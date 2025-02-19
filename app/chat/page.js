@@ -214,62 +214,81 @@ export default function Home() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
+            {/* Navigation Header */}
             <Box
-                width="100vw"
-                height="100vh"
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="center"
+                component="header"
                 sx={{
-                    backgroundImage: 'url("https://media.giphy.com/media/vTr3WiTdqpL6GOT5mF/giphy.gif")',
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: isMobile ? '60px' : '80px',
+                    padding: '12px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    backdropFilter: 'blur(10px)',
+                    zIndex: 1000,
                 }}
             >
-                {/* Theme toggle button */}
-                <Fab
-                    color="primary"
-                    onClick={toggleColorMode}
-                    sx={{
-                        position: 'absolute',
-                        top: 16,
-                        right: 16,
-                    }}
-                >
-                    {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                </Fab>
-
-                {/* Home button */}
                 <Fab
                     color="primary"
                     onClick={() => router.push('/')}
                     size={isMobile ? "small" : "medium"}
                     sx={{
-                        position: 'absolute',
-                        top: isMobile ? 8 : 16,
-                        left: isMobile ? 8 : 16,
+                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+                        '&:hover': {
+                            background: 'linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)',
+                        },
                     }}
                 >
-                    {mode === 'dark' ? <HomeIcon fontSize={isMobile ? "small" : "medium"} /> : <HomeIcon fontSize={isMobile ? "small" : "medium"} />}
+                    <HomeIcon sx={{ color: '#fff' }} />
                 </Fab>
 
+                <Fab
+                    color="primary"
+                    onClick={toggleColorMode}
+                    size={isMobile ? "small" : "medium"}
+                    sx={{
+                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+                        '&:hover': {
+                            background: 'linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)',
+                        },
+                    }}
+                >
+                    {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                </Fab>
+            </Box>
 
-
+            {/* Main Content */}
+            <Box
+                sx={{
+                    width: '100vw',
+                    height: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    pt: isMobile ? '60px' : '80px', // Add padding for header
+                    backgroundImage: 'url("https://media.giphy.com/media/vTr3WiTdqpL6GOT5mF/giphy.gif")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            >
                 {/* Main chat container */}
                 <Stack
                     direction={'column'}
                     width={isMobile ? "100%" : "800px"}
-                    height={isMobile ? "100vh" : "90vh"}
-                    border={isMobile ? "none" : "1px solid"}
-                    borderColor="divider"
-                    borderRadius={isMobile ? 0 : 2}
-                    p={isMobile ? 1 : 2}
-                    spacing={2}
-                    bgcolor="background.paper"
+                    height={isMobile ? "calc(100vh - 60px)" : "calc(100vh - 80px)"}
                     sx={{
-                        animation: `${fadeIn} 0.5s ease-out`,
+                        background: mode === 'dark' ? 'rgba(18, 18, 18, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                        borderRadius: isMobile ? 0 : '20px',
+                        overflow: 'hidden',
                     }}
                 >
                     {/* Title */}

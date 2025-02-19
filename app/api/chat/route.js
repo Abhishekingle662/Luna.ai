@@ -66,7 +66,7 @@ export async function POST(req) {
         }
 
         console.log('Initiating chat completion');
-        console.log('Using model: gpt-4o-mini');
+        console.log('Using model: gpt-3.5-turbo');
         
         const completion = await openai.chat.completions.create({
             messages: [
@@ -76,7 +76,7 @@ export async function POST(req) {
                 },
                 ...data,
             ],
-            model: 'gpt-4o-mini',
+            model: 'gpt-3.5-turbo',
             stream: true,
         });
         console.log('Chat completion created successfully');
@@ -87,10 +87,9 @@ export async function POST(req) {
                 console.log('Stream started');
                 try {
                     for await (const chunk of completion) {
-                        const content = chunk.choices[0].delta.content;
+                        const content = chunk.choices[0]?.delta?.content;
                         if (content) {
-                            const text = encoder.encode(content);
-                            controller.enqueue(text);
+                            controller.enqueue(encoder.encode(content));
                             console.log('Chunk processed');
                         }
                     }
