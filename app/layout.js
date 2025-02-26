@@ -1,13 +1,20 @@
-import { Inter, Orbitron } from "next/font/google";
+import { Inter, Exo_2, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/react';
 import ClientLayout from './ClientLayout';
 
 const inter = Inter({ subsets: ["latin"] });
-const orbitron = Orbitron({ 
+const spaceGrotesk = Space_Grotesk({ 
+  weight: ['400', '500', '700'],
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-space-grotesk',
+});
+const exo2 = Exo_2({ 
   weight: ['400', '700'],
   subsets: ["latin"],
   display: 'swap',
+  variable: '--font-exo-2',
 });
 
 export const metadata = {
@@ -23,9 +30,12 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body className={`${inter.className} ${orbitron.className}`}>
+      <body className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable}`}>
         <ClientLayout>{children}</ClientLayout>
         <Analytics />
+        <footer style={{ textAlign: 'center', padding: '20px', borderTop: '1px solid #eaeaea' }}>
+          <p>&copy; {new Date().getFullYear()} Abhishek Ingle. All rights reserved.</p>
+        </footer>
       </body>
     </html>
   );

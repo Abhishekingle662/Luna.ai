@@ -5,6 +5,11 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SendIcon from '@mui/icons-material/Send'
 import { keyframes } from '@mui/system'
 import dynamic from 'next/dynamic'
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import rehypeRaw from 'rehype-raw';
+import Link from '@mui/material/Link'
 
 // Import particles background dynamically to avoid SSR issues
 const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false })
@@ -171,8 +176,9 @@ export default function Home() {
                 primary: '#E0E0E0',
               },
             },
+            // In your theme configuration in chat/page.js
             typography: {
-              fontFamily: '"Orbitron", "Roboto", "Arial", sans-serif',
+                fontFamily: 'var(--font-space-grotesk), "Roboto", "Arial", sans-serif',
             },
             components: {
               MuiTextField: {
@@ -206,20 +212,72 @@ export default function Home() {
 
 // formatting the text reply from the chatbot
     const formatMessage = (content) => {
-        const lines = content.split('•').filter(line => line.trim() !== '');
-        
-        if (lines.length > 1) {
-          return (
-            <ul>
-              {lines.map((line, index) => (
-                <li key={index}>{line.trim()}</li>
-              ))}
-            </ul>
-          );
-        } else {
-          return <span>{content}</span>;
-        }
-      };
+      return (
+        <ReactMarkdown
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            code({node, inline, className, children, ...props}) {
+              const match = /language-(\w+)/.exec(className || '');
+              return !inline && match ? (
+                <SyntaxHighlighter
+                  style={atomDark}
+                  language={match[1]}
+                  PreTag="div"
+                  className="code-block"
+                  wrapLines={true}
+                  showLineNumbers={true}
+                  {...props}
+                >
+                  {String(children).replace(/\n$/, '')}
+                </SyntaxHighlighter>
+              ) : (
+                <code className="inline-code" {...props}>
+                  {children}
+                </code>
+              );
+            },
+            h1: ({node, ...props}) => <Typography variant="h5" color="#9575CD" sx={{mt: 2, mb: 1, fontWeight: 'bold'}} {...props} />,
+            h2: ({node, ...props}) => <Typography variant="h6" color="#9575CD" sx={{mt: 1.5, mb: 1, fontWeight: 'bold'}} {...props} />,
+            h3: ({node, ...props}) => <Typography variant="subtitle1" color="#9575CD" sx={{mt: 1, mb: 0.5, fontWeight: 'bold'}} {...props} />,
+            p: ({node, ...props}) => <Typography variant="body1" sx={{my: 0.5}} {...props} />,
+            ul: ({node, ...props}) => <Box component="ul" sx={{ml: 2, mt: 0.5, mb: 1}} {...props} />,
+            ol: ({node, ...props}) => <Box component="ol" sx={{ml: 2, mt: 0.5, mb: 1}} {...props} />,
+            li: ({node, ...props}) => <Box component="li" sx={{mb: 0.5}} {...props} />,
+            a: ({node, ...props}) => (
+              <Link 
+                {...props} 
+                sx={{
+                  color: '#90CAF9',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                    color: '#90CAF9'
+                  }
+                }}
+                target="_blank"
+                rel="noopener"
+              />
+            ),
+            blockquote: ({node, ...props}) => (
+              <Box
+                component="blockquote"
+                sx={{
+                  borderLeft: '3px solid #9575CD',
+                  pl: 2,
+                  my: 1,
+                  py: 0.5,
+                  backgroundColor: 'rgba(149, 117, 205, 0.1)',
+                  borderRadius: '0 4px 4px 0',
+                }}
+                {...props}
+              />
+            ),
+          }}
+        >
+          {content}
+        </ReactMarkdown>
+      );
+    };
 
 
     // Function to send a message to the AI
@@ -293,7 +351,7 @@ export default function Home() {
             {/* Main Content */}
             <Box
                 sx={{
-                    width: '100vw',
+                    width: '100%',
                     height: '100vh',
                     display: 'flex',
                     flexDirection: 'column',
@@ -301,6 +359,8 @@ export default function Home() {
                     justifyContent: 'center',
                     position: 'relative',
                     overflow: 'hidden',
+                    maxWidth: '100%',
+                    boxSizing: 'border-box',
                 }}
             >
                 {/* Lunar Phase Animation */}
@@ -338,7 +398,7 @@ export default function Home() {
                         align="center" 
                         sx={{
                             color: '#9575CD',
-                            fontFamily: '"Orbitron", sans-serif',
+                            fontFamily: 'var(--font-exo-2), sans-serif',  // Changed from Orbitron to Exo 2
                             textShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
                             fontWeight: 700,
                             letterSpacing: '3px',
@@ -374,25 +434,51 @@ export default function Home() {
                                 }}
                             >
                                 <Box
-                                    bgcolor={
-                                        message.role === 'assistant'
-                                            ? 'rgba(93, 63, 211, 0.8)'
-                                            : 'rgba(30, 136, 229, 0.8)'
+                                  bgcolor={
+                                    message.role === 'assistant'
+                                      ? 'rgba(93, 63, 211, 0.8)'
+                                      : 'rgba(30, 136, 229, 0.8)'
+                                  }
+                                  color="white"
+                                  borderRadius={3}
+                                  p={2}
+                                  maxWidth={isMobile ? "85%" : "70%"}
+                                  sx={{
+                                    boxShadow: message.role === 'assistant' 
+                                      ? '0 0 15px rgba(93, 63, 211, 0.5)'
+                                      : '0 0 15px rgba(30, 136, 229, 0.5)',
+                                    backdropFilter: 'blur(5px)',
+                                    '& .code-block': {
+                                      borderRadius: '4px',
+                                      margin: '8px 0',
+                                      maxWidth: '100%',
+                                      overflow: 'auto',
+                                      fontSize: '0.85rem'
+                                    },
+                                    '& .inline-code': {
+                                      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                      padding: '2px 4px',
+                                      borderRadius: '3px',
+                                      fontFamily: 'monospace',
+                                      fontSize: '0.9em'
+                                    },
+                                    '& a': {
+                                      color: '#90CAF9',
+                                      textDecoration: 'none',
+                                      '&:hover': {
+                                        textDecoration: 'underline',
+                                        color: '#42A5F5'
+                                      }
+                                    },
+                                    '& img': {
+                                      maxWidth: '100%',
+                                      height: 'auto',
+                                      borderRadius: '4px',
+                                      margin: '8px 0'
                                     }
-                                    color="white"
-                                    borderRadius={5}
-                                    p={1.5}
-                                    maxWidth={isMobile ? "85%" : "70%"}
-                                    sx={{
-                                        boxShadow: message.role === 'assistant' 
-                                            ? '0 0 15px rgba(93, 63, 211, 0.5)'
-                                            : '0 0 15px rgba(30, 136, 229, 0.5)',
-                                        backdropFilter: 'blur(5px)',
-                                    }}
+                                  }}
                                 >
-                                    <Typography variant={isMobile ? "body2" : "body1"}>
-                                        {formatMessage(message.content)}
-                                    </Typography>
+                                  {formatMessage(message.content)}
                                 </Box>
                             </Box>
                         ))}
@@ -444,5 +530,6 @@ export default function Home() {
                 </Stack>
             </Box>
         </ThemeProvider>
+        
     )
 }

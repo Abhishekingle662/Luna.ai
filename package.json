@@ -19,7 +19,10 @@
     "openai": "^4.55.7",
     "particles-bg": "^2.5.5",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-markdown": "^10.0.0",
+    "react-syntax-highlighter": "^15.6.1",
+    "rehype-raw": "^7.0.0"
   },
   "devDependencies": {
     "eslint": "^8",
