@@ -1,16 +1,9 @@
 'use client'
-// Import necessary components and icons from Material-UI and React
 import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline } from '@mui/material'
 import { useState, useMemo } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SendIcon from '@mui/icons-material/Send'
-// import MicIcon from '@mui/icons-material/Mic'
-// import StopIcon from '@mui/icons-material/Stop'
 import { keyframes } from '@mui/system'
-import Brightness4Icon from '@mui/icons-material/Brightness4'
-import Brightness7Icon from '@mui/icons-material/Brightness7'
-import HomeIcon from '@mui/icons-material/Home'
-import { useRouter } from 'next/navigation'
 
 // Define keyframe animations for visual effects
 const pulse = keyframes`
@@ -44,24 +37,21 @@ export default function Home() {
     ])
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const [mode, setMode] = useState('light')
     
     // Check if the device is mobile
     const isMobile = useMediaQuery('(max-width:600px)')
     const [isRecording, setIsRecording] = useState(false)
     const [mediaRecorder, setMediaRecorder] = useState(null)
 
-    const router = useRouter()
-
-    // Create a theme based on the current mode (light/dark)
+    // Create a fixed light theme
     const theme = useMemo(
         () =>
           createTheme({
             palette: {
-              mode,
+              mode: 'light',
             },
           }),
-        [mode],
+        [],
     )
 
 // formatting the text reply from the chatbot
@@ -143,127 +133,11 @@ export default function Home() {
         }
     }
 
-    // Handle voice recording
-    // const handleRecording = async () => {
-    //     if (isRecording) {
-    //         mediaRecorder.stop()
-    //         setIsRecording(false)
-    //         return
-    //     }
-    
-    //     setIsRecording(true)
-    //     try {
-    //         // Request microphone access and set up MediaRecorder
-    //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    //         const recorder = new MediaRecorder(stream)
-    //         setMediaRecorder(recorder)
-    //         const audioChunks = []
-    
-    //         recorder.addEventListener("dataavailable", event => {
-    //             audioChunks.push(event.data)
-    //         })
-    
-    //         recorder.addEventListener("stop", async () => {
-    //             // Process the recorded audio
-    //             const audioBlob = new Blob(audioChunks)
-    //             const audioFile = new File([audioBlob], "audio.webm")
-    //             console.log("Audio file ready to be sent to API", audioFile)
-    //             setIsRecording(false)
-                
-    //             // Send audio file to speech-to-text API
-    //             const formData = new FormData()
-    //             formData.append('audio', audioFile)
-                
-    //             try {
-    //                 const response = await fetch('/api/speech-to-text', {
-    //                     method: 'POST',
-    //                     body: formData,
-    //                 })
-                    
-    //                 if (!response.ok) {
-    //                     throw new Error('Speech-to-text API response was not ok')
-    //                 }
-                    
-    //                 const { text } = await response.json()
-    //                 console.log("Transcribed text:", text)
-                    
-    //                 // Send transcribed text to chat API
-    //                 sendMessage(text)
-    //             } catch (error) {
-    //                 console.error("Error processing speech to text:", error)
-    //                 setMessages((messages) => [
-    //                     ...messages,
-    //                     { role: 'assistant', content: "I'm sorry, but I encountered an error processing your voice input. Please try again." },
-    //                 ])
-    //             }
-    //         })
-    
-    //         recorder.start()
-    //     } catch (err) {
-    //         console.error("Error accessing microphone:", err)
-    //         setIsRecording(false)
-    //     }
-    // }
-
-    // Toggle between light and dark mode
-    const toggleColorMode = () => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'))
-    }
-
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            {/* Navigation Header */}
-            <Box
-                component="header"
-                sx={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: isMobile ? '60px' : '80px',
-                    padding: '12px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    background: 'rgba(0, 0, 0, 0.3)',
-                    backdropFilter: 'blur(10px)',
-                    zIndex: 1000,
-                }}
-            >
-                <Fab
-                    color="primary"
-                    onClick={() => router.push('/')}
-                    size={isMobile ? "small" : "medium"}
-                    sx={{
-                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-                        '&:hover': {
-                            background: 'linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)',
-                        },
-                    }}
-                >
-                    <HomeIcon sx={{ color: '#fff' }} />
-                </Fab>
-
-                <Fab
-                    color="primary"
-                    onClick={toggleColorMode}
-                    size={isMobile ? "small" : "medium"}
-                    sx={{
-                        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-                        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-                        '&:hover': {
-                            background: 'linear-gradient(45deg, #21CBF3 30%, #2196F3 90%)',
-                        },
-                    }}
-                >
-                    {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                </Fab>
-            </Box>
-
-            {/* Main Content */}
+            {/* Main Content - Remove pt (padding-top) since header is gone */}
             <Box
                 sx={{
                     width: '100vw',
@@ -272,20 +146,19 @@ export default function Home() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    pt: isMobile ? '60px' : '80px', // Add padding for header
                     backgroundImage: 'url("https://media.giphy.com/media/vTr3WiTdqpL6GOT5mF/giphy.gif")',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
                 }}
             >
-                {/* Main chat container */}
+                {/* Main chat container - Update height calculation since header is gone */}
                 <Stack
                     direction={'column'}
                     width={isMobile ? "100%" : "800px"}
-                    height={isMobile ? "calc(100vh - 60px)" : "calc(100vh - 80px)"}
+                    height="100vh"
                     sx={{
-                        background: mode === 'dark' ? 'rgba(18, 18, 18, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                        background: 'rgba(255, 255, 255, 0.95)',
                         backdropFilter: 'blur(10px)',
                         borderRadius: isMobile ? 0 : '20px',
                         overflow: 'hidden',
@@ -348,28 +221,7 @@ export default function Home() {
                             size={isMobile ? "small" : "medium"}
                         />
 
-                        {/* Voice recording button (commented out) */}
-                        {/* <Fab
-                            color="secondary"
-                            onClick={handleRecording}
-                            disabled={isLoading}
-                            size={isMobile ? "small" : "medium"}
-                            aria-label={isRecording ? "Stop recording" : "Start voice recording"}
-                            aria-pressed={isRecording}
-                            aria-live="polite"
-                            sx={{
-                                transition: 'transform 0.2s',
-                                '&:hover': {
-                                    transform: 'scale(1.1)',
-                                },
-                                '&:active': {
-                                    transform: 'scale(0.9)',
-                                },
-                                animation: isRecording ? `${pulse} 1s infinite` : 'none',
-                            }}
-                        >
-                            {isRecording ? <StopIcon /> : <MicIcon />}
-                        </Fab> */}
+                       
 
                         {/* Send message button */}
                         <Fab
