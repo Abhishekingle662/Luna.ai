@@ -379,19 +379,25 @@ export default function Home() {
                 
                 {/* Main chat container */}
                 <Stack
-                    direction={'column'}
-                    width={isMobile ? "100%" : "800px"}
-                    height="100vh"
+                    direction="column"
                     sx={{
-                        background: 'rgba(25, 25, 35, 0.75)',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: isMobile ? 0 : '20px',
-                        overflow: 'hidden',
-                        border: '1px solid rgba(149, 117, 205, 0.3)',
-                        boxShadow: '0 0 20px rgba(149, 117, 205, 0.5)',
-                        zIndex: 5,
+                      /* Use full width on small screens (xs), and a fixed width on medium (md) and above */
+                      width: { xs: "100%", md: "800px" },
+                      /* For height, use full viewport height on mobile and a bit less on larger screens */
+                      height: { xs: "100vh", md: "80vh" },
+                      background: "rgba(25, 25, 35, 0.75)",
+                      backdropFilter: "blur(10px)",
+                      /* No border radius on mobile, rounded corners on larger screens */
+                      borderRadius: { xs: 0, md: "20px" },
+                      overflow: "hidden",
+                      border: "1px solid rgba(149, 117, 205, 0.3)",
+                      boxShadow: "0 0 20px rgba(149, 117, 205, 0.5)",
+                      zIndex: 5,
+                      /* Center the container horizontally on desktop */
+                      mx: { xs: 0, md: "auto" },
                     }}
-                >
+                  >
+                    
                     {/* Title */}
                     <Typography 
                         variant={isMobile ? "h5" : "h4"} 
