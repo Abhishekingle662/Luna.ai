@@ -204,6 +204,14 @@ const StarfieldCanvas = () => {
 
 // Planet component with orbital system
 const Planet = ({ size, top, left, image, rotationSpeed, hasRings = false, satellites = [] }) => {
+  // Add state for random animation duration
+  const [animDuration, setAnimDuration] = useState(7);
+  
+  // Move random generation to useEffect (client-side only)
+  useEffect(() => {
+    setAnimDuration(7 + Math.random() * 5);
+  }, []);
+  
   // Fallback image path if image is not provided or fails to load
   const imgSrc = image || "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?q=80&w=150&auto=format";
   
@@ -215,7 +223,7 @@ const Planet = ({ size, top, left, image, rotationSpeed, hasRings = false, satel
         height: `${size * 3}px`,
         top: `${top}%`,
         left: `${left}%`,
-        animation: `${float} ${7 + Math.random() * 5}s infinite ease-in-out`,
+        animation: `${float} ${animDuration}s infinite ease-in-out`, // Use state value
         zIndex: 1,
         display: 'flex',
         alignItems: 'center',
@@ -373,27 +381,60 @@ const meteorAnimation = keyframes`
   }
 `;
 
-// Meteor component
-const Meteor = () => {
+// Updated Meteor component with customization options
+const Meteor = ({ speedMultiplier = 1, positionArea = 'top-left' }) => {
   const [position, setPosition] = useState({
-    top: Math.random() * 30,
-    left: Math.random() * 30,
-    duration: 2 + Math.random() * 3,
-    size: 100 + Math.random() * 100
+    top: 15,
+    left: 15,
+    duration: 3,
+    size: 150
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const updatePosition = () => {
+      // Position calculation based on area parameter
+      let topPos, leftPos;
+      
+      switch(positionArea) {
+        case 'top-right':
+          topPos = Math.random() * 20;
+          leftPos = 50 + Math.random() * 30;
+          break;
+        case 'bottom-left':
+          topPos = 50 + Math.random() * 30;
+          leftPos = Math.random() * 20;
+          break;
+        case 'bottom-right':
+          topPos = 50 + Math.random() * 30;
+          leftPos = 50 + Math.random() * 30;
+          break;
+        case 'random':
+          topPos = Math.random() * 80;
+          leftPos = Math.random() * 80;
+          break;
+        case 'top-left':
+        default:
+          topPos = Math.random() * 20;
+          leftPos = Math.random() * 20;
+      }
+      
+      // Apply speed multiplier to duration (lower = faster)
+      const speed = (2 + Math.random() * 3) / speedMultiplier;
+      
       setPosition({
-        top: Math.random() * 30,
-        left: Math.random() * 30,
-        duration: 2 + Math.random() * 3,
+        top: topPos,
+        left: leftPos,
+        duration: speed,
         size: 100 + Math.random() * 100
       });
-    }, position.duration * 1000);
+    };
+    
+    updatePosition();
+    // Update meteor position every few seconds
+    const timer = setInterval(updatePosition, 5000); 
     
     return () => clearInterval(timer);
-  }, [position.duration]);
+  }, [speedMultiplier, positionArea]);
 
   return (
     <Box

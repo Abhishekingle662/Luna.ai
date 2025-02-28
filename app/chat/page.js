@@ -84,6 +84,7 @@ const waveMotion = keyframes`
 // Component for the animated moon
 const LunarPhase = ({ size = 60 }) => {
   const [phase, setPhase] = useState(0);
+  const [shadowOffset, setShadowOffset] = useState(0);
   
   useEffect(() => {
     // Calculate moon phase based on current date
@@ -95,18 +96,23 @@ const LunarPhase = ({ size = 60 }) => {
     
     // Simple algorithm to roughly calculate moon phase
     const moonPhase = ((year - 2000) % 19) * 11 + month + dayOfMonth;
-    setPhase(moonPhase % 30); // 0-29 (0 = new moon, 15 = full moon)
+    const newPhase = moonPhase % 30; // 0-29 (0 = new moon, 15 = full moon)
+    
+    setPhase(newPhase);
+    // Calculate shadow position based on phase
+    setShadowOffset(Math.sin((newPhase / 30) * Math.PI * 2) * (size / 2));
     
     const intervalId = setInterval(() => {
       // Slightly change phase for animation effect
-      setPhase(prev => (prev + 0.1) % 30);
+      setPhase(prev => {
+        const updatedPhase = (prev + 0.1) % 30;
+        setShadowOffset(Math.sin((updatedPhase / 30) * Math.PI * 2) * (size / 2));
+        return updatedPhase;
+      });
     }, 5000);
     
     return () => clearInterval(intervalId);
-  }, []);
-  
-  // Calculate shadow position based on phase
-  const shadowOffset = Math.sin((phase / 30) * Math.PI * 2) * (size / 2);
+  }, [size]);
   
   return (
     <Box
@@ -126,75 +132,100 @@ const LunarPhase = ({ size = 60 }) => {
   );
 };
 
-// Star component
-const Star = ({ size, top, left, delay }) => (
-  <Box
-    sx={{
-      position: 'absolute',
-      width: `${size}px`,
-      height: `${size}px`,
-      top: `${top}%`,
-      left: `${left}%`,
-      backgroundColor: '#fff',
-      borderRadius: '50%',
-      boxShadow: '0 0 10px 2px rgba(255, 255, 255, 0.8)',
-      animation: `${float} ${4 + Math.random() * 4}s infinite ease-in-out ${delay}s`,
-    }}
-  />
-);
+// Updated Star component
+const Star = ({ size, top, left, delay }) => {
+  const [animDuration, setAnimDuration] = useState(4);
+  
+  // Generate random animation duration on client
+  useEffect(() => {
+    setAnimDuration(4 + Math.random() * 4);
+  }, []);
+  
+  return (
+    <Box
+      sx={{
+        position: 'absolute',
+        width: `${size}px`,
+        height: `${size}px`,
+        top: `${top}%`,
+        left: `${left}%`,
+        backgroundColor: '#fff',
+        borderRadius: '50%',
+        boxShadow: '0 0 10px 2px rgba(255, 255, 255, 0.8)',
+        animation: `${float} ${animDuration}s infinite ease-in-out ${delay}s`,
+      }}
+    />
+  );
+};
 
 
-// Alternative thinking indicator with cosmic waves
-const CosmicWavesIndicator = () => (
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      flexDirection: 'column',
-      gap: 1,
-      my: 1,
-      width: '100%',
-      height: '50px',
-    }}
-  >
+// Updated CosmicWavesIndicator with client-side random values
+const CosmicWavesIndicator = () => {
+  // Use state to store random heights
+  const [waveHeights, setWaveHeights] = useState([15, 15, 15, 15, 15]);
+  
+  // Generate random heights after component mounts (client-side only)
+  useEffect(() => {
+    setWaveHeights([
+      10 + Math.random() * 20,
+      10 + Math.random() * 20,
+      10 + Math.random() * 20,
+      10 + Math.random() * 20,
+      10 + Math.random() * 20
+    ]);
+  }, []);
+  
+  return (
     <Box
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        flexDirection: 'column',
         gap: 1,
-        height: '30px',
+        my: 1,
+        width: '100%',
+        height: '50px',
       }}
     >
-      {[0, 1, 2, 3, 4].map((index) => (
-        <Box
-          key={index}
-          sx={{
-            width: '4px',
-            height: `${10 + Math.random() * 20}px`,
-            backgroundColor: index % 2 === 0 ? '#9370DB' : '#4169E1',
-            borderRadius: '2px',
-            animation: `${waveMotion} ${1 + index * 0.2}s infinite ease-in-out ${index * 0.1}s`,
-            boxShadow: index % 2 === 0 
-              ? '0 0 8px #9370DB, 0 0 12px #9370DB' 
-              : '0 0 8px #4169E1, 0 0 12px #4169E1',
-          }}
-        />
-      ))}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+          gap: 1,
+          height: '30px',
+        }}
+      >
+        {[0, 1, 2, 3, 4].map((index) => (
+          <Box
+            key={index}
+            sx={{
+              width: '4px',
+              height: `${waveHeights[index]}px`, // Use stored heights
+              backgroundColor: index % 2 === 0 ? '#9370DB' : '#4169E1',
+              borderRadius: '2px',
+              animation: `${waveMotion} ${1 + index * 0.2}s infinite ease-in-out ${index * 0.1}s`,
+              boxShadow: index % 2 === 0 
+                ? '0 0 8px #9370DB, 0 0 12px #9370DB' 
+                : '0 0 8px #4169E1, 0 0 12px #4169E1',
+            }}
+          />
+        ))}
+      </Box>
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'rgba(255, 255, 255, 0.7)',
+          fontFamily: 'var(--font-space-grotesk), sans-serif',
+          letterSpacing: '1px',
+        }}
+      >
+        Computing cosmic response...
+      </Typography>
     </Box>
-    <Typography
-      variant="caption"
-      sx={{
-        color: 'rgba(255, 255, 255, 0.7)',
-        fontFamily: 'var(--font-space-grotesk), sans-serif',
-        letterSpacing: '1px',
-      }}
-    >
-      Computing cosmic response...
-    </Typography>
-  </Box>
-);
+  );
+};
 
 export default function Home() {
     // Initialize state variables
