@@ -2,7 +2,7 @@ import { Inter, Exo_2, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/react';
 import ClientLayout from './ClientLayout';
-import GoogleAnalytics from '../components/GoogleAnalytics';
+import GoogleAnalytics from './GoogleAnalytics';
 
 const inter = Inter({ subsets: ["latin"] });
 const spaceGrotesk = Space_Grotesk({ 
