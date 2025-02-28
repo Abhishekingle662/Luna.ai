@@ -65,6 +65,22 @@ const float = keyframes`
   }
 `
 
+// Add this keyframe animation with your other animations
+const waveMotion = keyframes`
+  0% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-5px) scaleY(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+    opacity: 0.5;
+  }
+`;
+
 // Component for the animated moon
 const LunarPhase = ({ size = 60 }) => {
   const [phase, setPhase] = useState(0);
@@ -125,6 +141,59 @@ const Star = ({ size, top, left, delay }) => (
       animation: `${float} ${4 + Math.random() * 4}s infinite ease-in-out ${delay}s`,
     }}
   />
+);
+
+
+// Alternative thinking indicator with cosmic waves
+const CosmicWavesIndicator = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'column',
+      gap: 1,
+      my: 1,
+      width: '100%',
+      height: '50px',
+    }}
+  >
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        gap: 1,
+        height: '30px',
+      }}
+    >
+      {[0, 1, 2, 3, 4].map((index) => (
+        <Box
+          key={index}
+          sx={{
+            width: '4px',
+            height: `${10 + Math.random() * 20}px`,
+            backgroundColor: index % 2 === 0 ? '#9370DB' : '#4169E1',
+            borderRadius: '2px',
+            animation: `${waveMotion} ${1 + index * 0.2}s infinite ease-in-out ${index * 0.1}s`,
+            boxShadow: index % 2 === 0 
+              ? '0 0 8px #9370DB, 0 0 12px #9370DB' 
+              : '0 0 8px #4169E1, 0 0 12px #4169E1',
+          }}
+        />
+      ))}
+    </Box>
+    <Typography
+      variant="caption"
+      sx={{
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontFamily: 'var(--font-space-grotesk), sans-serif',
+        letterSpacing: '1px',
+      }}
+    >
+      Computing cosmic response...
+    </Typography>
+  </Box>
 );
 
 export default function Home() {
@@ -285,6 +354,9 @@ export default function Home() {
         if (!message.trim() || isLoading) return;
         setIsLoading(true)
 
+        // Record animation start time
+    const animationStartTime = Date.now();  
+
         setMessage('')
         setMessages((messages) => [
             ...messages,
@@ -330,6 +402,18 @@ export default function Home() {
                 { role: 'assistant', content: "I'm sorry, but I encountered an error. Please try again later." },
             ])
         }
+
+              // Calculate how long the animation has been showing
+            const animationDisplayTime = Date.now() - animationStartTime;
+            
+            // If it's been less than 1500ms, wait the remaining time
+            const minimumDisplayTime = 1500; // 1.5 seconds
+            if (animationDisplayTime < minimumDisplayTime) {
+                await new Promise(resolve => 
+                    setTimeout(resolve, minimumDisplayTime - animationDisplayTime)
+                );
+              }
+
         setIsLoading(false)
     }
 
@@ -397,7 +481,7 @@ export default function Home() {
                       mx: { xs: 0, md: "auto" },
                     }}
                   >
-                    
+
                     {/* Title */}
                     <Typography 
                         variant={isMobile ? "h5" : "h4"} 
@@ -484,11 +568,17 @@ export default function Home() {
                                     }
                                   }}
                                 >
-                                  {formatMessage(message.content)}
+                                  {/* Show actual message content or placeholder for empty assistant messages */}
+                                  {message.content ? formatMessage(message.content) : 
+                                    message.role === 'assistant' && isLoading && index === messages.length - 1 ? 
+                                      <CosmicWavesIndicator /> : null
+                                  }
                                 </Box>
                             </Box>
                         ))}
                     </Stack>
+
+
                     {/* Input area */}
                     <Stack 
                         direction={'row'} 
