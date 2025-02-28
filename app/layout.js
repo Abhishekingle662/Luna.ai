@@ -2,7 +2,10 @@ import { Inter, Exo_2, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/react';
 import ClientLayout from './ClientLayout';
-import GoogleAnalytics from './GoogleAnalytics';
+import dynamic from 'next/dynamic';
+
+// Import the analytics component with no SSR
+const ClientAnalytics = dynamic(() => import('./ClientAnalytics'), { ssr: false });
 
 const inter = Inter({ subsets: ["latin"] });
 const spaceGrotesk = Space_Grotesk({ 
@@ -33,7 +36,7 @@ export default function RootLayout({ children }) {
       </head>
 
       <body className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable}`}>
-        <GoogleAnalytics GA_MEASUREMENT_ID="G-2F84GPF4QD" className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable}`} />
+        <ClientAnalytics />
         <ClientLayout>{children}</ClientLayout>
         <Analytics />
         <footer style={{ textAlign: 'center', padding: '20px', borderTop: '1px solid #eaeaea' }}>
@@ -43,3 +46,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
