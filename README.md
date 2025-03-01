@@ -1,5 +1,7 @@
 # Meet LUNA, your personal gateway to the cosmos! 
 
+Try Luna here: https://www.lunaapp.space
+
 This project is an innovative AI-powered chat application built with Next.js and Material-UI. It features a responsive design that works seamlessly across desktop and mobile devices. The application includes:
 
 - A welcoming landing page with a call-to-action to start chatting
