@@ -1,5 +1,5 @@
 'use client'
-import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline } from '@mui/material'
+import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline, Tooltip } from '@mui/material'
 import { useState, useMemo, useEffect } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SendIcon from '@mui/icons-material/Send'
@@ -10,6 +10,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import Link from '@mui/material/Link'
+import GamesIcon from '@mui/icons-material/Games';
 
 // Import particles background dynamically to avoid SSR issues
 const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false })
@@ -631,6 +632,26 @@ export default function Home() {
                             maxRows={4}
                             size={isMobile ? "small" : "medium"}
                         />
+
+                        <Tooltip title="Explore Space Games">
+                          <Fab
+                            color="secondary"
+                            component={Link}
+                            href="/games"
+                            size={isMobile ? "small" : "medium"}
+                            sx={{
+                              transition: 'transform 0.3s',
+                              background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
+                              boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
+                              '&:hover': {
+                                transform: 'scale(1.1)',
+                                boxShadow: '0 0 15px rgba(30, 136, 229, 1)',
+                              },
+                            }}
+                          >
+                            <GamesIcon />
+                          </Fab>
+                        </Tooltip>
 
                         {/* Send message button */}
                         <Fab
