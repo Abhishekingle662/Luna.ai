@@ -498,10 +498,10 @@ export default function Home() {
                     sx={{
                       /* Use full width on small screens (xs), and a fixed width on medium (md) and above */
                       width: { xs: "100%", md: "800px" },
-                      /* For height, use full viewport height on mobile and a bit less on larger screens */
-                      height: { xs: "100vh", md: "80vh" },
-                      background: "rgba(25, 25, 35, 0.75)",
-                      backdropFilter: "blur(10px)",
+                        /* Use 95vh on mobile to prevent content from being cut off by browser UI */
+                        height: { xs: "95vh", md: "80vh" },
+                        background: "rgba(25, 25, 35, 0.75)",
+                        backdropFilter: "blur(10px)",
                       /* No border radius on mobile, rounded corners on larger screens */
                       borderRadius: { xs: 0, md: "20px" },
                       overflow: "hidden",
