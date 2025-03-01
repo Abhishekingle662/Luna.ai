@@ -39,9 +39,7 @@ export default function RootLayout({ children }) {
         <ClientAnalytics />
         <ClientLayout>{children}</ClientLayout>
         <Analytics />
-        <footer style={{ textAlign: 'center', padding: '20px', borderTop: '1px solid #eaeaea' }}>
-          <p>&copy; {new Date().getFullYear()} Abhishek Ingle. All rights reserved.</p>
-        </footer>
+        
       </body>
     </html>
   );

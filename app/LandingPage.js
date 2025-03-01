@@ -693,15 +693,17 @@ export default function LandingPage() {
             color: 'rgba(149, 117, 205, 0.7)',
             marginTop: '20px',
             fontSize: {
-              xs: '0.7rem',
-              sm: '0.75rem',
+              xs: '1rem',
+              sm: '1rem',
             },
             textAlign: 'center',
           }}
         >
-          Powered by OpenAI · Explore the cosmos with LUNA
+          Powered by OpenAI
         </Typography>
-
+        <footer style={{ textAlign: 'center', position: 'relative', top: '20px' , padding: '20px 0 0 0', fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.8)' }}>
+          <p>&copy; {new Date().getFullYear()} Abhishek Ingle. All rights reserved.</p>
+        </footer>
         
       </Box>
     </Box>
