@@ -2,6 +2,11 @@
 
 Try Luna here: https://www.lunaapp.space
 
+
+![Screenshot 2025-03-01 084033](https://github.com/user-attachments/assets/10f09cdf-5c26-4816-ae63-c467ddf26d5e)
+
+![Screenshot 2025-03-01 084045](https://github.com/user-attachments/assets/3344b43a-78c7-4071-9181-3c6f456fd1c6)
+
 This project is an innovative AI-powered chat application built with Next.js and Material-UI. It features a responsive design that works seamlessly across desktop and mobile devices. The application includes:
 
 - A welcoming landing page with a call-to-action to start chatting
