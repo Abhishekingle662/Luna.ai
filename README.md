@@ -1,4 +1,4 @@
-# Meet LUNA, your personal gateway to the cosmos! 
+# Meet Luna!, your personal gateway to the cosmos! 
 
 Try Luna here: https://www.lunaapp.space
 
