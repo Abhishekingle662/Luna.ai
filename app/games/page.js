@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -11,18 +11,23 @@ import {
   Grid, 
   Container,
   Tabs,
-  Tab
+  Tab,
+  useMediaQuery,
+  Stack
 } from '@mui/material';
 import SpaceFactGenerator from './SpaceFactGenerator';
 import GravitySimulator from './GravitySimulator';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
+import HomeIcon from '@mui/icons-material/Home'; 
 
 // Import particles background dynamically to avoid SSR issues
 const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false });
 
 export default function GamesPage() {
   const [activeTab, setActiveTab] = useState(0);
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -43,6 +48,58 @@ export default function GamesPage() {
       
       {/* Header */}
       <Container maxWidth="lg">
+        {/* Navigation Buttons - Hidden on mobile */}
+        <Stack 
+          direction="row" 
+          spacing={2} 
+          sx={{ 
+            mb: 3, 
+            display: { xs: 'none', sm: 'flex' }  // Hide on mobile, show on tablet/desktop
+          }}
+        >
+          {/* Back to Home Button */}
+          <Button
+            component={Link}
+            href="/"
+            startIcon={<HomeIcon />}
+            sx={{
+              color: '#9575CD',
+              borderColor: 'rgba(149, 117, 205, 0.5)',
+              '&:hover': {
+                borderColor: '#9575CD',
+                backgroundColor: 'rgba(149, 117, 205, 0.1)',
+              },
+              backdropFilter: 'blur(5px)',
+              borderRadius: '30px',
+              px: 2,
+            }}
+            variant="outlined"
+          >
+            Home
+          </Button>
+          
+          {/* Back to Chat Button */}
+          <Button
+            component={Link}
+            href="/chat"
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              color: '#9575CD',
+              borderColor: 'rgba(149, 117, 205, 0.5)',
+              '&:hover': {
+                borderColor: '#9575CD',
+                backgroundColor: 'rgba(149, 117, 205, 0.1)',
+              },
+              backdropFilter: 'blur(5px)',
+              borderRadius: '30px',
+              px: 2,
+            }}
+            variant="outlined"
+          >
+            Back to Chat
+          </Button>
+        </Stack>
+
         <Box textAlign="center" mb={6}>
           <Typography 
             variant="h3" 

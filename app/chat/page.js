@@ -1,5 +1,5 @@
 'use client'
-import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline, Tooltip } from '@mui/material'
+import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline, Tooltip, Button } from '@mui/material'
 import { useState, useMemo, useEffect } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SendIcon from '@mui/icons-material/Send'
@@ -11,9 +11,13 @@ import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import Link from '@mui/material/Link'
 import GamesIcon from '@mui/icons-material/Games';
+import HomeIcon from '@mui/icons-material/Home'; 
+
 
 // Import particles background dynamically to avoid SSR issues
 const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false })
+
+
 
 // Define keyframe animations for visual effects
 const pulse = keyframes`
@@ -463,6 +467,27 @@ export default function Home() {
             <CssBaseline />
             {/* Particle Background */}
             <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={50} />
+
+            {/* Back to Home Button */}
+          <Button
+            component={Link}
+            href="/"
+            startIcon={<HomeIcon />}
+            sx={{
+              color: '#9575CD',
+              borderColor: 'rgba(149, 117, 205, 0.5)',
+              '&:hover': {
+                borderColor: '#9575CD',
+                backgroundColor: 'rgba(149, 117, 205, 0.1)',
+              },
+              backdropFilter: 'blur(5px)',
+              borderRadius: '30px',
+              px: 2,
+            }}
+            variant="outlined"
+          >
+            Home
+          </Button>
             
             {/* Main Content */}
             <Box
