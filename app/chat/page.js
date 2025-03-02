@@ -86,6 +86,31 @@ const waveMotion = keyframes`
   }
 `;
 
+// Add these new keyframe animations with your other animations at the top
+const borderGlow = keyframes`
+  0% {
+    box-shadow: 0 0 5px rgba(149, 117, 205, 0.3), 0 0 0 1px rgba(149, 117, 205, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(149, 117, 205, 0.5), 0 0 0 1px rgba(149, 117, 205, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(149, 117, 205, 0.3), 0 0 0 1px rgba(149, 117, 205, 0.2);
+  }
+`;
+
+const subtleRotate = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
+
 // Component for the animated moon
 const LunarPhase = ({ size = 60 }) => {
   const [phase, setPhase] = useState(0);
@@ -242,6 +267,7 @@ export default function Home() {
     ])
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [isInputFixed, setIsInputFixed] = useState(false) // Track if input should be fixed
     
     // Check if the device is mobile
     const isMobile = useMediaQuery('(max-width:600px)')
@@ -251,16 +277,46 @@ export default function Home() {
 
     // Add this new ref for scrolling to the latest message
     const messagesEndRef = useRef(null);
+    const messagesContainerRef = useRef(null);
     
     // Add this function to scroll to the bottom when new messages arrive
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
+
+    // Determine if input should be fixed based on scroll position
+    const handleScroll = () => {
+      if (isMobile) return; // Always fixed on mobile
+      
+      if (messagesContainerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+        const isScrolled = scrollTop > 100; // Fix input when scrolled down more than 100px
+        setIsInputFixed(isScrolled || messages.length > 2); // Fixed when scrolled or > 2 messages
+      }
+    };
     
-    // Add this effect to scroll when messages change
+    // Add scroll event listener
     useEffect(() => {
+      const messagesContainer = messagesContainerRef.current;
+      if (messagesContainer && !isMobile) {
+        messagesContainer.addEventListener('scroll', handleScroll);
+        return () => messagesContainer.removeEventListener('scroll', handleScroll);
+      }
+    }, [isMobile]);
+    
+    // Update fixed state when messages change
+    useEffect(() => {
+      if (messages.length > 2 && !isMobile) {
+        setIsInputFixed(true);
+      }
+      
+      // For the first load on desktop, input should not be fixed
+      if (messages.length <= 1 && !isMobile && !isLoading) {
+        setIsInputFixed(false);
+      }
+      
       scrollToBottom();
-    }, [messages]);
+    }, [messages, isMobile, isLoading]);
     
     // Generate random stars on component mount
     useEffect(() => {
@@ -570,31 +626,60 @@ export default function Home() {
           </Typography>
 
           {/* Chat container */}
-          <Box sx={{ 
-            width: '100%', 
-            maxWidth: '800px', 
-            margin: '0 auto', 
-            px: { xs: 0, md: 0 },  // No horizontal padding on mobile
-            display: 'flex', 
-            flexDirection: 'column', 
-            flex: 1,  // Take remaining space
-            overflow: 'auto',  // Allow scrolling
-            // Add padding at the bottom to ensure messages aren't hidden behind the input area
-            pb: { xs: '70px', md: '90px' }
-          }}>
+          <Box 
+            ref={messagesContainerRef}
+            sx={{ 
+              width: '100%', 
+              maxWidth: '800px', 
+              margin: '0 auto', 
+              px: { xs: 0, md: 0 },
+              display: 'flex', 
+              flexDirection: 'column', 
+              flex: 1,
+              overflow: 'auto',
+              // Add padding at the bottom to ensure messages aren't hidden
+              // More padding when input is fixed to prevent content from being hidden
+              pb: { 
+                xs: '70px', 
+                md: isInputFixed ? '90px' : '20px' 
+              }
+            }}
+          >
             {messages.map((message, index) => (
               <Box 
                 key={index}
                 sx={{
                   width: '100%',
-                  py: { xs: 2, md: 4 },  // Less vertical padding on mobile
-                  px: { xs: 2, md: 4 },  // Less horizontal padding on mobile
+                  py: { xs: 2, md: 4 },
+                  px: { xs: 2, md: 4 },
                   bgcolor: message.role === 'assistant' 
                     ? 'rgba(25, 25, 35, 0.75)' 
                     : 'rgba(35, 35, 45, 0.6)',
-                  borderBottom: '1px solid rgba(149, 117, 205, 0.15)',
+                  borderBottom: message.role === 'assistant'
+                    ? '1px solid rgba(149, 117, 205, 0.3)'
+                    : '1px solid rgba(100, 181, 246, 0.3)',
                   animation: `${fadeIn} 0.3s ease-out`,
                   backdropFilter: 'blur(10px)',
+                  position: 'relative',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '1px',
+                    background: message.role === 'assistant'
+                      ? 'linear-gradient(90deg, rgba(149, 117, 205, 0), rgba(149, 117, 205, 0.5), rgba(149, 117, 205, 0))'
+                      : 'linear-gradient(90deg, rgba(100, 181, 246, 0), rgba(100, 181, 246, 0.5), rgba(100, 181, 246, 0))',
+                  },
+                  '&:first-of-type': {
+                    borderTopLeftRadius: '12px',
+                    borderTopRightRadius: '12px',
+                  },
+                  '&:last-of-type': {
+                    borderBottomLeftRadius: message.role === 'user' ? '12px' : '0px',
+                    borderBottomRightRadius: message.role === 'user' ? '12px' : '0px',
+                  },
                 }}
               >
                 <Box
@@ -613,7 +698,6 @@ export default function Home() {
                       letterSpacing: '1px',
                       mb: 1,
                       display: 'block',
-                      // Smaller text on mobile
                       fontSize: { xs: '0.65rem', md: '0.75rem' }
                     }}
                   >
@@ -626,7 +710,9 @@ export default function Home() {
                       margin: { xs: '6px 0', md: '8px 0' },
                       maxWidth: '100%',
                       overflow: 'auto',
-                      fontSize: { xs: '0.75rem', md: '0.85rem' }
+                      fontSize: { xs: '0.75rem', md: '0.85rem' },
+                      border: '1px solid rgba(149, 117, 205, 0.3)',
+                      boxShadow: '0 0 10px rgba(149, 117, 205, 0.1)',
                     },
                     '& .inline-code': {
                       backgroundColor: 'rgba(0, 0, 0, 0.2)',
@@ -649,14 +735,12 @@ export default function Home() {
                       borderRadius: '4px',
                       margin: { xs: '6px 0', md: '8px 0' }
                     },
-                    // Better typography for mobile
                     '& p': {
                       fontSize: { xs: '0.9rem', md: '1rem' },
                       lineHeight: { xs: 1.5, md: 1.6 },
                       margin: { xs: '0.5em 0', md: '0.75em 0' }
                     }
                   }}>
-                    {/* Show message content or loading indicator */}
                     {message.content ? formatMessage(message.content) : 
                       message.role === 'assistant' && isLoading && index === messages.length - 1 ? 
                       <CosmicWavesIndicator /> : null
@@ -665,109 +749,243 @@ export default function Home() {
                 </Box>
               </Box>
             ))}
+            
+            {/* Input area - positioned inline on desktop when not fixed */}
+            {!isInputFixed && !isMobile && (
+              <Box 
+                sx={{ 
+                  width: '100%',
+                  px: { xs: 2, md: 4 },
+                  py: { xs: 2, md: 3 },
+                  mt: 3
+                }}
+              >
+                <Paper
+                  elevation={3}
+                  sx={{
+                    bgcolor: 'rgba(25, 25, 35, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(149, 117, 205, 0.3)',
+                    borderRadius: '12px',
+                    p: 2,
+                    background: 'linear-gradient(145deg, rgba(25, 25, 35, 0.9), rgba(30, 30, 45, 0.9))',
+                    animation: `${borderGlow} 4s infinite ease-in-out`,
+                    maxWidth: '800px',
+                    margin: '0 auto',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: -100,
+                      right: -100,
+                      height: '1px',
+                      background: 'linear-gradient(90deg, rgba(149, 117, 205, 0), rgba(149, 117, 205, 0.8), rgba(149, 117, 205, 0))',
+                      animation: `${subtleRotate} 8s infinite linear`,
+                      backgroundSize: '200% 200%',
+                    },
+                  }}
+                >
+                  <Stack 
+                    direction={'row'} 
+                    spacing={1} 
+                    alignItems="flex-end"
+                  >
+                    <TextField
+                      label="Message"
+                      fullWidth
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyDown={handleKeyPress}
+                      disabled={isLoading || isRecording}
+                      multiline
+                      maxRows={3}
+                      size="small"
+                      sx={{
+                        '& .MuiInputLabel-root': {
+                          fontSize: '1rem'
+                        },
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: '4px',
+                          paddingRight: '12px',
+                        }
+                      }}
+                    />
+                    <Tooltip title="Explore Space Games">
+                      <Fab
+                        color="secondary"
+                        component={Link}
+                        href="/games"
+                        size="small"
+                        sx={{
+                          height: '48px',
+                          width: '48px',
+                          transition: 'transform 0.2s',
+                          background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
+                          boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
+                          '&:hover': {
+                            transform: 'scale(1.05)',
+                            boxShadow: '0 0 15px rgba(30, 136, 229, 1)',
+                          },
+                        }}
+                      >
+                        <GamesIcon sx={{ fontSize: '1.5rem' }} />
+                      </Fab>
+                    </Tooltip>
+                    <Fab
+                      color="primary"
+                      onClick={sendMessage}
+                      disabled={isLoading || isRecording}
+                      size="small"
+                      sx={{
+                        height: '48px',
+                        width: '48px',
+                        transition: 'transform 0.2s',
+                        background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
+                        boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
+                        },
+                        '&:active': {
+                          transform: 'scale(0.95)',
+                        },
+                      }}
+                    >
+                      <SendIcon sx={{ fontSize: '1.5rem' }} />
+                    </Fab>
+                  </Stack>
+                </Paper>
+              </Box>
+            )}
+            
             {/* Invisible element to scroll to */}
             <div ref={messagesEndRef} />
           </Box>
 
-          {/* Input area - fixed at bottom */}
-          <Paper 
-            elevation={3}
-            sx={{ 
-              position: 'fixed', 
-              bottom: 0, 
-              left: 0,
-              right: 0,
-              width: '100%', 
-              bgcolor: 'rgba(25, 25, 35, 0.9)',
-              backdropFilter: 'blur(10px)',
-              borderTop: '1px solid rgba(149, 117, 205, 0.3)',
-              pt: { xs: 1.5, md: 2 },
-              pb: { xs: 2, md: 3 },
-              px: { xs: 1.5, md: 2 },
-              zIndex: 10
-            }}
-          >
-            <Stack 
-              direction={'row'} 
-              spacing={1} 
-              alignItems="flex-end"
-              sx={{
-                maxWidth: '800px',
-                margin: '0 auto',
-                width: '100%',
+          {/* Fixed Input area - shown on mobile or when scrolled down on desktop */}
+          {(isInputFixed || isMobile) && (
+            <Paper 
+              elevation={3}
+              sx={{ 
+                position: 'fixed', 
+                bottom: 0, 
+                left: 0,
+                right: 0,
+                width: '100%', 
+                bgcolor: 'rgba(25, 25, 35, 0.9)',
+                backdropFilter: 'blur(10px)',
+                borderTop: '1px solid rgba(149, 117, 205, 0.3)',
+                pt: { xs: 1.5, md: 2 },
+                pb: { xs: 2, md: 3 },
+                px: { xs: 1.5, md: 2 },
+                zIndex: 10,
+                animation: `${fadeIn} 0.3s ease-out`,
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  background: 'linear-gradient(90deg, rgba(149, 117, 205, 0), rgba(149, 117, 205, 0.8), rgba(149, 117, 205, 0))',
+                },
+                boxShadow: '0 -5px 15px rgba(0,0,0,0.2), 0 -1px 3px rgba(149, 117, 205, 0.3)'
               }}
             >
-              <TextField
-                label="Message"
-                fullWidth
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyPress}
-                disabled={isLoading || isRecording}
-                multiline
-                maxRows={3}  // Limit to 3 rows on mobile
-                size="small"  // Always use small on mobile
+              <Stack 
+                direction={'row'} 
+                spacing={1} 
+                alignItems="flex-end"
                 sx={{
-                  '& .MuiInputLabel-root': {
-                    fontSize: { xs: '0.875rem', md: '1rem' }
-                  },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: { xs: '18px', md: '4px' },  // More rounded on mobile like modern chat apps
-                    paddingRight: '12px',  // Leave space for the button
-                  }
+                  maxWidth: '800px',  // Match the max-width of message containers
+                  margin: '0 auto',
+                  width: '100%',
+                  px: { xs: 0.5, md: 2 },  // Add some padding to align with messages
                 }}
-              />
+              >
+                <TextField
+                  label="Message"
+                  fullWidth
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  disabled={isLoading || isRecording}
+                  multiline
+                  maxRows={3}
+                  size="small"
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      fontSize: { xs: '0.875rem', md: '1rem' }
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: { xs: '18px', md: '8px' },  // More rounded corners
+                      paddingRight: '12px',
+                      '& fieldset': {
+                        borderColor: 'rgba(149, 117, 205, 0.4)',
+                        transition: 'border-color 0.3s',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'rgba(149, 117, 205, 0.7)',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#9575CD',
+                        boxShadow: '0 0 0 2px rgba(149, 117, 205, 0.2)',
+                      },
+                    }
+                  }}
+                />
 
-              {/* Games button - smaller on mobile */}
-              <Tooltip title="Explore Space Games">
+                <Tooltip title="Explore Space Games">
+                  <Fab
+                    color="secondary"
+                    component={Link}
+                    href="/games"
+                    size="small"
+                    sx={{
+                      minHeight: { xs: '40px', md: '48px' },
+                      height: { xs: '40px', md: '48px' },
+                      width: { xs: '40px', md: '48px' },
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
+                      boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 0 15px rgba(30, 136, 229, 1), 0 0 2px #fff',
+                      },
+                    }}
+                  >
+                    <GamesIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
+                  </Fab>
+                </Tooltip>
+
                 <Fab
-                  color="secondary"
-                  component={Link}
-                  href="/games"
-                  size="small"  // Always small on mobile
+                  color="primary"
+                  onClick={sendMessage}
+                  disabled={isLoading || isRecording}
+                  size="small"
                   sx={{
                     minHeight: { xs: '40px', md: '48px' },
                     height: { xs: '40px', md: '48px' },
                     width: { xs: '40px', md: '48px' },
-                    transition: 'transform 0.2s',  // Faster animation on mobile
-                    background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
-                    boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
+                    boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
                     '&:hover': {
-                      transform: 'scale(1.05)',  // Smaller scale effect on mobile
-                      boxShadow: '0 0 15px rgba(30, 136, 229, 1)',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 0 15px rgba(149, 117, 205, 1), 0 0 2px #fff',
+                    },
+                    '&:active': {
+                      transform: 'scale(0.95)',
                     },
                   }}
                 >
-                  <GamesIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
+                  <SendIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
                 </Fab>
-              </Tooltip>
-
-              {/* Send button - smaller on mobile */}
-              <Fab
-                color="primary"
-                onClick={sendMessage}
-                disabled={isLoading || isRecording}
-                size="small"  // Always small on mobile
-                sx={{
-                  minHeight: { xs: '40px', md: '48px' },
-                  height: { xs: '40px', md: '48px' },
-                  width: { xs: '40px', md: '48px' },
-                  transition: 'transform 0.2s',  // Faster animation on mobile
-                  background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
-                  boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
-                  '&:hover': {
-                    transform: 'scale(1.05)',  // Smaller scale effect on mobile
-                    boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
-                  },
-                  '&:active': {
-                    transform: 'scale(0.95)',
-                  },
-                }}
-              >
-                <SendIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
-              </Fab>
-            </Stack>
-          </Paper>
+              </Stack>
+            </Paper>
+          )}
         </Box>
       </ThemeProvider>
     )
