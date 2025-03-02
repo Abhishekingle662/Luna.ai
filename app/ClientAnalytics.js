@@ -10,7 +10,7 @@ export default function ClientAnalytics() {
         'event_category': 'testing',
         'event_label': 'GA4 implementation test'
       });
-      console.log('Test event sent to Google Analytics');
+    //   console.log('Test event sent to Google Analytics');
     }
   }, []);
 

@@ -1,5 +1,5 @@
 'use client'
-import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline, Tooltip, Button } from '@mui/material'
+import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline, Tooltip, Button, Container } from '@mui/material'
 import { useState, useMemo, useEffect } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SendIcon from '@mui/icons-material/Send'
@@ -463,12 +463,13 @@ export default function Home() {
 
 
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {/* Particle Background */}
-            <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={50} />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {/* Particle Background */}
+        <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={50} />
 
-            {/* Back to Home Button */}
+        {/* Navigation */}
+        <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 10, display: { xs: 'none', md: 'block' } }}>
           <Button
             component={Link}
             href="/"
@@ -482,227 +483,225 @@ export default function Home() {
               },
               backdropFilter: 'blur(5px)',
               borderRadius: '30px',
-              px: 2,
+              px: 2
             }}
             variant="outlined"
           >
             Home
           </Button>
-            
-            {/* Main Content */}
-            <Box
+        </Box>
+          
+        {/* Lunar Phase Animation */}
+        <LunarPhase size={isMobile ? 40 : 80} />
+        
+        {/* Animated Stars */}
+        {stars.map(star => (
+          <Star 
+            key={star.id}
+            size={star.size}
+            top={star.top}
+            left={star.left}
+            delay={star.delay}
+          />
+        ))}
+        
+        {/* Main Content */}
+        <Box
+          sx={{
+            width: '100%',
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: { xs: '70px 0 0', md: '100px 0 30px' },
+            position: 'relative',
+            overflow: 'hidden',
+            boxSizing: 'border-box',
+          }}
+        >
+          {/* Title */}
+          <Typography 
+            variant={isMobile ? "h5" : "h4"} 
+            align="center" 
+            sx={{
+              color: '#9575CD',
+              fontFamily: 'var(--font-exo-2), sans-serif',
+              textShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+              fontWeight: 700,
+              letterSpacing: '3px',
+              padding: '0 0 20px',
+              animation: `${pulse} 5s infinite ease-in-out`,
+            }}
+          >
+            LUNA.ai
+          </Typography>
+
+          {/* Chat thread container - like ChatGPT */}
+          <Box sx={{ 
+            width: '100%', 
+            maxWidth: '800px', 
+            margin: '0 auto', 
+            px: { xs: 2, md: 0 },
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 0 
+          }}>
+            {messages.map((message, index) => (
+              <Box 
+                key={index}
                 sx={{
-                    width: '100%',
-                    height: '100vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    maxWidth: '100%',
-                    boxSizing: 'border-box',
+                  width: '100%',
+                  py: 4,
+                  px: { xs: 2, md: 4 },
+                  bgcolor: message.role === 'assistant' 
+                    ? 'rgba(25, 25, 35, 0.75)' 
+                    : 'rgba(35, 35, 45, 0.6)',
+                  borderBottom: '1px solid rgba(149, 117, 205, 0.15)',
+                  animation: `${fadeIn} 0.3s ease-out`,
+                  backdropFilter: 'blur(10px)',
                 }}
-            >
-                {/* Lunar Phase Animation */}
-                <LunarPhase size={isMobile ? 40 : 80} />
-                
-                {/* Animated Stars */}
-                {stars.map(star => (
-                    <Star 
-                        key={star.id}
-                        size={star.size}
-                        top={star.top}
-                        left={star.left}
-                        delay={star.delay}
-                    />
-                ))}
-                
-                {/* Main chat container */}
-                <Stack
-                    direction="column"
-                    sx={{
-                      /* Use full width on small screens (xs), and a fixed width on medium (md) and above */
-                      width: { xs: "100%", md: "800px" },
-                      /* For height, use full viewport height on mobile and a bit less on larger screens */
-                      height: { xs: "100%", md: "80vh" },
-                      background: "rgba(25, 25, 35, 0.75)",
-                      backdropFilter: "blur(10px)",
-                      /* No border radius on mobile, rounded corners on larger screens */
-                      borderRadius: { xs: 0, md: "20px" },
-                      overflow: "hidden",
-                      border: "1px solid rgba(149, 117, 205, 0.3)",
-                      boxShadow: "0 0 20px rgba(149, 117, 205, 0.5)",
-                      zIndex: 5,
-                      /* Center the container horizontally on desktop */
-                      mx: { xs: 0, md: "auto" },
+              >
+                <Box
+                  sx={{
+                    maxWidth: '800px',
+                    margin: '0 auto',
+                    width: '100%',
+                  }}
+                >
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      color: message.role === 'assistant' ? '#9575CD' : '#64B5F6',
+                      textTransform: 'uppercase',
+                      fontWeight: 600,
+                      letterSpacing: '1px',
+                      mb: 1,
+                      display: 'block'
                     }}
                   >
+                    {message.role === 'assistant' ? 'LUNA' : 'You'}
+                  </Typography>
+                  <Box sx={{ 
+                    color: 'white',
+                    '& .code-block': {
+                      borderRadius: '4px',
+                      margin: '8px 0',
+                      maxWidth: '100%',
+                      overflow: 'auto',
+                      fontSize: '0.85rem'
+                    },
+                    '& .inline-code': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                      padding: '2px 4px',
+                      borderRadius: '3px',
+                      fontFamily: 'monospace',
+                      fontSize: '0.9em'
+                    },
+                    '& a': {
+                      color: '#90CAF9',
+                      textDecoration: 'none',
+                      '&:hover': {
+                        textDecoration: 'underline',
+                        color: '#42A5F5'
+                      }
+                    },
+                    '& img': {
+                      maxWidth: '100%',
+                      height: 'auto',
+                      borderRadius: '4px',
+                      margin: '8px 0'
+                    }
+                  }}>
+                    {/* Show message content or loading indicator */}
+                    {message.content ? formatMessage(message.content) : 
+                      message.role === 'assistant' && isLoading && index === messages.length - 1 ? 
+                      <CosmicWavesIndicator /> : null
+                    }
+                  </Box>
+                </Box>
+              </Box>
+            ))}
+          </Box>
 
-                    {/* Title */}
-                    <Typography 
-                        variant={isMobile ? "h5" : "h4"} 
-                        align="center" 
-                        sx={{
-                            color: '#9575CD',
-                            fontFamily: 'var(--font-exo-2), sans-serif',  // Changed from Orbitron to Exo 2
-                            textShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
-                            fontWeight: 700,
-                            letterSpacing: '3px',
-                            padding: '15px 0',
-                            animation: `${pulse} 5s infinite ease-in-out`,
-                        }}
-                    >
-                        LUNA.ai
-                    </Typography>
+          {/* Input area - fixed at bottom */}
+          <Box sx={{ 
+            position: 'sticky', 
+            bottom: 0, 
+            width: '100%', 
+            bgcolor: 'rgba(25, 25, 35, 0.9)',
+            backdropFilter: 'blur(10px)',
+            borderTop: '1px solid rgba(149, 117, 205, 0.3)',
+            pt: 2,
+            pb: { xs: 4, md: 3 },
+            px: 2,
+            zIndex: 10
+          }}>
+            <Stack 
+              direction={'row'} 
+              spacing={1} 
+              alignItems="flex-end"
+              sx={{
+                maxWidth: '800px',
+                margin: '0 auto',
+                width: '100%',
+              }}
+            >
+              <TextField
+                label="Message"
+                fullWidth
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyPress}
+                disabled={isLoading || isRecording}
+                multiline
+                maxRows={4}
+                size={isMobile ? "small" : "medium"}
+              />
 
-                    {/* Chat messages */}
-                    <Stack
-                        direction={'column'}
-                        spacing={2}
-                        flexGrow={1}
-                        overflow="auto"
-                        maxHeight={isMobile ? "calc(100% - 140px)" : "calc(100% - 120px)"}
-                        sx={{
-                            padding: '10px 15px',
-                            backgroundImage: 'linear-gradient(rgba(25, 25, 35, 0.5), rgba(25, 25, 35, 0.7))',
-                            backdropFilter: 'blur(5px)',
-                        }}
-                    >
-                        {messages.map((message, index) => (
-                            <Box
-                                key={index}
-                                display="flex"
-                                justifyContent={
-                                    message.role === 'assistant' ? 'flex-start' : 'flex-end'
-                                }
-                                sx={{
-                                    animation: `${fadeIn} 0.3s ease-out`,
-                                }}
-                            >
-                                <Box
-                                  bgcolor={
-                                    message.role === 'assistant'
-                                      ? 'rgba(93, 63, 211, 0.8)'
-                                      : 'rgba(30, 136, 229, 0.8)'
-                                  }
-                                  color="white"
-                                  borderRadius={3}
-                                  p={2}
-                                  maxWidth={isMobile ? "85%" : "70%"}
-                                  sx={{
-                                    boxShadow: message.role === 'assistant' 
-                                      ? '0 0 15px rgba(93, 63, 211, 0.5)'
-                                      : '0 0 15px rgba(30, 136, 229, 0.5)',
-                                    backdropFilter: 'blur(5px)',
-                                    '& .code-block': {
-                                      borderRadius: '4px',
-                                      margin: '8px 0',
-                                      maxWidth: '100%',
-                                      overflow: 'auto',
-                                      fontSize: '0.85rem'
-                                    },
-                                    '& .inline-code': {
-                                      backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                                      padding: '2px 4px',
-                                      borderRadius: '3px',
-                                      fontFamily: 'monospace',
-                                      fontSize: '0.9em'
-                                    },
-                                    '& a': {
-                                      color: '#90CAF9',
-                                      textDecoration: 'none',
-                                      '&:hover': {
-                                        textDecoration: 'underline',
-                                        color: '#42A5F5'
-                                      }
-                                    },
-                                    '& img': {
-                                      maxWidth: '100%',
-                                      height: 'auto',
-                                      borderRadius: '4px',
-                                      margin: '8px 0'
-                                    }
-                                  }}
-                                >
-                                  {/* Show actual message content or placeholder for empty assistant messages */}
-                                  {message.content ? formatMessage(message.content) : 
-                                    message.role === 'assistant' && isLoading && index === messages.length - 1 ? 
-                                      <CosmicWavesIndicator /> : null
-                                  }
-                                </Box>
-                            </Box>
-                        ))}
-                    </Stack>
+              <Tooltip title="Explore Space Games">
+                <Fab
+                  color="secondary"
+                  component={Link}
+                  href="/games"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    transition: 'transform 0.3s',
+                    background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
+                    boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
+                    '&:hover': {
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 0 15px rgba(30, 136, 229, 1)',
+                    },
+                  }}
+                >
+                  <GamesIcon />
+                </Fab>
+              </Tooltip>
 
-
-                    {/* Input area */}
-                    <Stack 
-                        direction={'row'} 
-                        spacing={1} 
-                        alignItems="flex-end"
-                        sx={{
-                            padding: '10px',
-                            borderTop: '1px solid rgba(149, 117, 205, 0.3)',
-                        }}
-                    >
-                        <TextField
-                            label="Message"
-                            fullWidth
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            disabled={isLoading || isRecording}
-                            multiline
-                            maxRows={4}
-                            size={isMobile ? "small" : "medium"}
-                        />
-
-                        <Tooltip title="Explore Space Games">
-                          <Fab
-                            color="secondary"
-                            component={Link}
-                            href="/games"
-                            size={isMobile ? "small" : "medium"}
-                            sx={{
-                              transition: 'transform 0.3s',
-                              background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
-                              boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
-                              '&:hover': {
-                                transform: 'scale(1.1)',
-                                boxShadow: '0 0 15px rgba(30, 136, 229, 1)',
-                              },
-                            }}
-                          >
-                            <GamesIcon />
-                          </Fab>
-                        </Tooltip>
-
-                        {/* Send message button */}
-                        <Fab
-                            color="primary"
-                            onClick={sendMessage}
-                            disabled={isLoading || isRecording}
-                            size={isMobile ? "small" : "medium"}
-                            sx={{
-                                transition: 'transform 0.3s',
-                                background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
-                                boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
-                                '&:hover': {
-                                    transform: 'scale(1.1)',
-                                    boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
-                                },
-                                '&:active': {
-                                    transform: 'scale(0.9)',
-                                },
-                            }}
-                        >
-                            <SendIcon />
-                        </Fab>
-                    </Stack>
-                </Stack>
-            </Box>
-        </ThemeProvider>
-        
+              <Fab
+                color="primary"
+                onClick={sendMessage}
+                disabled={isLoading || isRecording}
+                size={isMobile ? "small" : "medium"}
+                sx={{
+                  transition: 'transform 0.3s',
+                  background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
+                  boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                    boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
+                  },
+                  '&:active': {
+                    transform: 'scale(0.9)',
+                  },
+                }}
+              >
+                <SendIcon />
+              </Fab>
+            </Stack>
+          </Box>
+        </Box>
+      </ThemeProvider>
     )
 }
+

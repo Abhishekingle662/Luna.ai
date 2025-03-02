@@ -22,10 +22,10 @@ export default function GoogleAnalytics({ GA_MEASUREMENT_ID, debug = false }) {
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
         strategy="afterInteractive"
         onLoad={() => {
-          console.log('GA script loaded successfully');
+          // console.log('GA script loaded successfully');
         }}
         onError={(e) => {
-          console.error('Error loading GA script:', e);
+          // console.error('Error loading GA script:', e);
         }}
       />
       <Script id="google-analytics" strategy="afterInteractive">
