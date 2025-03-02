@@ -1,6 +1,6 @@
 'use client'
-import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline, Tooltip, Button, Container } from '@mui/material'
-import { useState, useMemo, useEffect } from 'react'
+import { Box, Fab, Stack, TextField, Typography, useMediaQuery, CssBaseline, Tooltip, Button, Container, IconButton, Paper } from '@mui/material'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SendIcon from '@mui/icons-material/Send'
 import { keyframes } from '@mui/system'
@@ -248,6 +248,19 @@ export default function Home() {
     const [isRecording, setIsRecording] = useState(false)
     const [mediaRecorder, setMediaRecorder] = useState(null)
     const [stars, setStars] = useState([])
+
+    // Add this new ref for scrolling to the latest message
+    const messagesEndRef = useRef(null);
+    
+    // Add this function to scroll to the bottom when new messages arrive
+    const scrollToBottom = () => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    
+    // Add this effect to scroll when messages change
+    useEffect(() => {
+      scrollToBottom();
+    }, [messages]);
     
     // Generate random stars on component mount
     useEffect(() => {
@@ -284,6 +297,13 @@ export default function Home() {
             // In your theme configuration in chat/page.js
             typography: {
                 fontFamily: 'var(--font-space-grotesk), "Roboto", "Arial", sans-serif',
+                // Adjust font sizes for mobile readability
+                body1: {
+                  fontSize: '0.95rem',
+                },
+                caption: {
+                  fontSize: '0.75rem',
+                }
             },
             components: {
               MuiTextField: {
@@ -310,6 +330,19 @@ export default function Home() {
                   },
                 },
               },
+              // Add more mobile-friendly styling
+              MuiFab: {
+                styleOverrides: {
+                  root: {
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  },
+                  sizeSmall: {
+                    width: '40px',
+                    height: '40px',
+                    minHeight: '40px',
+                  }
+                }
+              }
             },
           }),
         [],
@@ -465,8 +498,8 @@ export default function Home() {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {/* Particle Background */}
-        <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={50} />
+        {/* Reduce particles on mobile for better performance */}
+        <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={isMobile ? 25 : 50} />
 
         {/* Navigation */}
         <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 10, display: { xs: 'none', md: 'block' } }}>
@@ -491,11 +524,11 @@ export default function Home() {
           </Button>
         </Box>
           
-        {/* Lunar Phase Animation */}
-        <LunarPhase size={isMobile ? 40 : 80} />
+        {/* Only show lunar phase on desktop */}
+        {!isMobile && <LunarPhase size={isMobile ? 40 : 80} />}
         
-        {/* Animated Stars */}
-        {stars.map(star => (
+        {/* Only show stars on desktop */}
+        {!isMobile && stars.map(star => (
           <Star 
             key={star.id}
             size={star.size}
@@ -513,7 +546,7 @@ export default function Home() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: { xs: '70px 0 0', md: '100px 0 30px' },
+            padding: { xs: '50px 0 0', md: '100px 0 30px' },
             position: 'relative',
             overflow: 'hidden',
             boxSizing: 'border-box',
@@ -521,38 +554,41 @@ export default function Home() {
         >
           {/* Title */}
           <Typography 
-            variant={isMobile ? "h5" : "h4"} 
+            variant={isMobile ? "h6" : "h4"} 
             align="center" 
             sx={{
               color: '#9575CD',
               fontFamily: 'var(--font-exo-2), sans-serif',
               textShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
               fontWeight: 700,
-              letterSpacing: '3px',
-              padding: '0 0 20px',
+              letterSpacing: isMobile ? '2px' : '3px',
+              padding: isMobile ? '0 0 10px' : '0 0 20px',
               animation: `${pulse} 5s infinite ease-in-out`,
             }}
           >
             LUNA.ai
           </Typography>
 
-          {/* Chat thread container - like ChatGPT */}
+          {/* Chat container */}
           <Box sx={{ 
             width: '100%', 
             maxWidth: '800px', 
             margin: '0 auto', 
-            px: { xs: 2, md: 0 },
+            px: { xs: 0, md: 0 },  // No horizontal padding on mobile
             display: 'flex', 
             flexDirection: 'column', 
-            gap: 0 
+            flex: 1,  // Take remaining space
+            overflow: 'auto',  // Allow scrolling
+            // Add padding at the bottom to ensure messages aren't hidden behind the input area
+            pb: { xs: '70px', md: '90px' }
           }}>
             {messages.map((message, index) => (
               <Box 
                 key={index}
                 sx={{
                   width: '100%',
-                  py: 4,
-                  px: { xs: 2, md: 4 },
+                  py: { xs: 2, md: 4 },  // Less vertical padding on mobile
+                  px: { xs: 2, md: 4 },  // Less horizontal padding on mobile
                   bgcolor: message.role === 'assistant' 
                     ? 'rgba(25, 25, 35, 0.75)' 
                     : 'rgba(35, 35, 45, 0.6)',
@@ -576,7 +612,9 @@ export default function Home() {
                       fontWeight: 600,
                       letterSpacing: '1px',
                       mb: 1,
-                      display: 'block'
+                      display: 'block',
+                      // Smaller text on mobile
+                      fontSize: { xs: '0.65rem', md: '0.75rem' }
                     }}
                   >
                     {message.role === 'assistant' ? 'LUNA' : 'You'}
@@ -585,17 +623,17 @@ export default function Home() {
                     color: 'white',
                     '& .code-block': {
                       borderRadius: '4px',
-                      margin: '8px 0',
+                      margin: { xs: '6px 0', md: '8px 0' },
                       maxWidth: '100%',
                       overflow: 'auto',
-                      fontSize: '0.85rem'
+                      fontSize: { xs: '0.75rem', md: '0.85rem' }
                     },
                     '& .inline-code': {
                       backgroundColor: 'rgba(0, 0, 0, 0.2)',
                       padding: '2px 4px',
                       borderRadius: '3px',
                       fontFamily: 'monospace',
-                      fontSize: '0.9em'
+                      fontSize: { xs: '0.8em', md: '0.9em' }
                     },
                     '& a': {
                       color: '#90CAF9',
@@ -609,7 +647,13 @@ export default function Home() {
                       maxWidth: '100%',
                       height: 'auto',
                       borderRadius: '4px',
-                      margin: '8px 0'
+                      margin: { xs: '6px 0', md: '8px 0' }
+                    },
+                    // Better typography for mobile
+                    '& p': {
+                      fontSize: { xs: '0.9rem', md: '1rem' },
+                      lineHeight: { xs: 1.5, md: 1.6 },
+                      margin: { xs: '0.5em 0', md: '0.75em 0' }
                     }
                   }}>
                     {/* Show message content or loading indicator */}
@@ -621,21 +665,28 @@ export default function Home() {
                 </Box>
               </Box>
             ))}
+            {/* Invisible element to scroll to */}
+            <div ref={messagesEndRef} />
           </Box>
 
           {/* Input area - fixed at bottom */}
-          <Box sx={{ 
-            position: 'sticky', 
-            bottom: 0, 
-            width: '100%', 
-            bgcolor: 'rgba(25, 25, 35, 0.9)',
-            backdropFilter: 'blur(10px)',
-            borderTop: '1px solid rgba(149, 117, 205, 0.3)',
-            pt: 2,
-            pb: { xs: 4, md: 3 },
-            px: 2,
-            zIndex: 10
-          }}>
+          <Paper 
+            elevation={3}
+            sx={{ 
+              position: 'fixed', 
+              bottom: 0, 
+              left: 0,
+              right: 0,
+              width: '100%', 
+              bgcolor: 'rgba(25, 25, 35, 0.9)',
+              backdropFilter: 'blur(10px)',
+              borderTop: '1px solid rgba(149, 117, 205, 0.3)',
+              pt: { xs: 1.5, md: 2 },
+              pb: { xs: 2, md: 3 },
+              px: { xs: 1.5, md: 2 },
+              zIndex: 10
+            }}
+          >
             <Stack 
               direction={'row'} 
               spacing={1} 
@@ -654,52 +705,69 @@ export default function Home() {
                 onKeyDown={handleKeyPress}
                 disabled={isLoading || isRecording}
                 multiline
-                maxRows={4}
-                size={isMobile ? "small" : "medium"}
+                maxRows={3}  // Limit to 3 rows on mobile
+                size="small"  // Always use small on mobile
+                sx={{
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.875rem', md: '1rem' }
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: { xs: '18px', md: '4px' },  // More rounded on mobile like modern chat apps
+                    paddingRight: '12px',  // Leave space for the button
+                  }
+                }}
               />
 
+              {/* Games button - smaller on mobile */}
               <Tooltip title="Explore Space Games">
                 <Fab
                   color="secondary"
                   component={Link}
                   href="/games"
-                  size={isMobile ? "small" : "medium"}
+                  size="small"  // Always small on mobile
                   sx={{
-                    transition: 'transform 0.3s',
+                    minHeight: { xs: '40px', md: '48px' },
+                    height: { xs: '40px', md: '48px' },
+                    width: { xs: '40px', md: '48px' },
+                    transition: 'transform 0.2s',  // Faster animation on mobile
                     background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
                     boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
                     '&:hover': {
-                      transform: 'scale(1.1)',
+                      transform: 'scale(1.05)',  // Smaller scale effect on mobile
                       boxShadow: '0 0 15px rgba(30, 136, 229, 1)',
                     },
                   }}
                 >
-                  <GamesIcon />
+                  <GamesIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
                 </Fab>
               </Tooltip>
 
+              {/* Send button - smaller on mobile */}
               <Fab
                 color="primary"
                 onClick={sendMessage}
                 disabled={isLoading || isRecording}
-                size={isMobile ? "small" : "medium"}
+                size="small"  // Always small on mobile
                 sx={{
-                  transition: 'transform 0.3s',
+                  minHeight: { xs: '40px', md: '48px' },
+                  height: { xs: '40px', md: '48px' },
+                  width: { xs: '40px', md: '48px' },
+                  transition: 'transform 0.2s',  // Faster animation on mobile
                   background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
                   boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
                   '&:hover': {
-                    transform: 'scale(1.1)',
+                    transform: 'scale(1.05)',  // Smaller scale effect on mobile
                     boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
                   },
                   '&:active': {
-                    transform: 'scale(0.9)',
+                    transform: 'scale(0.95)',
                   },
                 }}
               >
-                <SendIcon />
+                <SendIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
               </Fab>
             </Stack>
-          </Box>
+          </Paper>
         </Box>
       </ThemeProvider>
     )
