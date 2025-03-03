@@ -28,7 +28,7 @@ const nasaOptions = [
     {
         id: 'eyes-on-solar-system',
         title: 'Eyes on the Solar System',
-        description: 'Explore planets, moons, asteroids, comets and NASA spacecraft in real-time 3D visualization.',
+        description: 'Explore planets, moons, asteroids, comets and NASA&apos;s spacecraft in real-time 3D visualization.',
         image: 'https://cdn.arstechnica.net/wp-content/uploads/2023/07/GettyImages-460712793-scaled.jpg',
         link: 'https://eyes.nasa.gov/apps/orrery/'
     },

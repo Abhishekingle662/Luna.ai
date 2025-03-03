@@ -55,14 +55,15 @@ export default function GamesPage() {
           spacing={2} 
           sx={{ 
             mb: 3, 
-            display: { xs: 'none', sm: 'flex' }  // Hide on mobile, show on tablet/desktop
+            justifyContent: 'flex-start', 
+            display: { xs: isMobile ? 'none' : 'flex', md: 'flex' } 
           }}
         >
-          {/* Back to Home Button */}
           <Button
             component={Link}
             href="/"
             startIcon={<HomeIcon />}
+            size="small"
             sx={{
               color: '#9575CD',
               borderColor: 'rgba(149, 117, 205, 0.5)',
@@ -78,12 +79,12 @@ export default function GamesPage() {
           >
             Home
           </Button>
-          
-          {/* Back to Chat Button */}
+
           <Button
             component={Link}
             href="/chat"
             startIcon={<ArrowBackIcon />}
+            size="small"
             sx={{
               color: '#9575CD',
               borderColor: 'rgba(149, 117, 205, 0.5)',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Box, 
   Typography, 
@@ -80,7 +80,7 @@ export default function SpaceFactGenerator() {
   }, []);
 
   // Fetch APOD data - only run on the client
-  const fetchAPOD = async () => {
+  const fetchAPOD = useCallback(async () => {
     if (!isClient) return;
     
     setLoading(true);
@@ -134,7 +134,7 @@ export default function SpaceFactGenerator() {
       // Fall back to search API
       fetchNASALibrary();
     }
-  };
+  }, [isClient]); // Add dependencies here
 
   // Fetch from NASA Image Library and get associated details
   const fetchNASALibrary = async () => {
@@ -252,7 +252,7 @@ export default function SpaceFactGenerator() {
     if (isClient) {
       fetchAPOD();
     }
-  }, [isClient]); // Add fetchAPOD as a dependency to fix the ESLint warning
+  }, [isClient, fetchAPOD]); // Include both dependencies
   
   // For the stars background, use a fixed number of stars with predictable positions
   const renderStars = () => {
