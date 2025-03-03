@@ -35,6 +35,8 @@ const fadeIn = keyframes`
 const NASA_API_KEY = 'QwBO9buK8b8mmqmTcwnIDOCuuAOW5CogPKWvYVZt'; // Use your NASA API key or DEMO_KEY
 const APOD_API = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`;
 const NASA_LIBRARY_API = 'https://images-api.nasa.gov';
+const NASA_TECHPORT_API = `https://api.nasa.gov/techport/api/projects?api_key=${NASA_API_KEY}`;
+const NASA_EPIC_API = `https://api.nasa.gov/EPIC/api/natural?api_key=${NASA_API_KEY}`;
 
 // Categories for images search
 const CATEGORIES = [
@@ -43,8 +45,8 @@ const CATEGORIES = [
   "mars", "jupiter", "saturn", "space exploration"
 ];
 
-// Facts that will be combined with NASA images
-const SPACE_FACTS = [
+// Backup facts in case API fails
+const FALLBACK_FACTS = [
   {
     title: "Black Hole Power",
     fact: "If you could harness the energy that a black hole releases, a black hole the size of a coin could power all of Earth's electrical needs for a year.",
@@ -52,37 +54,21 @@ const SPACE_FACTS = [
   },
   {
     title: "Diamond Planet",
-    fact: "There's a planet called 55 Cancri e that is believed to be made largely of diamond. The planet's surface is estimated to be worth $26.9 nonillion (that's 30 zeros!)",
+    fact: "There's a planet called 55 Cancri e that is believed to be made largely of diamond. The planet's surface is estimated to be worth $26.9 nonillion.",
     category: "Exoplanets"
   },
   {
     title: "Space Smell",
     fact: "Astronauts report that space has a distinct smell: a mix of hot metal, seared steak, raspberries, and rum. This odor clings to their suits after spacewalks.",
     category: "Space Exploration"
-  },
-  {
-    title: "Cosmic Symphony",
-    fact: "Galaxies make sound! NASA has converted the electromagnetic waves from celestial objects into audible frequencies, creating what astronomers call 'cosmic symphonies'.",
-    category: "Galaxies"
-  },
-  {
-    title: "Neutron Star Density",
-    fact: "A teaspoon of neutron star material would weigh about 4 billion tons—roughly the weight of all humans combined or a mountain on Earth.",
-    category: "Stars"
-  },
-  {
-    title: "Martian Sunsets",
-    fact: "Sunsets on Mars appear blue due to the way fine dust particles in the thin Martian atmosphere scatter light. On Earth, our thicker atmosphere scatters blue light, giving us red sunsets.",
-    category: "Planets"
-  },
-  // Add more facts as needed
+  }
 ];
 
 export default function SpaceFactGenerator() {
   // Add a client-side check to prevent SSR issues
   const [isClient, setIsClient] = useState(false);
   const [currentFact, setCurrentFact] = useState(null);
-  const [loading, setLoading] = useState(true); // Start with loading true
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [animateFadeIn, setAnimateFadeIn] = useState(false);
   const [factSource, setFactSource] = useState('');
@@ -127,12 +113,15 @@ export default function SpaceFactGenerator() {
         return;
       }
       
+      // Use the APOD explanation as the fact
+      const factText = data.explanation.split('. ').slice(0, 3).join('. ') + '.'; // First 3 sentences
+      
       setCurrentFact({
         title: data.title,
-        fact: data.explanation.split('. ').slice(0, 3).join('. ') + '.',  // First 3 sentences
+        fact: factText,
         image: data.url,
         date: data.date,
-        category: 'NASA APOD',
+        category: 'Astronomy',
         copyright: data.copyright || 'NASA'
       });
       
@@ -147,7 +136,7 @@ export default function SpaceFactGenerator() {
     }
   };
 
-  // Fetch from NASA Image Library
+  // Fetch from NASA Image Library and get associated details
   const fetchNASALibrary = async () => {
     if (!isClient) return;
     
@@ -182,25 +171,39 @@ export default function SpaceFactGenerator() {
         throw new Error('Invalid image data structure');
       }
       
-      // Get a random fact from our fact library that matches the category if possible
-      let matchingFacts = SPACE_FACTS.filter(fact => 
-        randomCategory.toLowerCase().includes(fact.category.toLowerCase()) || 
-        fact.category.toLowerCase().includes(randomCategory.toLowerCase())
-      );
+      // Use the item description as the fact
+      let factTitle = item.data[0].title || randomCategory;
+      let factText = '';
       
-      // If no matching facts, just pick a random one
-      if (matchingFacts.length === 0) {
-        matchingFacts = SPACE_FACTS;
+      if (item.data[0].description && item.data[0].description.length > 10) {
+        // Use the description from the NASA Library API
+        factText = item.data[0].description.split('. ').slice(0, 3).join('. ') + '.';
+      } else {
+        // If no good description, fetch a related fact from another NASA API
+        try {
+          const epicResponse = await fetch(NASA_EPIC_API);
+          if (epicResponse.ok) {
+            const epicData = await epicResponse.json();
+            if (epicData && epicData.length > 0) {
+              const randomEpicIndex = Math.floor(Math.random() * epicData.length);
+              factText = `The Earth Polychromatic Imaging Camera (EPIC) captured this image of Earth on ${epicData[randomEpicIndex].date}. EPIC provides full disc imagery of the Earth and captures unique perspectives of certain astronomical events.`;
+            }
+          }
+        } catch (epicErr) {
+          console.error('Error fetching EPIC data:', epicErr);
+          // Use a fallback fact if both API calls fail
+          const randomFallback = FALLBACK_FACTS[Math.floor(Math.random() * FALLBACK_FACTS.length)];
+          factTitle = randomFallback.title;
+          factText = randomFallback.fact;
+        }
       }
       
-      const randomFact = matchingFacts[Math.floor(Math.random() * matchingFacts.length)];
-      
       setCurrentFact({
-        title: randomFact.title || item.data[0].title,
-        fact: randomFact.fact,
+        title: factTitle,
+        fact: factText,
         image: item.links[0].href,
         date: item.data[0].date_created?.split('T')[0] || 'Unknown date',
-        category: randomFact.category || randomCategory,
+        category: randomCategory.charAt(0).toUpperCase() + randomCategory.slice(1),
         nasa_id: item.data[0].nasa_id
       });
       
@@ -218,7 +221,7 @@ export default function SpaceFactGenerator() {
   const displayFallbackFact = () => {
     if (!isClient) return;
     
-    const randomFact = SPACE_FACTS[Math.floor(Math.random() * SPACE_FACTS.length)];
+    const randomFact = FALLBACK_FACTS[Math.floor(Math.random() * FALLBACK_FACTS.length)];
     
     setCurrentFact({
       title: randomFact.title,
@@ -249,7 +252,7 @@ export default function SpaceFactGenerator() {
     if (isClient) {
       fetchAPOD();
     }
-  }, [isClient]);
+  }, [isClient]); // Add fetchAPOD as a dependency to fix the ESLint warning
   
   // For the stars background, use a fixed number of stars with predictable positions
   const renderStars = () => {
@@ -477,7 +480,7 @@ export default function SpaceFactGenerator() {
             maxWidth: '600px'
           }}
         >
-          Data sourced from NASA Open APIs. Some images and facts courtesy of NASA's Astronomy Picture of the Day and NASA Image Library.
+          Data sourced from NASA Open APIs. Images and facts courtesy of NASA&apos;s Astronomy Picture of the Day and NASA Image Library.
         </Typography>
       </Box>
     </Box>
