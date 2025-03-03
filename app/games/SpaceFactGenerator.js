@@ -31,17 +31,17 @@ const spaceFacts = [
     {
         fact: "The Sun makes up 99.86% of the mass in the solar system.",
         category: "Sun",
-        image: "https://images.unsplash.com/photo-1560996050-9a5de56605c3?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/600px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg"
     },
     {
         fact: "One million Earths could fit inside the Sun.",
         category: "Sun",
-        image: "https://images.unsplash.com/photo-1532768778661-1b323a16e0cf?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/600px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg"
     },
     {
         fact: "The hottest planet in our solar system is Venus, not Mercury.",
         category: "Planets",
-        image: "https://images.pexels.com/photos/39561/solar-flare-sun-eruption-energy-39561.jpeg"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Venus-real_color.jpg/600px-Venus-real_color.jpg"
     },
     {
         fact: "A year on Mercury is just 88 Earth days long.",
@@ -56,12 +56,12 @@ const spaceFacts = [
     {
         fact: "We always see the same side of the Moon from Earth because it rotates at the same rate it orbits Earth.",
         category: "Moon",
-        image: "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/600px-FullMoon2010.jpg"
     },
     {
         fact: "The Moon is moving away from Earth at a rate of about 3.8 centimeters per year.",
         category: "Moon",
-        image: "https://images.pexels.com/photos/47367/full-moon-moon-bright-sky-47367.jpeg"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/600px-FullMoon2010.jpg"
     },
     {
         fact: "Jupiter has 79 confirmed moons, the most of any planet in our solar system.",
@@ -76,22 +76,22 @@ const spaceFacts = [
     {
         fact: "Saturn's rings are made mostly of ice and rock, ranging in size from tiny grains to boulders as big as houses.",
         category: "Planets",
-        image: "https://images.unsplash.com/photo-1614642264762-d0a3b8bf3700?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/600px-Saturn_during_Equinox.jpg"
     },
     {
         fact: "It takes sunlight about 8 minutes and 20 seconds to reach Earth.",
         category: "Space",
-        image: "https://images.pexels.com/photos/87611/sun-fireball-solar-flare-sunlight-87611.jpeg"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/The_Sun_in_January_2016.jpg/600px-The_Sun_in_January_2016.jpg"
     },
     {
         fact: "The Milky Way galaxy is approximately 100,000 light-years across.",
         category: "Galaxies",
-        image: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg/600px-Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg"
     },
     {
         fact: "There are more stars in the universe than grains of sand on all of Earth's beaches combined.",
         category: "Stars",
-        image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Starsinthesky.jpg/600px-Starsinthesky.jpg"
     },
     {
         fact: "A neutron star can spin at a rate of 600 rotations per second.",
@@ -101,7 +101,7 @@ const spaceFacts = [
     {
         fact: "Black holes can have the mass of over 20 billion suns. These are called supermassive black holes.",
         category: "Black Holes",
-        image: "https://images.unsplash.com/photo-1465101162946-4377e57745c3?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Black_hole_lensing_web.jpg/600px-Black_hole_lensing_web.jpg"
     },
     {
         fact: "The first photograph of a black hole was published in April 2019. It was captured by the Event Horizon Telescope.",
@@ -121,7 +121,7 @@ const spaceFacts = [
     {
         fact: "The International Space Station is the largest human-made structure in space and can be seen from Earth with the naked eye.",
         category: "Space Exploration",
-        image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/International_Space_Station_after_undocking_of_STS-132.jpg/600px-International_Space_Station_after_undocking_of_STS-132.jpg"
     },
     {
         fact: "There is a planet named HD 189733b where it rains glass sideways in winds of 5,400 mph (8,700 km/h).",
@@ -151,7 +151,7 @@ const spaceFacts = [
     {
         fact: "If two pieces of the same type of metal touch in space, they will permanently bond together. This is called cold welding.",
         category: "Space",
-        image: "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Cold_welding.jpg/600px-Cold_welding.jpg"
     },
     {
         fact: "Scientists have discovered a planet made of diamonds, called 55 Cancri e.",
@@ -161,7 +161,7 @@ const spaceFacts = [
     {
         fact: "The Boötes void is an enormous empty region of space that spans nearly 330 million light-years and contains very few galaxies.",
         category: "Space",
-        image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Artist%27s_impression_of_the_Bo%C3%B6tes_void.jpg/600px-Artist%27s_impression_of_the_Bo%C3%B6tes_void.jpg"
     },
     {
         fact: "There's a giant cloud of alcohol in Sagittarius B. It contains enough ethyl alcohol to fill 400 trillion trillion pints of beer.",
@@ -176,37 +176,37 @@ const spaceFacts = [
     {
         fact: "The core of Jupiter is so hot that it liquefies diamonds.",
         category: "Planets",
-        image: "https://images.unsplash.com/photo-1630839437035-dac17da580d0?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Jupiter_from_Voyager_1.jpg/600px-Jupiter_from_Voyager_1.jpg"
     },
     {
         title: "Black Hole Power",
         fact: "If you could harness the energy that a black hole releases, a black hole the size of a coin could power all of Earth's electrical needs for a year.",
         category: "Black Holes",
-        image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Black_hole_lensing_web.jpg/600px-Black_hole_lensing_web.jpg"
     },
     {
         title: "Diamond Planet",
         fact: "There's a planet called 55 Cancri e that is believed to be made largely of diamond. The planet's surface is estimated to be worth $26.9 nonillion (that's 30 zeros!)",
         category: "Exoplanets",
-        image: "https://images.pexels.com/photos/957061/milky-way-starry-sky-night-sky-star-957061.jpeg"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/55_Cancri_e_-_artist_impression.jpg/600px-55_Cancri_e_-_artist_impression.jpg"
     },
     {
         title: "Space Smell",
         fact: "Astronauts report that space has a distinct smell: a mix of hot metal, seared steak, raspberries, and rum. This odor clings to their suits after spacewalks.",
         category: "Space Exploration",
-        image: "https://images.unsplash.com/photo-1614728263952-84ea256f9679?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/EVA_during_STS-129.jpg/600px-EVA_during_STS-129.jpg"
     },
     {
         title: "Venus Day",
         fact: "A day on Venus (243 Earth days) is longer than a year on Venus (225 Earth days). It also rotates backwards compared to most planets.",
         category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Venus_globe.jpg/600px-Venus_globe.jpg"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Venus-real_color.jpg/600px-Venus-real_color.jpg"
     },
     {
         title: "Cosmic Symphony",
         fact: "Galaxies make sound! NASA has converted the electromagnetic waves from celestial objects into audible frequencies, creating what astronomers call 'cosmic symphonies'.",
         category: "Galaxies",
-        image: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg/600px-Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg"
     },
     {
         title: "Neutron Star Density",
@@ -218,7 +218,7 @@ const spaceFacts = [
         title: "Earth's Cosmic Address",
         fact: "Our complete cosmic address is: Earth, Solar System, Orion Arm, Milky Way Galaxy, Local Group, Virgo Supercluster, Laniakea Supercluster, Universe.",
         category: "Cosmology",
-        image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Observable_Universe_%28ELT_simulation%29.png/600px-Observable_Universe_%28ELT_simulation%29.png"
     },
     {
         title: "Cosmic Echoes",
@@ -236,13 +236,13 @@ const spaceFacts = [
         title: "Speed of Light Limit",
         fact: "If you could travel at the speed of light, it would still take you 100,000 years to cross our Milky Way galaxy from one end to the other.",
         category: "Physics",
-        image: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/LightSpeed.gif/600px-LightSpeed.gif"
     },
     {
         title: "Space is Silent",
         fact: "There is no sound in space because sound waves need a medium to travel through, and space is a vacuum. The explosions we see in sci-fi movies would be completely silent.",
         category: "Physics",
-        image: "https://images.unsplash.com/photo-1528722828814-77b9b83aafb2?ixlib=rb-4.0.3&auto=format&fit=crop"
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Acoustic_waves.gif/600px-Acoustic_waves.gif"
     },
     {
         title: "Martian Sunsets",

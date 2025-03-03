@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import SpaceFactGenerator from './SpaceFactGenerator';
 import GravitySimulator from './GravitySimulator';
+import NasaEyes from './NasaEyes';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
@@ -129,12 +130,16 @@ export default function GamesPage() {
           >
             <Tab label="Space Facts" />
             <Tab label="Gravity Simulator" />
+            <Tab label="NASA Eyes Visualization" />
+
           </Tabs>
           
           {/* Games Content */}
           <Box>
             {activeTab === 0 && <SpaceFactGenerator />}
             {activeTab === 1 && <GravitySimulator />}
+            {activeTab === 2 && <NasaEyes />}
+
           </Box>
         </Box>
       </Container>
