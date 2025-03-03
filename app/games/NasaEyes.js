@@ -52,7 +52,7 @@ const nasaOptions = [
           textShadow: '0 0 5px rgba(149, 117, 205, 0.5)'
         }}
       >
-        Explore NASA's Interactive 3D Visualizations
+        Explore NASA&apos;s Interactive 3D Visualizations
       </Typography>
 
       <Grid container spacing={3}>

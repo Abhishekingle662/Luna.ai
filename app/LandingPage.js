@@ -185,7 +185,7 @@ const StarfieldCanvas = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [mousePosition]);
   
   return (
     <canvas

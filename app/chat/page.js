@@ -285,7 +285,7 @@ export default function Home() {
     };
 
     // Determine if input should be fixed based on scroll position
-    const handleScroll = () => {
+    const handleScroll = useCallback(() => {
       if (isMobile) return; // Always fixed on mobile
       
       if (messagesContainerRef.current) {
@@ -293,7 +293,7 @@ export default function Home() {
         const isScrolled = scrollTop > 100; // Fix input when scrolled down more than 100px
         setIsInputFixed(isScrolled || messages.length > 2); // Fixed when scrolled or > 2 messages
       }
-    };
+    }, [isMobile, messages.length]);
     
     // Add scroll event listener
     useEffect(() => {
@@ -302,7 +302,7 @@ export default function Home() {
         messagesContainer.addEventListener('scroll', handleScroll);
         return () => messagesContainer.removeEventListener('scroll', handleScroll);
       }
-    }, [isMobile]);
+    }, [isMobile, handleScroll]);
     
     // Update fixed state when messages change
     useEffect(() => {
