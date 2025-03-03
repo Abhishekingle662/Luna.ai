@@ -8,10 +8,15 @@ import {
   CardContent, 
   Button, 
   CardMedia,
-  CircularProgress
+  CircularProgress,
+  Alert,
+  Chip,
+  Stack
 } from '@mui/material';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import CategoryIcon from '@mui/icons-material/Category';
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { keyframes } from '@mui/system';
 
 // Animation for stars twinkling
@@ -26,285 +31,230 @@ const fadeIn = keyframes`
   to { opacity: 1; }
 `;
 
-// Comprehensive collection of space facts
-const spaceFacts = [
-    {
-        fact: "The Sun makes up 99.86% of the mass in the solar system.",
-        category: "Sun",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/600px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg"
-    },
-    {
-        fact: "One million Earths could fit inside the Sun.",
-        category: "Sun",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg/600px-The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg"
-    },
-    {
-        fact: "The hottest planet in our solar system is Venus, not Mercury.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Venus-real_color.jpg/600px-Venus-real_color.jpg"
-    },
-    {
-        fact: "A year on Mercury is just 88 Earth days long.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg/600px-Mercury_in_color_-_Prockter07-edit1.jpg"
-    },
-    {
-        fact: "The largest volcano in our solar system, Olympus Mons, is on Mars. It's about the size of Arizona.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Mars_Express_-_Olympus_Mons.jpg/600px-Mars_Express_-_Olympus_Mons.jpg"
-    },
-    {
-        fact: "We always see the same side of the Moon from Earth because it rotates at the same rate it orbits Earth.",
-        category: "Moon",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/600px-FullMoon2010.jpg"
-    },
-    {
-        fact: "The Moon is moving away from Earth at a rate of about 3.8 centimeters per year.",
-        category: "Moon",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/600px-FullMoon2010.jpg"
-    },
-    {
-        fact: "Jupiter has 79 confirmed moons, the most of any planet in our solar system.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Jupiter_New_Horizons.jpg/600px-Jupiter_New_Horizons.jpg"
-    },
-    {
-        fact: "The largest storm in our solar system is Jupiter's Great Red Spot, which has been raging for over 400 years.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Jupiter_Great_Red_Spot_with_moons_Io_and_Ganymede_-_2019-06-12_6969.jpg/600px-Jupiter_Great_Red_Spot_with_moons_Io_and_Ganymede_-_2019-06-12_6969.jpg"
-    },
-    {
-        fact: "Saturn's rings are made mostly of ice and rock, ranging in size from tiny grains to boulders as big as houses.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/600px-Saturn_during_Equinox.jpg"
-    },
-    {
-        fact: "It takes sunlight about 8 minutes and 20 seconds to reach Earth.",
-        category: "Space",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/The_Sun_in_January_2016.jpg/600px-The_Sun_in_January_2016.jpg"
-    },
-    {
-        fact: "The Milky Way galaxy is approximately 100,000 light-years across.",
-        category: "Galaxies",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg/600px-Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg"
-    },
-    {
-        fact: "There are more stars in the universe than grains of sand on all of Earth's beaches combined.",
-        category: "Stars",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Starsinthesky.jpg/600px-Starsinthesky.jpg"
-    },
-    {
-        fact: "A neutron star can spin at a rate of 600 rotations per second.",
-        category: "Stars",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Artist%27s_concept_of_a_neutron_star.jpg/600px-Artist%27s_concept_of_a_neutron_star.jpg"
-    },
-    {
-        fact: "Black holes can have the mass of over 20 billion suns. These are called supermassive black holes.",
-        category: "Black Holes",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Black_hole_lensing_web.jpg/600px-Black_hole_lensing_web.jpg"
-    },
-    {
-        fact: "The first photograph of a black hole was published in April 2019. It was captured by the Event Horizon Telescope.",
-        category: "Black Holes",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Black_hole_-_Messier_87_crop_max_res.jpg/600px-Black_hole_-_Messier_87_crop_max_res.jpg"
-    },
-    {
-        fact: "The closest galaxy to the Milky Way is the Andromeda Galaxy, which is 2.5 million light-years away.",
-        category: "Galaxies",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Andromeda_galaxy_Ssc2005-20a1.jpg/600px-Andromeda_galaxy_Ssc2005-20a1.jpg"
-    },
-    {
-        fact: "The Hubble Space Telescope orbits Earth at a speed of 17,000 mph (27,300 km/h).",
-        category: "Space Exploration",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/HST-SM4.jpeg/600px-HST-SM4.jpeg"
-    },
-    {
-        fact: "The International Space Station is the largest human-made structure in space and can be seen from Earth with the naked eye.",
-        category: "Space Exploration",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/International_Space_Station_after_undocking_of_STS-132.jpg/600px-International_Space_Station_after_undocking_of_STS-132.jpg"
-    },
-    {
-        fact: "There is a planet named HD 189733b where it rains glass sideways in winds of 5,400 mph (8,700 km/h).",
-        category: "Exoplanets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Exoplanet_HD_189733_b.jpg/600px-Exoplanet_HD_189733_b.jpg"
-    },
-    {
-        fact: "The Voyager 1 spacecraft is the most distant human-made object, currently over 14 billion miles (22.5 billion km) from Earth.",
-        category: "Space Exploration",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Voyager.jpg/600px-Voyager.jpg"
-    },
-    {
-        fact: "The largest known star, UY Scuti, is more than 1,700 times the radius of the Sun.",
-        category: "Stars",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/UY_Scuti_size_comparison_to_the_sun.png/600px-UY_Scuti_size_comparison_to_the_sun.png"
-    },
-    {
-        fact: "A day on Venus is longer than a year on Venus. It takes Venus 243 Earth days to rotate once on its axis and 225 Earth days to orbit the Sun.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Venus-real_color.jpg/600px-Venus-real_color.jpg"
-    },
-    {
-        fact: "The astronauts' footprints on the Moon will likely remain there for at least 100 million years since there's no wind or water to erode them.",
-        category: "Moon",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Apollo_11_bootprint.jpg/600px-Apollo_11_bootprint.jpg"
-    },
-    {
-        fact: "If two pieces of the same type of metal touch in space, they will permanently bond together. This is called cold welding.",
-        category: "Space",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Cold_welding.jpg/600px-Cold_welding.jpg"
-    },
-    {
-        fact: "Scientists have discovered a planet made of diamonds, called 55 Cancri e.",
-        category: "Exoplanets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/55_Cancri_e_-_artist_impression.jpg/600px-55_Cancri_e_-_artist_impression.jpg"
-    },
-    {
-        fact: "The Boötes void is an enormous empty region of space that spans nearly 330 million light-years and contains very few galaxies.",
-        category: "Space",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Artist%27s_impression_of_the_Bo%C3%B6tes_void.jpg/600px-Artist%27s_impression_of_the_Bo%C3%B6tes_void.jpg"
-    },
-    {
-        fact: "There's a giant cloud of alcohol in Sagittarius B. It contains enough ethyl alcohol to fill 400 trillion trillion pints of beer.",
-        category: "Space",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Milky_Way_IR_Spitzer.jpg/600px-Milky_Way_IR_Spitzer.jpg"
-    },
-    {
-        fact: "The Olympus Mons on Mars is the tallest mountain in our solar system, standing at 22 km (13.6 miles) high.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Olympus_Mons_alt.jpg/600px-Olympus_Mons_alt.jpg"
-    },
-    {
-        fact: "The core of Jupiter is so hot that it liquefies diamonds.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Jupiter_from_Voyager_1.jpg/600px-Jupiter_from_Voyager_1.jpg"
-    },
-    {
-        title: "Black Hole Power",
-        fact: "If you could harness the energy that a black hole releases, a black hole the size of a coin could power all of Earth's electrical needs for a year.",
-        category: "Black Holes",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Black_hole_lensing_web.jpg/600px-Black_hole_lensing_web.jpg"
-    },
-    {
-        title: "Diamond Planet",
-        fact: "There's a planet called 55 Cancri e that is believed to be made largely of diamond. The planet's surface is estimated to be worth $26.9 nonillion (that's 30 zeros!)",
-        category: "Exoplanets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/55_Cancri_e_-_artist_impression.jpg/600px-55_Cancri_e_-_artist_impression.jpg"
-    },
-    {
-        title: "Space Smell",
-        fact: "Astronauts report that space has a distinct smell: a mix of hot metal, seared steak, raspberries, and rum. This odor clings to their suits after spacewalks.",
-        category: "Space Exploration",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/EVA_during_STS-129.jpg/600px-EVA_during_STS-129.jpg"
-    },
-    {
-        title: "Venus Day",
-        fact: "A day on Venus (243 Earth days) is longer than a year on Venus (225 Earth days). It also rotates backwards compared to most planets.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Venus-real_color.jpg/600px-Venus-real_color.jpg"
-    },
-    {
-        title: "Cosmic Symphony",
-        fact: "Galaxies make sound! NASA has converted the electromagnetic waves from celestial objects into audible frequencies, creating what astronomers call 'cosmic symphonies'.",
-        category: "Galaxies",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg/600px-Milky_Way_Night_Sky_-_Chile_%2836386326885%29.jpg"
-    },
-    {
-        title: "Neutron Star Density",
-        fact: "A teaspoon of neutron star material would weigh about 4 billion tons—roughly the weight of all humans combined or a mountain on Earth.",
-        category: "Stars",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Neutron_star_illustrated.jpg/600px-Neutron_star_illustrated.jpg"
-    },
-    {
-        title: "Earth's Cosmic Address",
-        fact: "Our complete cosmic address is: Earth, Solar System, Orion Arm, Milky Way Galaxy, Local Group, Virgo Supercluster, Laniakea Supercluster, Universe.",
-        category: "Cosmology",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Observable_Universe_%28ELT_simulation%29.png/600px-Observable_Universe_%28ELT_simulation%29.png"
-    },
-    {
-        title: "Cosmic Echoes",
-        fact: "The Cosmic Microwave Background Radiation is the afterglow of the Big Bang, and it's visible as static on about 1% of untuned analog TV sets.",
-        category: "Cosmology",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Ilc_9yr_moll4096.png/600px-Ilc_9yr_moll4096.png"
-    },
-    {
-        title: "Jupiter's Storms",
-        fact: "Jupiter's Great Red Spot is a storm that has been raging for at least 400 years. It's so large that three Earths could fit inside it.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg/600px-Jupiter_and_its_shrunken_Great_Red_Spot.jpg"
-    },
-    {
-        title: "Speed of Light Limit",
-        fact: "If you could travel at the speed of light, it would still take you 100,000 years to cross our Milky Way galaxy from one end to the other.",
-        category: "Physics",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/LightSpeed.gif/600px-LightSpeed.gif"
-    },
-    {
-        title: "Space is Silent",
-        fact: "There is no sound in space because sound waves need a medium to travel through, and space is a vacuum. The explosions we see in sci-fi movies would be completely silent.",
-        category: "Physics",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Acoustic_waves.gif/600px-Acoustic_waves.gif"
-    },
-    {
-        title: "Martian Sunsets",
-        fact: "Sunsets on Mars appear blue due to the way fine dust particles in the thin Martian atmosphere scatter light. On Earth, our thicker atmosphere scatters blue light, giving us red sunsets.",
-        category: "Planets",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Mars_sunset_PIA00920.jpg/600px-Mars_sunset_PIA00920.jpg"
-    },
-    {
-        title: "Stellar Nursery",
-        fact: "The Pillars of Creation in the Eagle Nebula are stellar nurseries where new stars are born. These towering columns of gas and dust are several light-years tall.",
-        category: "Nebulae",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/The_Pillars_of_Creation.jpg/600px-The_Pillars_of_Creation.jpg"
-    },
-    {
-        title: "Moon Dust Danger",
-        fact: "Lunar dust is extremely abrasive and clingy due to its jagged shape and electrostatic charge. It posed serious health concerns for Apollo astronauts who described it smelling like spent gunpowder.",
-        category: "Moon",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Lunar_Soil_Sample.jpg/600px-Lunar_Soil_Sample.jpg"
-    },
-    {
-        title: "Galactic Collision",
-        fact: "Our Milky Way galaxy is on a collision course with the Andromeda galaxy. They will begin to merge in about 4.5 billion years, forming a new galaxy sometimes called 'Milkomeda'.",
-        category: "Galaxies",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Andromeda_and_Milky_Way_collision.jpg/600px-Andromeda_and_Milky_Way_collision.jpg"
-    }
+// NASA API endpoints - move key to environment variable in production
+const NASA_API_KEY = 'QwBO9buK8b8mmqmTcwnIDOCuuAOW5CogPKWvYVZt'; // Use your NASA API key or DEMO_KEY
+const APOD_API = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`;
+const NASA_LIBRARY_API = 'https://images-api.nasa.gov';
+
+// Categories for images search
+const CATEGORIES = [
+  "nebula", "galaxy", "star", "planet", "moon", 
+  "sun", "asteroid", "comet", "black hole", "supernova", 
+  "mars", "jupiter", "saturn", "space exploration"
+];
+
+// Facts that will be combined with NASA images
+const SPACE_FACTS = [
+  {
+    title: "Black Hole Power",
+    fact: "If you could harness the energy that a black hole releases, a black hole the size of a coin could power all of Earth's electrical needs for a year.",
+    category: "Black Holes"
+  },
+  {
+    title: "Diamond Planet",
+    fact: "There's a planet called 55 Cancri e that is believed to be made largely of diamond. The planet's surface is estimated to be worth $26.9 nonillion (that's 30 zeros!)",
+    category: "Exoplanets"
+  },
+  {
+    title: "Space Smell",
+    fact: "Astronauts report that space has a distinct smell: a mix of hot metal, seared steak, raspberries, and rum. This odor clings to their suits after spacewalks.",
+    category: "Space Exploration"
+  },
+  {
+    title: "Cosmic Symphony",
+    fact: "Galaxies make sound! NASA has converted the electromagnetic waves from celestial objects into audible frequencies, creating what astronomers call 'cosmic symphonies'.",
+    category: "Galaxies"
+  },
+  {
+    title: "Neutron Star Density",
+    fact: "A teaspoon of neutron star material would weigh about 4 billion tons—roughly the weight of all humans combined or a mountain on Earth.",
+    category: "Stars"
+  },
+  {
+    title: "Martian Sunsets",
+    fact: "Sunsets on Mars appear blue due to the way fine dust particles in the thin Martian atmosphere scatter light. On Earth, our thicker atmosphere scatters blue light, giving us red sunsets.",
+    category: "Planets"
+  },
+  // Add more facts as needed
 ];
 
 export default function SpaceFactGenerator() {
+  // Add a client-side check to prevent SSR issues
+  const [isClient, setIsClient] = useState(false);
   const [currentFact, setCurrentFact] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [fadeIn, setFadeIn] = useState(true);
-  const [hasInitialized, setHasInitialized] = useState(false);
-  
-  // Get a random fact
-  const getRandomFact = () => {
-    setLoading(true);
-    setFadeIn(false);
+  const [loading, setLoading] = useState(true); // Start with loading true
+  const [error, setError] = useState(null);
+  const [animateFadeIn, setAnimateFadeIn] = useState(false);
+  const [factSource, setFactSource] = useState('');
+  const [nasaData, setNasaData] = useState([]);
+
+  // Check for client-side rendering first
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Fetch APOD data - only run on the client
+  const fetchAPOD = async () => {
+    if (!isClient) return;
     
-    setTimeout(() => {
-      let newFact;
-      do {
-        newFact = spaceFacts[Math.floor(Math.random() * spaceFacts.length)];
-      } while (currentFact && newFact.fact === currentFact.fact);
+    setLoading(true);
+    setError(null);
+    setAnimateFadeIn(false);
+    
+    try {
+      // Get a random date within the last 5 years for APOD
+      const today = new Date();
+      const pastDate = new Date(today);
+      pastDate.setFullYear(today.getFullYear() - 5);
       
-      setCurrentFact(newFact);
+      const randomTime = pastDate.getTime() + Math.random() * (today.getTime() - pastDate.getTime());
+      const randomDate = new Date(randomTime);
+      
+      const formattedDate = randomDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      
+      const response = await fetch(`${APOD_API}&date=${formattedDate}`);
+      
+      if (!response.ok) {
+        throw new Error(`NASA API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Skip videos, only use images
+      if (data.media_type === 'video') {
+        // Try again if we get a video
+        fetchAPOD();
+        return;
+      }
+      
+      setCurrentFact({
+        title: data.title,
+        fact: data.explanation.split('. ').slice(0, 3).join('. ') + '.',  // First 3 sentences
+        image: data.url,
+        date: data.date,
+        category: 'NASA APOD',
+        copyright: data.copyright || 'NASA'
+      });
+      
+      setFactSource('apod');
       setLoading(false);
-      setFadeIn(true);
-    }, 600);
+      setAnimateFadeIn(true);
+    } catch (err) {
+      console.error('Error fetching APOD data:', err);
+      setError('Failed to fetch data from NASA API. Trying backup source...');
+      // Fall back to search API
+      fetchNASALibrary();
+    }
+  };
+
+  // Fetch from NASA Image Library
+  const fetchNASALibrary = async () => {
+    if (!isClient) return;
+    
+    setLoading(true);
+    setError(null);
+    setAnimateFadeIn(false);
+    
+    try {
+      // Get random category
+      const randomCategory = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+      const randomPage = Math.floor(Math.random() * 10) + 1; // Get a random page of results
+      
+      const response = await fetch(
+        `${NASA_LIBRARY_API}/search?q=${randomCategory}&media_type=image&page=${randomPage}`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`NASA Library API returned ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.collection.items || data.collection.items.length === 0) {
+        throw new Error('No images found');
+      }
+      
+      // Get a random item from the results
+      const randomIndex = Math.floor(Math.random() * data.collection.items.length);
+      const item = data.collection.items[randomIndex];
+      
+      if (!item.links || !item.data || !item.data[0]) {
+        throw new Error('Invalid image data structure');
+      }
+      
+      // Get a random fact from our fact library that matches the category if possible
+      let matchingFacts = SPACE_FACTS.filter(fact => 
+        randomCategory.toLowerCase().includes(fact.category.toLowerCase()) || 
+        fact.category.toLowerCase().includes(randomCategory.toLowerCase())
+      );
+      
+      // If no matching facts, just pick a random one
+      if (matchingFacts.length === 0) {
+        matchingFacts = SPACE_FACTS;
+      }
+      
+      const randomFact = matchingFacts[Math.floor(Math.random() * matchingFacts.length)];
+      
+      setCurrentFact({
+        title: randomFact.title || item.data[0].title,
+        fact: randomFact.fact,
+        image: item.links[0].href,
+        date: item.data[0].date_created?.split('T')[0] || 'Unknown date',
+        category: randomFact.category || randomCategory,
+        nasa_id: item.data[0].nasa_id
+      });
+      
+      setFactSource('search');
+      setLoading(false);
+      setAnimateFadeIn(true);
+    } catch (err) {
+      console.error('Error fetching NASA Library data:', err);
+      setError('Failed to fetch NASA images. Displaying a stored fact instead.');
+      displayFallbackFact();
+    }
+  };
+
+  // Display a fallback fact if everything else fails
+  const displayFallbackFact = () => {
+    if (!isClient) return;
+    
+    const randomFact = SPACE_FACTS[Math.floor(Math.random() * SPACE_FACTS.length)];
+    
+    setCurrentFact({
+      title: randomFact.title,
+      fact: randomFact.fact,
+      // Use a default NASA image as fallback
+      image: 'https://images.nasa.gov/images/as17-148-22727~medium.jpg', 
+      category: randomFact.category,
+      fallback: true
+    });
+    
+    setLoading(false);
+    setAnimateFadeIn(true);
+    setFactSource('fallback');
+  };
+
+  // Get a new random space fact/image
+  const getRandomFact = () => {
+    // Randomly choose between APOD and search
+    if (Math.random() > 0.3) {
+      fetchAPOD();
+    } else {
+      fetchNASALibrary();
+    }
   };
   
-  // Initialize with a random fact - only on client side
+  // Initialize with a random fact only after confirming we're on the client
   useEffect(() => {
-    // Only set initial fact on client side
-    if (!hasInitialized) {
-      const initialFact = spaceFacts[Math.floor(Math.random() * spaceFacts.length)];
-      setCurrentFact(initialFact);
-      setHasInitialized(true);
+    if (isClient) {
+      fetchAPOD();
     }
-  }, [hasInitialized]);
+  }, [isClient]);
   
   // For the stars background, use a fixed number of stars with predictable positions
   const renderStars = () => {
+    if (!isClient) return null;
+    
     const stars = [];
     
     // Use fixed positions that will be the same on server and client
@@ -319,7 +269,6 @@ export default function SpaceFactGenerator() {
       { top: '90%', left: '40%', size: '1px', delay: '5s' },
       { top: '15%', left: '90%', size: '2px', delay: '3s' },
       { top: '50%', left: '50%', size: '3px', delay: '4s' },
-      // Add more with fixed positions as needed
     ];
     
     positions.forEach((pos, i) => {
@@ -342,6 +291,22 @@ export default function SpaceFactGenerator() {
     
     return stars;
   };
+
+  // Show loading state during SSR or initial client load
+  if (!isClient) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '400px' 
+      }}>
+        <Typography variant="body1" sx={{ color: '#9575CD' }}>
+          Loading cosmic facts...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ position: 'relative', minHeight: '400px' }}>
@@ -368,87 +333,152 @@ export default function SpaceFactGenerator() {
         justifyContent: 'center',
         px: { xs: 2, md: 0 },
       }}>
-        {hasInitialized ? (
-          <>
-            {loading ? (
-              <CircularProgress sx={{ color: '#9575CD', my: 10 }} />
-            ) : (
-              <Card 
-                sx={{ 
-                  maxWidth: 600, 
-                  width: '100%', 
-                  bgcolor: 'rgba(25, 25, 35, 0.8)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(149, 117, 205, 0.3)',
-                  boxShadow: '0 0 20px rgba(149, 117, 205, 0.5)',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  animation: fadeIn ? `${fadeIn} 0.6s ease` : 'none',
-                }}
-              >
-                {currentFact?.image && (
-                  <CardMedia
-                    component="img"
-                    height="240"
-                    image={currentFact.image}
-                    alt="Space image"
-                  />
-                )}
-                <CardContent sx={{ p: 3 }}>
-                  {currentFact?.title && (
-                    <Typography 
-                      variant="h5" 
-                      sx={{ 
-                        color: '#9575CD',
-                        mb: 1,
-                        fontFamily: 'var(--font-space-grotesk), sans-serif',
-                      }}
-                    >
-                      {currentFact.title}
-                    </Typography>
-                  )}
-                  
-                  <Typography 
-                    variant="body1" 
-                    sx={{ 
-                      color: '#fff', 
-                      mb: 2 
-                    }}
-                  >
-                    {currentFact?.fact}
-                  </Typography>
-                  
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      color: 'rgba(255,255,255,0.6)',
-                      display: 'block',
-                      mb: 2
-                    }}
-                  >
-                    Category: {currentFact?.category}
-                  </Typography>
-                  
-                  <Button
-                    variant="contained"
-                    startIcon={<AutorenewIcon />}
-                    onClick={getRandomFact}
+        {error && (
+          <Alert 
+            severity="warning" 
+            sx={{ 
+              mb: 2, 
+              bgcolor: 'rgba(25, 25, 35, 0.9)', 
+              color: '#FFD700',
+              '.MuiAlert-icon': {
+                color: '#FFD700'
+              }
+            }}
+          >
+            {error}
+          </Alert>
+        )}
+        
+        {loading ? (
+          <CircularProgress sx={{ color: '#9575CD', my: 10 }} />
+        ) : currentFact ? (
+          <Card 
+            sx={{ 
+              maxWidth: 600, 
+              width: '100%', 
+              bgcolor: 'rgba(25, 25, 35, 0.8)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(149, 117, 205, 0.3)',
+              boxShadow: '0 0 20px rgba(149, 117, 205, 0.5)',
+              borderRadius: 2,
+              overflow: 'hidden',
+              animation: animateFadeIn ? `${fadeIn} 0.6s ease` : 'none',
+            }}
+          >
+            {currentFact.image && (
+              <Box sx={{ position: 'relative' }}>
+                <CardMedia
+                  component="img"
+                  height="300"
+                  image={currentFact.image}
+                  alt={currentFact.title || "Space image"}
+                  sx={{
+                    objectFit: 'cover',
+                  }}
+                />
+                {currentFact.date && (
+                  <Chip
+                    icon={<DateRangeIcon sx={{ color: '#fff !important' }} />}
+                    label={currentFact.date}
                     sx={{
-                      bgcolor: 'rgba(149, 117, 205, 0.8)',
-                      '&:hover': {
-                        bgcolor: 'rgba(149, 117, 205, 1)',
+                      position: 'absolute',
+                      top: 16,
+                      right: 16,
+                      bgcolor: 'rgba(25, 25, 35, 0.7)',
+                      color: '#fff',
+                      borderColor: 'rgba(149, 117, 205, 0.5)',
+                      '& .MuiChip-icon': {
+                        color: '#fff'
                       }
                     }}
-                  >
-                    Next Fact
-                  </Button>
-                </CardContent>
-              </Card>
+                    variant="outlined"
+                  />
+                )}
+              </Box>
             )}
-          </>
+            <CardContent sx={{ p: 3 }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  color: '#9575CD',
+                  mb: 1,
+                  fontFamily: 'var(--font-space-grotesk), sans-serif',
+                }}
+              >
+                {currentFact.title}
+              </Typography>
+              
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: '#fff', 
+                  mb: 2,
+                  lineHeight: 1.6,
+                }}
+              >
+                {currentFact.fact}
+              </Typography>
+              
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 3 }}>
+                <Chip 
+                  icon={<CategoryIcon sx={{ color: '#fff !important' }} />}
+                  label={currentFact.category}
+                  sx={{
+                    bgcolor: 'rgba(35, 35, 45, 0.8)',
+                    color: '#fff',
+                    borderColor: 'rgba(149, 117, 205, 0.5)',
+                  }}
+                  variant="outlined"
+                />
+                
+                <Chip 
+                  icon={<RocketLaunchIcon sx={{ color: '#fff !important' }} />}
+                  label={
+                    factSource === 'apod' 
+                      ? 'Astronomy Picture of the Day' 
+                      : factSource === 'search'
+                        ? 'NASA Image Library'
+                        : 'Space Facts Archive'
+                  }
+                  sx={{
+                    bgcolor: 'rgba(35, 35, 45, 0.8)',
+                    color: '#fff',
+                    borderColor: 'rgba(149, 117, 205, 0.5)',
+                  }}
+                  variant="outlined"
+                />
+              </Stack>
+              
+              <Button
+                variant="contained"
+                startIcon={<AutorenewIcon />}
+                onClick={getRandomFact}
+                sx={{
+                  bgcolor: 'rgba(149, 117, 205, 0.8)',
+                  '&:hover': {
+                    bgcolor: 'rgba(149, 117, 205, 1)',
+                  }
+                }}
+              >
+                Next Cosmic Fact
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
           <CircularProgress sx={{ color: '#9575CD', my: 10 }} />
         )}
+
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            color: 'rgba(255,255,255,0.6)',
+            mt: 2, 
+            textAlign: 'center',
+            maxWidth: '600px'
+          }}
+        >
+          Data sourced from NASA Open APIs. Some images and facts courtesy of NASA's Astronomy Picture of the Day and NASA Image Library.
+        </Typography>
       </Box>
     </Box>
   );
