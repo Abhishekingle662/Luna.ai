@@ -62,7 +62,7 @@ export default function NasaEyes() {
           fontWeight: 500
         }}
       >
-        NASA's Interactive Visualizations
+        NASA&apos;s  Interactive Visualizations
       </Typography>
 
       <Grid container spacing={3}>
