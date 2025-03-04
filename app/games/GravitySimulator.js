@@ -22,7 +22,6 @@ import {
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import InfoIcon from '@mui/icons-material/Info';
 import { keyframes } from '@mui/system';
-import GravitySimulator from './GravitySimulator';
 
 // Animation for bouncing effect
 const bounce = keyframes`
@@ -111,7 +110,8 @@ const planetData = [
 // Object types for simulation
 const objectTypes = ['ball', 'human', 'feather', 'car'];
 
-export default function GravitySimulatorComponent() {
+// Export the component with a consistent name
+export default function GravitySimulator() {
   const [selectedPlanet, setSelectedPlanet] = useState('Earth');
   const [mass, setMass] = useState(70); // kg
   const [bounceHeight, setBounceHeight] = useState(100); // px

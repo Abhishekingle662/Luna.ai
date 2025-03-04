@@ -10,7 +10,6 @@ import {
   CardMedia,
   CircularProgress
 } from '@mui/material';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { keyframes } from '@mui/system';
 
@@ -273,13 +272,21 @@ const spaceFacts = [
 export default function SpaceFactGenerator() {
   const [currentFact, setCurrentFact] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [fadeIn, setFadeIn] = useState(true);
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  
+  // Make sure we're on client-side
+  useEffect(() => {
+    setMounted(true);
+    // Initialize with a random fact
+    const initialFact = spaceFacts[Math.floor(Math.random() * spaceFacts.length)];
+    setCurrentFact(initialFact);
+  }, []);
   
   // Get a random fact
   const getRandomFact = () => {
     setLoading(true);
-    setFadeIn(false);
+    setIsAnimating(false);
     
     setTimeout(() => {
       let newFact;
@@ -289,63 +296,18 @@ export default function SpaceFactGenerator() {
       
       setCurrentFact(newFact);
       setLoading(false);
-      setFadeIn(true);
+      setIsAnimating(true);
     }, 600);
   };
-  
-  // Initialize with a random fact - only on client side
-  useEffect(() => {
-    // Only set initial fact on client side
-    if (!hasInitialized) {
-      const initialFact = spaceFacts[Math.floor(Math.random() * spaceFacts.length)];
-      setCurrentFact(initialFact);
-      setHasInitialized(true);
-    }
-  }, [hasInitialized]);
-  
-  // For the stars background, use a fixed number of stars with predictable positions
-  const renderStars = () => {
-    const stars = [];
-    
-    // Use fixed positions that will be the same on server and client
-    const positions = [
-      { top: '10%', left: '20%', size: '2px', delay: '3s' },
-      { top: '25%', left: '15%', size: '3px', delay: '4s' },
-      { top: '30%', left: '70%', size: '1px', delay: '2s' },
-      { top: '45%', left: '30%', size: '2px', delay: '5s' },
-      { top: '60%', left: '80%', size: '1px', delay: '3s' },
-      { top: '70%', left: '10%', size: '3px', delay: '4s' },
-      { top: '80%', left: '60%', size: '2px', delay: '2s' },
-      { top: '90%', left: '40%', size: '1px', delay: '5s' },
-      { top: '15%', left: '90%', size: '2px', delay: '3s' },
-      { top: '50%', left: '50%', size: '3px', delay: '4s' },
-      // Add more with fixed positions as needed
-    ];
-    
-    positions.forEach((pos, i) => {
-      stars.push(
-        <Box
-          key={`star-${i}`}
-          sx={{
-            position: 'absolute',
-            width: pos.size,
-            height: pos.size,
-            backgroundColor: '#fff',
-            borderRadius: '50%',
-            top: pos.top,
-            left: pos.left,
-            animation: `${twinkle} ${pos.delay} infinite`,
-          }}
-        />
-      );
-    });
-    
-    return stars;
-  };
 
+  // If not mounted yet (server-side), return a loader
+  if (!mounted) {
+    return <CircularProgress sx={{ color: '#9575CD', my: 10 }} />;
+  }
+  
   return (
     <Box sx={{ position: 'relative', minHeight: '400px' }}>
-      {/* Star background with fixed positions */}
+      {/* Star background */}
       <Box sx={{ 
         position: 'absolute', 
         top: 0, 
@@ -355,7 +317,22 @@ export default function SpaceFactGenerator() {
         zIndex: 0,
         overflow: 'hidden',
       }}>
-        {renderStars()}
+        {/* Render a fixed number of stars with deterministic positions */}
+        {[...Array(10)].map((_, i) => (
+          <Box
+            key={`star-${i}`}
+            sx={{
+              position: 'absolute',
+              width: `${(i % 3) + 1}px`,
+              height: `${(i % 3) + 1}px`,
+              backgroundColor: '#fff',
+              borderRadius: '50%',
+              top: `${(i * 10) % 100}%`,
+              left: `${((i * 7) + 5) % 100}%`,
+              animation: `${twinkle} ${(i % 5) + 2}s infinite`,
+            }}
+          />
+        ))}
       </Box>
 
       {/* Content section */}
@@ -368,84 +345,80 @@ export default function SpaceFactGenerator() {
         justifyContent: 'center',
         px: { xs: 2, md: 0 },
       }}>
-        {hasInitialized ? (
-          <>
-            {loading ? (
-              <CircularProgress sx={{ color: '#9575CD', my: 10 }} />
-            ) : (
-              <Card 
+        {loading ? (
+          <CircularProgress sx={{ color: '#9575CD', my: 10 }} />
+        ) : currentFact ? (
+          <Card 
+            sx={{ 
+              maxWidth: 600, 
+              width: '100%', 
+              bgcolor: 'rgba(25, 25, 35, 0.8)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(149, 117, 205, 0.3)',
+              boxShadow: '0 0 20px rgba(149, 117, 205, 0.5)',
+              borderRadius: 2,
+              overflow: 'hidden',
+              animation: isAnimating ? `${fadeIn} 0.6s ease` : 'none',
+            }}
+          >
+            {currentFact.image && (
+              <CardMedia
+                component="img"
+                height="240"
+                image={currentFact.image}
+                alt={currentFact.title || "Space image"}
+              />
+            )}
+            <CardContent sx={{ p: 3 }}>
+              {currentFact.title && (
+                <Typography 
+                  variant="h5" 
+                  sx={{ 
+                    color: '#9575CD',
+                    mb: 1,
+                    fontFamily: 'var(--font-space-grotesk), sans-serif',
+                  }}
+                >
+                  {currentFact.title}
+                </Typography>
+              )}
+              
+              <Typography 
+                variant="body1" 
                 sx={{ 
-                  maxWidth: 600, 
-                  width: '100%', 
-                  bgcolor: 'rgba(25, 25, 35, 0.8)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(149, 117, 205, 0.3)',
-                  boxShadow: '0 0 20px rgba(149, 117, 205, 0.5)',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  animation: fadeIn ? `${fadeIn} 0.6s ease` : 'none',
+                  color: '#fff', 
+                  mb: 2 
                 }}
               >
-                {currentFact?.image && (
-                  <CardMedia
-                    component="img"
-                    height="240"
-                    image={currentFact.image}
-                    alt="Space image"
-                  />
-                )}
-                <CardContent sx={{ p: 3 }}>
-                  {currentFact?.title && (
-                    <Typography 
-                      variant="h5" 
-                      sx={{ 
-                        color: '#9575CD',
-                        mb: 1,
-                        fontFamily: 'var(--font-space-grotesk), sans-serif',
-                      }}
-                    >
-                      {currentFact.title}
-                    </Typography>
-                  )}
-                  
-                  <Typography 
-                    variant="body1" 
-                    sx={{ 
-                      color: '#fff', 
-                      mb: 2 
-                    }}
-                  >
-                    {currentFact?.fact}
-                  </Typography>
-                  
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      color: 'rgba(255,255,255,0.6)',
-                      display: 'block',
-                      mb: 2
-                    }}
-                  >
-                    Category: {currentFact?.category}
-                  </Typography>
-                  
-                  <Button
-                    variant="contained"
-                    startIcon={<AutorenewIcon />}
-                    onClick={getRandomFact}
-                    sx={{
-                      bgcolor: 'rgba(149, 117, 205, 0.8)',
-                      '&:hover': {
-                        bgcolor: 'rgba(149, 117, 205, 1)',
-                      }
-                    }}
-                  >
-                    Next Fact
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </>
+                {currentFact.fact}
+              </Typography>
+              
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: 'rgba(255,255,255,0.6)',
+                  display: 'block',
+                  mb: 2
+                }}
+              >
+                Category: {currentFact.category}
+              </Typography>
+              
+              <Button
+                variant="contained"
+                startIcon={<AutorenewIcon />}
+                onClick={getRandomFact}
+                sx={{
+                  bgcolor: 'rgba(149, 117, 205, 0.8)',
+                  '&:hover': {
+                    bgcolor: 'rgba(149, 117, 205, 1)',
+                  }
+                }}
+              >
+                Next Cosmic Fact
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
           <CircularProgress sx={{ color: '#9575CD', my: 10 }} />
         )}

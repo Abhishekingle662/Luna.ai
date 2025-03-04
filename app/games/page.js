@@ -3,35 +3,65 @@
 import { useState, useEffect } from 'react';
 import { 
   Box, 
-  Typography, 
-  Button, 
-  Card, 
-  CardContent, 
-  CardMedia, 
-  Grid, 
+  Typography,
   Container,
   Tabs,
   Tab,
   useMediaQuery,
-  Stack
+  Stack,
+  Button,
+  CircularProgress
 } from '@mui/material';
-import SpaceFactGenerator from './SpaceFactGenerator';
-import GravitySimulator from './GravitySimulator';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
-import HomeIcon from '@mui/icons-material/Home'; 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HomeIcon from '@mui/icons-material/Home';
+import dynamic from 'next/dynamic';
 
-// Import particles background dynamically to avoid SSR issues
-const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false });
+// Use dynamic imports to prevent server-side rendering issues
+const SpaceFactGenerator = dynamic(() => import('./SpaceFactGenerator'), {
+  loading: () => <CircularProgress sx={{ color: '#9575CD', my: 10 }} />,
+  ssr: false
+});
+
+const GravitySimulator = dynamic(() => import('./GravitySimulator'), {
+  loading: () => <CircularProgress sx={{ color: '#9575CD', my: 10 }} />,
+  ssr: false
+});
+
+const NasaEyes = dynamic(() => import('./NasaEyes'), {
+  loading: () => <CircularProgress sx={{ color: '#9575CD', my: 10 }} />,
+  ssr: false
+});
 
 export default function GamesPage() {
   const [activeTab, setActiveTab] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
   };
+
+  // Show loading spinner until client-side rendering is complete
+  if (!mounted) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
+        }}
+      >
+        <CircularProgress sx={{ color: '#9575CD' }} />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -43,25 +73,23 @@ export default function GamesPage() {
         py: { xs: 4, md: 6 }
       }}
     >
-      {/* Particle Background */}
-      <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={50} />
-      
       {/* Header */}
       <Container maxWidth="lg">
-        {/* Navigation Buttons - Hidden on mobile */}
+        {/* Navigation Buttons */}
         <Stack 
           direction="row" 
           spacing={2} 
           sx={{ 
             mb: 3, 
-            display: { xs: 'none', sm: 'flex' }  // Hide on mobile, show on tablet/desktop
+            justifyContent: 'flex-start', 
+            display: { xs: isMobile ? 'none' : 'flex', md: 'flex' } 
           }}
         >
-          {/* Back to Home Button */}
           <Button
             component={Link}
             href="/"
             startIcon={<HomeIcon />}
+            size="small"
             sx={{
               color: '#9575CD',
               borderColor: 'rgba(149, 117, 205, 0.5)',
@@ -77,12 +105,12 @@ export default function GamesPage() {
           >
             Home
           </Button>
-          
-          {/* Back to Chat Button */}
+
           <Button
             component={Link}
             href="/chat"
             startIcon={<ArrowBackIcon />}
+            size="small"
             sx={{
               color: '#9575CD',
               borderColor: 'rgba(149, 117, 205, 0.5)',
@@ -129,12 +157,14 @@ export default function GamesPage() {
           >
             <Tab label="Space Facts" />
             <Tab label="Gravity Simulator" />
+            <Tab label="NASA Eyes Visualization" />
           </Tabs>
           
           {/* Games Content */}
           <Box>
             {activeTab === 0 && <SpaceFactGenerator />}
             {activeTab === 1 && <GravitySimulator />}
+            {activeTab === 2 && <NasaEyes />}
           </Box>
         </Box>
       </Container>
