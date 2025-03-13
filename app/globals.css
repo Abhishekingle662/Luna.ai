@@ -4,15 +4,3 @@
   margin: 0;
 }
 
-.logo-container {
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-}
-
-.logo-container img {
-  max-height: 50px; /* Adjust as needed */
-  width: auto;
-}
-
-
