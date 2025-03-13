@@ -34,7 +34,7 @@ export default function GravitySection() {
       </Typography>
       
       <Typography variant="body1" sx={{ mb: 4 }}>
-        Explore the fascinating world of gravity and orbits. Learn about Newton's Law of Universal Gravitation, Kepler's Laws, and more through interactive visualizations.
+        Explore the fascinating world of gravity and orbits. Learn about Newton&apos;s Law of Universal Gravitation, Kepler&apos;s Laws, and more through interactive visualizations.
       </Typography>
       
       <Tabs 
@@ -53,15 +53,15 @@ export default function GravitySection() {
           }
         }}
       >
-        <Tab label="Newton's Law" />
-        <Tab label="Kepler's Laws" />
-        <Tab label="Einstein's Theory" />
+        <Tab label="Newton&apos;s Law" />
+        <Tab label="Kepler&apos;s Laws" />
+        <Tab label="Einstein&apos;s Theory" />
       </Tabs>
       
       {activeTab === 0 && (
         <Box sx={{ animation: `${fadeIn} 0.5s ease-out` }}>
           <Typography variant="body1" sx={{ mb: 3 }}>
-            Newton's Law of Universal Gravitation states that every particle attracts every other particle with a force directly proportional to the product of their masses and inversely proportional to the square of the distance between them.
+            Newton&apos;s Law of Universal Gravitation states that every particle attracts every other particle with a force directly proportional to the product of their masses and inversely proportional to the square of the distance between them.
           </Typography>
           
           <BlockMath math={"F = G \\frac{m_1 m_2}{r^2}"} />
@@ -96,7 +96,7 @@ export default function GravitySection() {
       {activeTab === 1 && (
         <Box sx={{ animation: `${fadeIn} 0.5s ease-out` }}>
           <Typography variant="body1" sx={{ mb: 3 }}>
-            Kepler's Three Laws describe the motion of planets around the Sun:
+            Kepler&apos;s Three Laws describe the motion of planets around the Sun:
           </Typography>
           
           <Box component="ul" sx={{ pl: 2, my: 3 }}>
@@ -123,7 +123,7 @@ export default function GravitySection() {
                 Third Law: The Law of Harmonies
               </Typography>
               <Typography variant="body1">
-                The square of a planet's orbital period is proportional to the cube of its semi-major axis:
+                The square of a planet&apos;s orbital period is proportional to the cube of its semi-major axis:
               </Typography>
               <Box sx={{ my: 2 }}>
                 <BlockMath math={"\\frac{T^2}{a^3} = \\frac{4\\pi^2}{G(M + m)}"} />
@@ -141,11 +141,11 @@ export default function GravitySection() {
       {activeTab === 2 && (
         <Box sx={{ animation: `${fadeIn} 0.5s ease-out` }}>
           <Typography variant="body1" sx={{ mb: 3 }}>
-            Einstein's Theory of General Relativity revolutionized our understanding of gravity, showing that it's not a force but a curvature of spacetime caused by mass and energy.
+            Einstein&apos;s Theory of General Relativity revolutionized our understanding of gravity, showing that it&apos;s not a force but a curvature of spacetime caused by mass and energy.
           </Typography>
           
           <Typography variant="h6" sx={{ mb: 2, color: '#9575CD' }}>
-            Einstein's Field Equation
+            Einstein&apos;s Field Equation
           </Typography>
           
           <BlockMath math={"G_{\\mu\\nu} = \\frac{8\\pi G}{c^4}T_{\\mu\\nu}"} />
@@ -177,7 +177,7 @@ export default function GravitySection() {
               </Box>
               <Box component="li" sx={{ mb: 2 }}>
                 <Typography variant="body1">
-                  Explains phenomena like Mercury's orbit, gravitational lensing, and gravitational waves
+                  Explains phenomena like Mercury&apos;s orbit, gravitational lensing, and gravitational waves
                 </Typography>
               </Box>
             </Box>
