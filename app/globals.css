@@ -1,6 +1,66 @@
+/* Import custom fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/* Base Tailwind imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+/* Custom star pattern background */
+.bg-pattern-stars {
+  background-image: radial-gradient(
+    circle at 25px 25px,
+    rgba(255, 255, 255, 0.2) 1px,
+    transparent 1px
+  ),
+  radial-gradient(
+    circle at 75px 75px,
+    rgba(255, 255, 255, 0.2) 1px,
+    transparent 1px
+  );
+  background-size: 100px 100px;
+}
+
+/* Space-themed backgrounds - add these images or create them */
+body {
+  @apply bg-gray-900;
+  color: white;
+  font-family: 'Space Grotesk', sans-serif;
+  background-image: url('/images/subtle-space-bg.png');
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+/* Add responsive text utilities */
+@layer utilities {
+  .text-shadow-space {
+    text-shadow: 0 0 30px rgba(88, 101, 242, 0.3);
+  }
+}
+
+/* Custom scrollbar for space theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4B5563;
 }
 

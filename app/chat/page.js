@@ -12,6 +12,7 @@ import rehypeRaw from 'rehype-raw';
 import Link from '@mui/material/Link'
 import GamesIcon from '@mui/icons-material/Games';
 import HomeIcon from '@mui/icons-material/Home'; 
+import ScienceIcon from '@mui/icons-material/Science';
 
 
 // Import particles background dynamically to avoid SSR issues
@@ -579,6 +580,47 @@ export default function Home() {
             Home
           </Button>
         </Box>
+
+        {/* Learn Space Science Button - Add this after the Navigation box */}
+        <Box 
+          sx={{ 
+            position: 'fixed', 
+            right: 20, 
+            top: '50%', 
+            transform: 'translateY(-50%)', 
+            zIndex: 10,
+            display: { xs: 'none', md: 'block' }
+          }}
+        >
+          <Button
+            component={Link}
+            href="/learn"
+            sx={{
+              color: '#ffffff',
+              backgroundColor: 'rgba(93, 63, 211, 0.7)',
+              borderColor: 'rgba(149, 117, 205, 0.7)',
+              border: '2px solid',
+              '&:hover': {
+                backgroundColor: 'rgba(93, 63, 211, 0.9)',
+                boxShadow: '0 0 15px rgba(149, 117, 205, 0.7)',
+                transform: 'scale(1.05)',
+              },
+              backdropFilter: 'blur(5px)',
+              borderRadius: '30px',
+              px: 2,
+              py: 1,
+              fontWeight: 'bold',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              boxShadow: '0 0 10px rgba(149, 117, 205, 0.5)',
+            }}
+          >
+            <ScienceIcon sx={{ mb: 1, fontSize: '1.8rem' }} />
+            <span className="font-space-grotesk">Learn Space Science</span>
+          </Button>
+        </Box>
           
         {/* Only show lunar phase on desktop */}
         {!isMobile && <LunarPhase size={isMobile ? 40 : 80} />}
@@ -812,6 +854,31 @@ export default function Home() {
                         }
                       }}
                     />
+
+                    {/* Add Learn Space Science button */}
+                    <Tooltip title="Learn Space Science">
+                      <Fab
+                        color="primary"
+                        component={Link}
+                        href="/learn"
+                        size="small"
+                        sx={{
+                          height: '48px',
+                          width: '48px',
+                          transition: 'transform 0.2s',
+                          background: 'linear-gradient(45deg, #5D3FD3 30%, #9575CD 90%)',
+                          boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                          '&:hover': {
+                            transform: 'scale(1.05)',
+                            boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
+                          },
+                          display: { xs: 'none', md: 'flex' },  // Only show on desktop
+                        }}
+                      >
+                        <ScienceIcon sx={{ fontSize: '1.5rem' }} />
+                      </Fab>
+                    </Tooltip>
+
                     <Tooltip title="Explore Space Games">
                       <Fab
                         color="secondary"
@@ -936,6 +1003,31 @@ export default function Home() {
                     }
                   }}
                 />
+
+                {/* Add Learn Space Science button for mobile */}
+                <Tooltip title="Learn Space Science">
+                  <Fab
+                    color="primary"
+                    component={Link}
+                    href="/learn"
+                    size="small"
+                    sx={{
+                      minHeight: { xs: '40px', md: '48px' },
+                      height: { xs: '40px', md: '48px' },
+                      width: { xs: '40px', md: '48px' },
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      background: 'linear-gradient(45deg, #5D3FD3 30%, #9575CD 90%)',
+                      boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 0 15px rgba(149, 117, 205, 1), 0 0 2px #fff',
+                      },
+                      display: { xs: 'flex', md: 'none' },  // Only show on mobile
+                    }}
+                  >
+                    <ScienceIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
+                  </Fab>
+                </Tooltip>
 
                 <Tooltip title="Explore Space Games">
                   <Fab
