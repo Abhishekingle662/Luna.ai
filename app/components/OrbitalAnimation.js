@@ -224,7 +224,7 @@ export default function OrbitalAnimation() {
       
       <Box sx={{ mt: 3, p: 2, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 1 }}>
         <Typography variant="body2" sx={{ color: '#E0E0E0' }}>
-          Kepler's First Law: Planets move in elliptical orbits with the sun at one focus.
+          Kepler&apos;s First Law: Planets move in elliptical orbits with the sun at one focus.
         </Typography>
         <Typography variant="caption" sx={{ color: '#aaa', mt: 1, display: 'block' }}>
           Adjust the eccentricity to see how the orbit shape changes from nearly circular (e ≈ 0) to highly elliptical (e ≈ 1).

@@ -29,7 +29,7 @@ export default function GravityVisualization() {
   const [mass2, setMass2] = useState(80);
   const [distance, setDistance] = useState(200);
   
-  // Calculate force based on Newton's Law
+  // Calculate force based on Newton&apos;s Law
   const G = 6.67430; // Universal gravitational constant (scaled for visualization)
   const force = G * (mass1 * mass2) / (distance * distance);
   const force_normalized = Math.min(Math.max(force / 300, 0.1), 1);
@@ -194,7 +194,7 @@ export default function GravityVisualization() {
           Force: <strong style={{ color: '#9575CD' }}>{force.toFixed(2)} N</strong>
         </Typography>
         <Typography variant="caption" sx={{ color: '#aaa', mt: 1, display: 'block' }}>
-          As you adjust the masses and distance, watch how the gravitational force changes according to Newton's Law:
+          As you adjust the masses and distance, watch how the gravitational force changes according to Newton&apos;s Law:
           F = G(m₁m₂)/r²
         </Typography>
       </Box>
