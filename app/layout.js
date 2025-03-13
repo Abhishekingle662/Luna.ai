@@ -36,6 +36,7 @@ export default function RootLayout({ children }) {
       </head>
 
       <body className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable}`}>
+        <img src="assets/death_star.svg" alt="luna.ai logo">
         <ClientAnalytics />
         <ClientLayout>{children}</ClientLayout>
         <Analytics />
