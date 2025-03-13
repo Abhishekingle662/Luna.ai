@@ -24,9 +24,14 @@ import Link from 'next/link';
 import { keyframes } from '@mui/system';
 import dynamic from 'next/dynamic';
 import GamesIcon from '@mui/icons-material/Games';
+import ScienceIcon from '@mui/icons-material/Science';
+import CalculateIcon from '@mui/icons-material/Calculate';
 
 // Import particles background dynamically to avoid SSR issues
 const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false });
+
+// Ensure MUI components are available
+const { Card: MuiCard } = require('@mui/material');
 
 // Define animations
 const float = keyframes`
@@ -268,6 +273,27 @@ export default function LearnPage() {
           </Button>
         </Box>
 
+        {/* Math and Physics button */}
+        <Box sx={{ position: 'fixed', top: 90, right: 20, zIndex: 10 }}>
+          <Button
+            component={Link}
+            href="/learn/mathphysics"
+            startIcon={<CalculateIcon />}
+            variant="outlined"
+            sx={{
+              color: '#64B5F6',
+              borderColor: 'rgba(100, 181, 246, 0.5)',
+              backdropFilter: 'blur(5px)',
+              '&:hover': {
+                borderColor: '#64B5F6',
+                backgroundColor: 'rgba(100, 181, 246, 0.1)',
+              },
+            }}
+          >
+            Space Math & Physics
+          </Button>
+        </Box>
+
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography 
@@ -465,9 +491,9 @@ export default function LearnPage() {
               ) : (
                 // Desktop: Show all topics in grid
                 spaceTopics.map((topic, index) => (
-                  <Grid item key={topic.id} xs={12} sm={6} md={4}>
+                  <Grid item xs={12} sm={6} md={4} key={topic.id}>
                     <Zoom in={true} style={{ transitionDelay: `${index * 100}ms` }}>
-                      <Card 
+                      <Card
                         onClick={() => handleTopicClick(topic)}
                         sx={{ 
                           cursor: 'pointer',
