@@ -1,14 +1,8 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Box, Slider, Typography, Grid, Paper } from '@mui/material';
-import dynamic from 'next/dynamic';
 import { keyframes } from '@mui/system';
-
-// Use dynamic import to avoid SSR issues with p5
-const ReactP5Wrapper = dynamic(() => import('react-p5-wrapper').then(mod => mod.ReactP5Wrapper), {
-  ssr: false,
-});
 
 // Animation
 const glow = keyframes`
@@ -29,73 +23,105 @@ export default function GravityVisualization() {
   const [mass2, setMass2] = useState(80);
   const [distance, setDistance] = useState(200);
   
-  // Calculate force based on Newton&apos;s Law
+  // Animation state
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  
+  // Calculate force based on Newton's Law
   const G = 6.67430; // Universal gravitational constant (scaled for visualization)
   const force = G * (mass1 * mass2) / (distance * distance);
   const force_normalized = Math.min(Math.max(force / 300, 0.1), 1);
   
-  // P5 sketch function
-  const sketch = p5 => {
-    p5.setup = () => {
-      p5.createCanvas(600, 300);
-      p5.noStroke();
-    };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     
-    p5.updateWithProps = props => {
-      if (props.mass1 !== undefined) setMass1(props.mass1);
-      if (props.mass2 !== undefined) setMass2(props.mass2);
-      if (props.distance !== undefined) setDistance(props.distance);
-    };
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
     
-    p5.draw = () => {
-      // Background
-      p5.background(25, 25, 35);
+    // Smooth animation function
+    const draw = () => {
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = 'rgba(25, 25, 35, 1)';
+      ctx.fillRect(0, 0, width, height);
       
       // Calculate sizes based on mass
       const size1 = Math.sqrt(mass1) * 3;
       const size2 = Math.sqrt(mass2) * 3;
       
       // Calculate positions
-      const center = p5.width / 2;
+      const center = width / 2;
       const pos1 = center - distance / 2;
       const pos2 = center + distance / 2;
       
       // Draw force line
-      p5.stroke(149, 117, 205, 150 * force_normalized);
-      p5.strokeWeight(force_normalized * 10);
-      p5.line(pos1, p5.height/2, pos2, p5.height/2);
-      p5.noStroke();
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(149, 117, 205, ${150 * force_normalized})`;
+      ctx.lineWidth = force_normalized * 10;
+      ctx.moveTo(pos1, height/2);
+      ctx.lineTo(pos2, height/2);
+      ctx.stroke();
       
       // Draw masses
-      p5.fill(149, 117, 205);
-      p5.ellipse(pos1, p5.height/2, size1, size1);
-      p5.fill(100, 181, 246);
-      p5.ellipse(pos2, p5.height/2, size2, size2);
+      ctx.fillStyle = 'rgba(149, 117, 205, 1)';
+      ctx.beginPath();
+      ctx.arc(pos1, height/2, size1, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = 'rgba(100, 181, 246, 1)';
+      ctx.beginPath();
+      ctx.arc(pos2, height/2, size2, 0, Math.PI * 2);
+      ctx.fill();
       
       // Draw force arrows
-      drawArrow(p5, pos1, p5.height/2, 1, force_normalized);
-      drawArrow(p5, pos2, p5.height/2, -1, force_normalized);
+      drawArrow(ctx, pos1, height/2, 1, force_normalized);
+      drawArrow(ctx, pos2, height/2, -1, force_normalized);
       
-      // Draw distance
-      p5.stroke(255, 255, 255, 100);
-      p5.strokeWeight(1);
-      p5.line(pos1, p5.height/2 + 60, pos2, p5.height/2 + 60);
-      p5.noStroke();
-      p5.fill(255);
-      p5.textAlign(p5.CENTER);
-      p5.text(`${distance.toFixed(0)} units`, center, p5.height/2 + 80);
+      // Draw distance line
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 3]);
+      ctx.moveTo(pos1, height/2 + 60);
+      ctx.lineTo(pos2, height/2 + 60);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Draw distance label
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Distance: ${distance.toFixed(0)} units`, center, height/2 + 80);
     };
     
-    function drawArrow(p5, x, y, direction, magnitude) {
+    const drawArrow = (ctx, x, y, direction, magnitude) => {
       const arrowSize = 15 * magnitude;
-      p5.fill(255, 150);
-      p5.push();
-      p5.translate(x + direction * 30, y);
-      p5.rotate(direction === 1 ? 0 : p5.PI);
-      p5.triangle(0, -arrowSize/2, arrowSize, 0, 0, arrowSize/2);
-      p5.pop();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.save();
+      ctx.translate(x + direction * 30, y);
+      ctx.rotate(direction === 1 ? 0 : Math.PI);
+      ctx.beginPath();
+      ctx.moveTo(0, -arrowSize/2);
+      ctx.lineTo(arrowSize, 0);
+      ctx.lineTo(0, arrowSize/2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+    
+    // Initial draw
+    draw();
+    
+    // Clean up any existing animation
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
-  };
+    
+    // We don't need a continuous animation here since we're only updating when parameters change
+    
+  }, [mass1, mass2, distance, force_normalized]);
   
   return (
     <Paper
@@ -114,14 +140,25 @@ export default function GravityVisualization() {
         Interactive Gravity Simulator
       </Typography>
       
-      <Box sx={{ width: '100%', overflow: 'hidden', mb: 3 }}>
-        <ReactP5Wrapper sketch={sketch} mass1={mass1} mass2={mass2} distance={distance} />
+      <Box sx={{ 
+        width: '100%', 
+        height: '300px',
+        display: 'flex',
+        justifyContent: 'center',
+        mb: 3
+      }}>
+        <canvas 
+          ref={canvasRef} 
+          width={600} 
+          height={300}
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
       </Box>
       
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Typography variant="body2" gutterBottom>
-            Mass 1: {mass1} units
+            Purple Mass: {mass1} units
           </Typography>
           <Slider
             value={mass1}
@@ -144,7 +181,7 @@ export default function GravityVisualization() {
         
         <Grid item xs={12} md={4}>
           <Typography variant="body2" gutterBottom>
-            Mass 2: {mass2} units
+            Blue Mass: {mass2} units
           </Typography>
           <Slider
             value={mass2}
@@ -173,7 +210,7 @@ export default function GravityVisualization() {
             value={distance}
             onChange={(e, newValue) => setDistance(newValue)}
             min={80}
-            max={500}
+            max={400}
             sx={{
               '& .MuiSlider-thumb': {
                 color: '#fff',
@@ -191,11 +228,10 @@ export default function GravityVisualization() {
       
       <Box sx={{ mt: 3, p: 2, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 1 }}>
         <Typography variant="body2" sx={{ color: '#E0E0E0' }}>
-          Force: <strong style={{ color: '#9575CD' }}>{force.toFixed(2)} N</strong>
+          Gravitational Force: <strong style={{ color: '#9575CD' }}>{force.toFixed(2)} N</strong>
         </Typography>
         <Typography variant="caption" sx={{ color: '#aaa', mt: 1, display: 'block' }}>
-          As you adjust the masses and distance, watch how the gravitational force changes according to Newton&apos;s Law:
-          F = G(m₁m₂)/r²
+          Newton's Law: F = G(m₁m₂)/r². When you increase mass, the force increases proportionally. When you increase distance, the force decreases with the square of the distance.
         </Typography>
       </Box>
     </Paper>

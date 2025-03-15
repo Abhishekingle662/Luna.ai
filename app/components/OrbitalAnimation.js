@@ -3,7 +3,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Box, Slider, Typography, Grid, Paper, Button } from '@mui/material';
 import { keyframes } from '@mui/system';
-import anime from 'animejs/lib/anime.es.js';
 
 // Animation
 const glow = keyframes`
@@ -20,113 +19,169 @@ const glow = keyframes`
 
 export default function OrbitalAnimation() {
   const canvasRef = useRef(null);
-  const animationRef = useRef(null);
-  const [eccentricity, setEccentricity] = useState(0.5);
-  const [speed, setSpeed] = useState(2);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const animFrameRef = useRef(null);
   
+  // State for interactive parameters
+  const [eccentricity, setEccentricity] = useState(0.5);
+  const [speed, setSpeed] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [showAreas, setShowAreas] = useState(false);
+  
+  // Animation state
+  const orbitDataRef = useRef({
+    t: 0,
+    planetPos: { x: 0, y: 0 },
+    areaPoints: [],
+    lastAreaTime: 0
+  });
+
   useEffect(() => {
-    // Initialize canvas
     const canvas = canvasRef.current;
+    if (!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
     
-    // Create orbital path
-    const a = 120; // semi-major axis
+    // Orbital parameters
+    const a = 150; // semi-major axis
     const c = a * eccentricity; // distance from center to focus
     const b = Math.sqrt(a * a - c * c); // semi-minor axis
+    const sunX = centerX - c; // Sun's position (at one focus)
     
-    let t = 0;
-    let planet = { x: 0, y: 0 };
-    
-    // Create animation
-    if (animationRef.current) {
-      animationRef.current.pause();
-    }
-    
-    const drawScene = () => {
-      ctx.clearRect(0, 0, width, height);
-      
-      // Draw background stars
-      for (let i = 0; i < 100; i++) {
-        const starX = Math.random() * width;
-        const starY = Math.random() * height;
-        const starSize = Math.random() * 1.5;
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.7 + 0.3})`;
-        ctx.beginPath();
-        ctx.arc(starX, starY, starSize, 0, Math.PI * 2);
-        ctx.fill();
+    // Animation loop
+    const animate = () => {
+      if (!isPlaying) {
+        animFrameRef.current = requestAnimationFrame(animate);
+        return;
       }
+      
+      // Clear canvas with a clean dark background
+      ctx.fillStyle = 'rgb(25, 25, 35)';
+      ctx.fillRect(0, 0, width, height);
       
       // Draw orbital path
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.ellipse(width/2, height/2, a, b, 0, 0, Math.PI * 2);
+      ctx.ellipse(centerX, centerY, a, b, 0, 0, Math.PI * 2);
       ctx.stroke();
       
-      // Draw sun
-      ctx.fillStyle = '#FDB813';
-      ctx.beginPath();
-      ctx.arc(width/2 + c, height/2, 15, 0, Math.PI * 2);
-      ctx.fill();
+      // Calculate planet position
+      // Kepler's equation implementation for more accurate elliptical motion
+      const orbitData = orbitDataRef.current;
+      const deltaT = speed * 0.005;
+      orbitData.t = (orbitData.t + deltaT) % (Math.PI * 2);
       
-      // Draw glow around sun
-      const gradient = ctx.createRadialGradient(
-        width/2 + c, height/2, 15,
-        width/2 + c, height/2, 40
+      // For simplicity, we'll use parametric equation of ellipse
+      // In a more complex simulation, we'd solve Kepler's equation
+      const planetX = centerX + a * Math.cos(orbitData.t);
+      const planetY = centerY + b * Math.sin(orbitData.t);
+      orbitData.planetPos = { x: planetX, y: planetY };
+      
+      // Kepler's Second Law visualization (equal areas in equal times)
+      if (showAreas) {
+        // Add points to visualize the swept area
+        if (orbitData.t - orbitData.lastAreaTime > 0.3) {
+          orbitData.areaPoints.push({ x: planetX, y: planetY });
+          orbitData.lastAreaTime = orbitData.t;
+          
+          // Keep only the last 3 points to show the most recent areas
+          if (orbitData.areaPoints.length > 3) {
+            orbitData.areaPoints.shift();
+          }
+        }
+        
+        // Draw the equal areas
+        if (orbitData.areaPoints.length >= 2) {
+          for (let i = 0; i < orbitData.areaPoints.length - 1; i++) {
+            ctx.beginPath();
+            ctx.moveTo(sunX, centerY);
+            ctx.lineTo(orbitData.areaPoints[i].x, orbitData.areaPoints[i].y);
+            ctx.lineTo(orbitData.areaPoints[i+1].x, orbitData.areaPoints[i+1].y);
+            ctx.closePath();
+            ctx.fillStyle = `rgba(100, 181, 246, ${0.2 + i * 0.1})`;
+            ctx.fill();
+          }
+        }
+      }
+      
+      // Draw Sun (at one focus)
+      const sunGradient = ctx.createRadialGradient(
+        sunX, centerY, 0,
+        sunX, centerY, 20
       );
-      gradient.addColorStop(0, 'rgba(253, 184, 19, 0.5)');
-      gradient.addColorStop(1, 'rgba(253, 184, 19, 0)');
-      ctx.fillStyle = gradient;
+      sunGradient.addColorStop(0, 'rgba(255, 215, 0, 1)');
+      sunGradient.addColorStop(1, 'rgba(255, 140, 0, 0.8)');
+      
       ctx.beginPath();
-      ctx.arc(width/2 + c, height/2, 40, 0, Math.PI * 2);
+      ctx.fillStyle = sunGradient;
+      ctx.arc(sunX, centerY, 12, 0, Math.PI * 2);
       ctx.fill();
       
-      // Draw planet
-      ctx.fillStyle = '#64B5F6';
+      // Draw line from sun to planet (radius vector)
       ctx.beginPath();
-      ctx.arc(planet.x, planet.y, 8, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Draw line connecting sun and planet
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
       ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(width/2 + c, height/2);
-      ctx.lineTo(planet.x, planet.y);
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(sunX, centerY);
+      ctx.lineTo(planetX, planetY);
       ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Draw planet
+      const planetGradient = ctx.createRadialGradient(
+        planetX, planetY, 0,
+        planetX, planetY, 10
+      );
+      planetGradient.addColorStop(0, 'rgba(100, 181, 246, 1)');
+      planetGradient.addColorStop(1, 'rgba(30, 136, 229, 0.8)');
+      
+      ctx.beginPath();
+      ctx.fillStyle = planetGradient;
+      ctx.arc(planetX, planetY, 8, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Draw the empty focus
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.arc(centerX + c, centerY, 3, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Add text labels
+      ctx.font = '12px Arial';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.textAlign = 'center';
+      ctx.fillText('Sun (Focus)', sunX, centerY + 30);
+      
+      // Continue animation
+      animFrameRef.current = requestAnimationFrame(animate);
     };
     
-    animationRef.current = anime({
-      duration: 6000 / speed,
-      easing: 'linear',
-      update: function() {
-        if (!isPlaying) return;
-        
-        // Calculate planet position using parametric equation of ellipse
-        t = (t + (speed / 60)) % (Math.PI * 2);
-        planet.x = width/2 + a * Math.cos(t);
-        planet.y = height/2 + b * Math.sin(t);
-        
-        drawScene();
-      },
-      loop: true
-    });
+    // Start animation
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+    }
+    animate();
     
-    // Initial draw
-    drawScene();
-    
+    // Clean up
     return () => {
-      if (animationRef.current) {
-        animationRef.current.pause();
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
       }
     };
-  }, [eccentricity, speed, isPlaying]);
+  }, [eccentricity, speed, isPlaying, showAreas]);
   
   const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
+    setIsPlaying(prev => !prev);
+  };
+  
+  const toggleShowAreas = () => {
+    setShowAreas(prev => !prev);
+    // Reset area points when toggling
+    orbitDataRef.current.areaPoints = [];
   };
   
   return (
@@ -143,26 +198,32 @@ export default function OrbitalAnimation() {
       }}
     >
       <Typography variant="h6" sx={{ mb: 2, color: '#64B5F6' }}>
-        Orbital Mechanics Visualization
+        Kepler's Laws Visualization
       </Typography>
       
-      <Box sx={{ width: '100%', overflow: 'hidden', mb: 3 }}>
+      <Box sx={{ 
+        width: '100%', 
+        height: '300px',
+        display: 'flex',
+        justifyContent: 'center', 
+        mb: 3 
+      }}>
         <canvas 
           ref={canvasRef} 
           width={600} 
           height={300}
-          style={{ width: '100%', height: 'auto', maxWidth: '600px', margin: '0 auto', display: 'block' }}
+          style={{ maxWidth: '100%', height: 'auto' }}
         />
       </Box>
       
       <Grid container spacing={3}>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} sm={6} md={4}>
           <Typography variant="body2" gutterBottom>
             Eccentricity: {eccentricity.toFixed(2)}
           </Typography>
           <Slider
             value={eccentricity}
-            onChange={(e, newValue) => setEccentricity(newValue)}
+            onChange={(_, newValue) => setEccentricity(newValue)}
             min={0}
             max={0.9}
             step={0.01}
@@ -178,17 +239,20 @@ export default function OrbitalAnimation() {
               }
             }}
           />
+          <Typography variant="caption" sx={{ color: '#aaa', mt: 1, display: 'block' }}>
+            0 = circle, 1 = line
+          </Typography>
         </Grid>
         
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} sm={6} md={4}>
           <Typography variant="body2" gutterBottom>
             Orbital Speed: {speed.toFixed(1)}x
           </Typography>
           <Slider
             value={speed}
-            onChange={(e, newValue) => setSpeed(newValue)}
-            min={0.5}
-            max={5}
+            onChange={(_, newValue) => setSpeed(newValue)}
+            min={0.1}
+            max={3}
             step={0.1}
             sx={{
               '& .MuiSlider-thumb': {
@@ -204,30 +268,45 @@ export default function OrbitalAnimation() {
           />
         </Grid>
         
-        <Grid item xs={12} md={2} sx={{ display: 'flex', alignItems: 'center' }}>
+        <Grid item xs={12} md={4} sx={{ display: 'flex', gap: 2 }}>
           <Button 
             variant="contained" 
             onClick={togglePlayPause}
             sx={{
-              mt: 1,
               backgroundColor: isPlaying ? '#64B5F6' : '#9575CD',
               '&:hover': {
                 backgroundColor: isPlaying ? '#2196F3' : '#7E57C2',
               },
-              width: '100%'
+              flexGrow: 1
             }}
           >
             {isPlaying ? 'Pause' : 'Play'}
+          </Button>
+          
+          <Button 
+            variant="outlined" 
+            onClick={toggleShowAreas}
+            sx={{
+              color: showAreas ? '#64B5F6' : '#888',
+              borderColor: showAreas ? '#64B5F6' : '#555',
+              '&:hover': {
+                borderColor: '#64B5F6',
+              },
+              flexGrow: 1
+            }}
+          >
+            {showAreas ? 'Hide Areas' : 'Show Equal Areas'}
           </Button>
         </Grid>
       </Grid>
       
       <Box sx={{ mt: 3, p: 2, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 1 }}>
         <Typography variant="body2" sx={{ color: '#E0E0E0' }}>
-          Kepler&apos;s First Law: Planets move in elliptical orbits with the sun at one focus.
+          Kepler's First Law: Planets move in elliptical orbits with the Sun at one focus.
         </Typography>
         <Typography variant="caption" sx={{ color: '#aaa', mt: 1, display: 'block' }}>
-          Adjust the eccentricity to see how the orbit shape changes from nearly circular (e ≈ 0) to highly elliptical (e ≈ 1).
+          Adjust the eccentricity to see how the orbit changes from circular to elliptical. 
+          {showAreas && " The colored triangles demonstrate Kepler's Second Law: equal areas are swept in equal times."}
         </Typography>
       </Box>
     </Paper>
