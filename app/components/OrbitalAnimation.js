@@ -49,7 +49,7 @@ export default function OrbitalAnimation() {
     const a = 150; // semi-major axis
     const c = a * eccentricity; // distance from center to focus
     const b = Math.sqrt(a * a - c * c); // semi-minor axis
-    const sunX = centerX - c; // Sun's position (at one focus)
+    const sunX = centerX - c; // Sun&apos;s position (at one focus)
     
     // Animation loop
     const animate = () => {
@@ -70,18 +70,18 @@ export default function OrbitalAnimation() {
       ctx.stroke();
       
       // Calculate planet position
-      // Kepler's equation implementation for more accurate elliptical motion
+      // Kepler&apos;s equation implementation for more accurate elliptical motion
       const orbitData = orbitDataRef.current;
       const deltaT = speed * 0.005;
       orbitData.t = (orbitData.t + deltaT) % (Math.PI * 2);
       
       // For simplicity, we'll use parametric equation of ellipse
-      // In a more complex simulation, we'd solve Kepler's equation
+      // In a more complex simulation, we'd solve Kepler&apos;s equation
       const planetX = centerX + a * Math.cos(orbitData.t);
       const planetY = centerY + b * Math.sin(orbitData.t);
       orbitData.planetPos = { x: planetX, y: planetY };
       
-      // Kepler's Second Law visualization (equal areas in equal times)
+      // Kepler&apos;s Second Law visualization (equal areas in equal times)
       if (showAreas) {
         // Add points to visualize the swept area
         if (orbitData.t - orbitData.lastAreaTime > 0.3) {
@@ -154,7 +154,7 @@ export default function OrbitalAnimation() {
       ctx.font = '12px Arial';
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
       ctx.textAlign = 'center';
-      ctx.fillText('Sun (Focus)', sunX, centerY + 30);
+      ctx.fillText('sun (Focus)', sunX, centerY + 30);
       
       // Continue animation
       animFrameRef.current = requestAnimationFrame(animate);
@@ -198,7 +198,7 @@ export default function OrbitalAnimation() {
       }}
     >
       <Typography variant="h6" sx={{ mb: 2, color: '#64B5F6' }}>
-        Kepler's Laws Visualization
+        Kepler&apos;s Laws Visualization
       </Typography>
       
       <Box sx={{ 
@@ -295,18 +295,18 @@ export default function OrbitalAnimation() {
               flexGrow: 1
             }}
           >
-            {showAreas ? 'Hide Areas' : 'Show Equal Areas'}
+            {showAreas ? 'Hide Areas' : 'show Equal Areas'}
           </Button>
         </Grid>
       </Grid>
       
       <Box sx={{ mt: 3, p: 2, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 1 }}>
         <Typography variant="body2" sx={{ color: '#E0E0E0' }}>
-          Kepler's First Law: Planets move in elliptical orbits with the Sun at one focus.
+          Kepler&apos;s First Law: Planets move in elliptical orbits with the Sun at one focus.
         </Typography>
         <Typography variant="caption" sx={{ color: '#aaa', mt: 1, display: 'block' }}>
           Adjust the eccentricity to see how the orbit changes from circular to elliptical. 
-          {showAreas && " The colored triangles demonstrate Kepler's Second Law: equal areas are swept in equal times."}
+          {showAreas && " The colored triangles demonstrate Kepler&apos;s Second Law: equal areas are swept in equal times."}
         </Typography>
       </Box>
     </Paper>
