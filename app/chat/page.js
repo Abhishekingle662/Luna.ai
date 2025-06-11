@@ -90,13 +90,13 @@ const waveMotion = keyframes`
 // Add these new keyframe animations with your other animations at the top
 const borderGlow = keyframes`
   0% {
-    box-shadow: 0 0 5px rgba(149, 117, 205, 0.3), 0 0 0 1px rgba(149, 117, 205, 0.2);
+    box-shadow: 0 0 5px rgba(240, 246, 252, 0.3), 0 0 0 1px rgba(240, 246, 252, 0.2);
   }
   50% {
-    box-shadow: 0 0 8px rgba(149, 117, 205, 0.5), 0 0 0 1px rgba(149, 117, 205, 0.3);
+    box-shadow: 0 0 8px rgba(240, 246, 252, 0.5), 0 0 0 1px rgba(240, 246, 252, 0.3);
   }
   100% {
-    box-shadow: 0 0 5px rgba(149, 117, 205, 0.3), 0 0 0 1px rgba(149, 117, 205, 0.2);
+    box-shadow: 0 0 5px rgba(240, 246, 252, 0.3), 0 0 0 1px rgba(240, 246, 252, 0.2);
   }
 `;
 
@@ -111,6 +111,90 @@ const subtleRotate = keyframes`
     background-position: 0% 50%;
   }
 `;
+
+// Luna-specific animations for enhanced visual flow
+const lunarPulse = keyframes`
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+`;
+
+const starFloat = keyframes`
+  0% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-20px) translateX(15px);
+  }
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+`;
+
+const cosmicBreath = keyframes`
+  0% {
+    box-shadow: 0 0 20px rgba(240, 246, 252, 0.3), inset 0 0 20px rgba(240, 246, 252, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(240, 246, 252, 0.6), inset 0 0 40px rgba(240, 246, 252, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(240, 246, 252, 0.3), inset 0 0 20px rgba(240, 246, 252, 0.1);
+  }
+`;
+
+// Add global styles to prevent layout shifts
+const GlobalStyle = `
+  * {
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+  
+  #__next {
+    min-height: 100vh;
+    position: relative;
+  }
+`;
+
+// Add global styles for Luna animations
+const lunaGlobalStyles = `
+  @keyframes lunarPulse {
+    0% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 0.6; }
+  }
+  @keyframes starFloat {
+    0% { transform: translateY(0px) translateX(0px); }
+    50% { transform: translateY(-20px) translateX(15px); }
+    100% { transform: translateY(0px) translateX(0px); }
+  }  @keyframes cosmicBreath {
+    0% { box-shadow: 0 0 20px rgba(240, 246, 252, 0.3), inset 0 0 20px rgba(240, 246, 252, 0.1); }
+    50% { box-shadow: 0 0 40px rgba(240, 246, 252, 0.6), inset 0 0 40px rgba(240, 246, 252, 0.2); }
+    100% { box-shadow: 0 0 20px rgba(240, 246, 252, 0.3), inset 0 0 20px rgba(240, 246, 252, 0.1); }
+  }
+`;
+
+// Inject global styles
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = lunaGlobalStyles;
+  document.head.appendChild(style);
+}
 
 // Component for the animated moon
 const LunarPhase = ({ size = 60 }) => {
@@ -190,7 +274,7 @@ const Star = ({ size, top, left, delay }) => {
 };
 
 
-// Updated CosmicWavesIndicator with client-side random values
+// Enhanced CosmicWavesIndicator with Luna theme
 const CosmicWavesIndicator = () => {
   // Use state to store random heights
   const [waveHeights, setWaveHeights] = useState([15, 15, 15, 15, 15]);
@@ -217,6 +301,19 @@ const CosmicWavesIndicator = () => {
         my: 1,
         width: '100%',
         height: '50px',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',          width: '150px',
+          height: '150px',
+          background: 'radial-gradient(circle, rgba(240, 246, 252, 0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          animation: `${lunarPulse} 3s infinite ease-in-out`,
+          zIndex: -1,
+        }
       }}
     >
       <Box
@@ -227,19 +324,18 @@ const CosmicWavesIndicator = () => {
           gap: 1,
           height: '30px',
         }}
-      >
-        {[0, 1, 2, 3, 4].map((index) => (
+      >        {[0, 1, 2, 3, 4].map((index) => (
           <Box
             key={index}
             sx={{
               width: '4px',
-              height: `${waveHeights[index]}px`, // Use stored heights
-              backgroundColor: index % 2 === 0 ? '#9370DB' : '#4169E1',
+              height: `${waveHeights[index]}px`,
+              backgroundColor: index % 2 === 0 ? '#f0f6fc' : '#c8d1d9',
               borderRadius: '2px',
               animation: `${waveMotion} ${1 + index * 0.2}s infinite ease-in-out ${index * 0.1}s`,
               boxShadow: index % 2 === 0 
-                ? '0 0 8px #9370DB, 0 0 12px #9370DB' 
-                : '0 0 8px #4169E1, 0 0 12px #4169E1',
+                ? '0 0 8px #f0f6fc, 0 0 12px #f0f6fc' 
+                : '0 0 8px #c8d1d9, 0 0 12px #c8d1d9',
             }}
           />
         ))}
@@ -247,9 +343,11 @@ const CosmicWavesIndicator = () => {
       <Typography
         variant="caption"
         sx={{
-          color: 'rgba(255, 255, 255, 0.7)',
+          color: 'rgba(240, 246, 252, 0.8)',
           fontFamily: 'var(--font-space-grotesk), sans-serif',
           letterSpacing: '1px',
+          textShadow: '0 0 5px rgba(240, 246, 252, 0.5)',
+          animation: `${pulse} 2s infinite ease-in-out`,
         }}
       >
         Computing cosmic response...
@@ -268,7 +366,6 @@ export default function Home() {
     ])
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const [isInputFixed, setIsInputFixed] = useState(false) // Track if input should be fixed
     
     // Check if the device is mobile
     const isMobile = useMediaQuery('(max-width:600px)')
@@ -279,45 +376,15 @@ export default function Home() {
     // Add this new ref for scrolling to the latest message
     const messagesEndRef = useRef(null);
     const messagesContainerRef = useRef(null);
-    
-    // Add this function to scroll to the bottom when new messages arrive
+      // Add this function to scroll to the bottom when new messages arrive
     const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Determine if input should be fixed based on scroll position
-    const handleScroll = useCallback(() => {
-      if (isMobile) return; // Always fixed on mobile
-      
-      if (messagesContainerRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
-        const isScrolled = scrollTop > 100; // Fix input when scrolled down more than 100px
-        setIsInputFixed(isScrolled || messages.length > 2); // Fixed when scrolled or > 2 messages
-      }
-    }, [isMobile, messages.length]);
-    
-    // Add scroll event listener
+    // Update when messages change to scroll to bottom
     useEffect(() => {
-      const messagesContainer = messagesContainerRef.current;
-      if (messagesContainer && !isMobile) {
-        messagesContainer.addEventListener('scroll', handleScroll);
-        return () => messagesContainer.removeEventListener('scroll', handleScroll);
-      }
-    }, [isMobile, handleScroll]);
-    
-    // Update fixed state when messages change
-    useEffect(() => {
-      if (messages.length > 2 && !isMobile) {
-        setIsInputFixed(true);
-      }
-      
-      // For the first load on desktop, input should not be fixed
-      if (messages.length <= 1 && !isMobile && !isLoading) {
-        setIsInputFixed(false);
-      }
-      
       scrollToBottom();
-    }, [messages, isMobile, isLoading]);
+    }, [messages]);
     
     // Generate random stars on component mount
     useEffect(() => {
@@ -335,10 +402,9 @@ export default function Home() {
     const theme = useMemo(
         () =>
           createTheme({
-            palette: {
-              mode: 'light',
+            palette: {            mode: 'light',
               primary: {
-                main: '#5D3FD3', // Purple for space theme
+                main: 'rgba(240, 246, 252, 0.7)', // Grayish white for space theme
               },
               secondary: {
                 main: '#1E88E5', // Blue for user messages
@@ -366,20 +432,18 @@ export default function Home() {
               MuiTextField: {
                 styleOverrides: {
                   root: {
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: 'rgba(149, 117, 205, 0.5)',
+                    '& .MuiOutlinedInput-root': {                      '& fieldset': {
+                        borderColor: 'rgba(240, 246, 252, 0.5)',
                       },
                       '&:hover fieldset': {
-                        borderColor: 'rgba(149, 117, 205, 0.8)',
+                        borderColor: 'rgba(240, 246, 252, 0.8)',
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#5D3FD3',
+                        borderColor: 'rgba(240, 246, 252, 0.7)',
                       },
                       backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: '#9575CD',
+                    },                    '& .MuiInputLabel-root': {
+                      color: 'rgba(240, 246, 252, 0.7)',
                     },
                     '& .MuiOutlinedInput-input': {
                       color: '#E0E0E0',
@@ -458,10 +522,9 @@ export default function Home() {
                 component="blockquote"
                 sx={{
                   borderLeft: '3px solid #9575CD',
-                  pl: 2,
-                  my: 1,
+                  pl: 2,                  my: 1,
                   py: 0.5,
-                  backgroundColor: 'rgba(149, 117, 205, 0.1)',
+                  backgroundColor: 'rgba(240, 246, 252, 0.1)',
                   borderRadius: '0 4px 4px 0',
                 }}
                 {...props}
@@ -541,165 +604,266 @@ export default function Home() {
               }
 
         setIsLoading(false)
-    }
-
-    // Handle Enter key press to send message
+    }    // Handle Enter key press to send message
     const handleKeyPress = (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault()
             sendMessage()
         }
-    }
-
+    };
 
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {/* Reduce particles on mobile for better performance */}
-        <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={isMobile ? 25 : 50} />
-
-        {/* Navigation */}
-        <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 10, display: { xs: 'none', md: 'block' } }}>
-          <Button
-            component={Link}
-            href="/"
-            startIcon={<HomeIcon />}
-            sx={{
-              color: '#9575CD',
-              borderColor: 'rgba(149, 117, 205, 0.5)',
-              '&:hover': {
-                borderColor: '#9575CD',
-                backgroundColor: 'rgba(149, 117, 205, 0.1)',
-              },
-              backdropFilter: 'blur(5px)',
-              borderRadius: '30px',
-              px: 2
-            }}
-            variant="outlined"
-          >
-            Home
-          </Button>
-        </Box>
-
-        {/* Learn Space Science Button - Add this after the Navigation box */}
-        <Box 
-          sx={{ 
+        
+        {/* Enhanced Luna-themed background */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'linear-gradient(135deg, #000000 0%, #111316 25%, #1a1a2e 50%, #16213e 75%, #0f3460 100%)',
+          zIndex: -2
+        }} />
+        
+        {/* Particle background with Luna theme */}
+        <ParticlesBg 
+          type="cobweb" 
+          bg={false} 
+          color="#8364E8" 
+          num={isMobile ? 25 : 50}
+          style={{ 
             position: 'fixed', 
-            right: 20, 
-            top: '50%', 
-            transform: 'translateY(-50%)', 
-            zIndex: 10,
-            display: { xs: 'none', md: 'block' }
+            top: 0, 
+            left: 0, 
+            width: '100vw', 
+            height: '100vh', 
+            zIndex: -1 
+          }} 
+        />
+
+        {/* Ambient lunar glow effect */}
+        <div style={{
+          position: 'fixed',
+          top: '20%',
+          right: '10%',
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(240, 246, 252, 0.1) 0%, rgba(240, 246, 252, 0.05) 30%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(40px)',
+          animation: 'lunarPulse 8s infinite ease-in-out',
+          zIndex: -1,
+          display: { xs: 'none', md: 'block' }
+        }} />
+
+        {/* Additional floating particles */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: `
+            radial-gradient(2px 2px at 20px 30px, rgba(240, 246, 252, 0.8), transparent),
+            radial-gradient(2px 2px at 40px 70px, rgba(200, 209, 217, 0.6), transparent),            radial-gradient(1px 1px at 90px 40px, rgba(240, 246, 252, 0.9), transparent),
+            radial-gradient(1px 1px at 130px 80px, rgba(240, 246, 252, 0.7), transparent),
+            radial-gradient(2px 2px at 160px 30px, rgba(240, 246, 252, 0.8), transparent)
+          `,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '200px 100px',
+          animation: 'starFloat 20s linear infinite',
+          zIndex: -1,
+          opacity: 0.6
+        }} />        {/* Main Layout Wrapper */}
+        <Box
+          sx={{
+            minHeight: '100vh',
+            width: '100vw',
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          <Button
-            component={Link}
-            href="/learn"
+          {/* Enhanced Navigation with Luna styling */}
+          <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 10, display: { xs: 'none', md: 'block' } }}>
+            <Button
+              component={Link}
+              href="/"
+              startIcon={<HomeIcon />}              sx={{
+                color: '#f0f6fc',
+                borderColor: 'rgba(240, 246, 252, 0.5)',
+                background: 'rgba(17, 19, 22, 0.7)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': {
+                  borderColor: 'rgba(240, 246, 252, 0.7)',
+                  backgroundColor: 'rgba(240, 246, 252, 0.2)',
+                  boxShadow: '0 0 15px rgba(240, 246, 252, 0.4)',
+                  transform: 'scale(1.05)',
+                },
+                borderRadius: '30px',
+                px: 2,
+                py: 1,
+                transition: 'all 0.3s ease',
+                boxShadow: '0 0 10px rgba(240, 246, 252, 0.3)',
+              }}
+              variant="outlined"
+            >
+              Home
+            </Button>
+          </Box>
+
+          {/* Enhanced Learn Space Science Button */}
+          <Box 
+            sx={{ 
+              position: 'fixed', 
+              right: 20, 
+              top: '50%', 
+              transform: 'translateY(-50%)', 
+              zIndex: 999,
+              display: { xs: 'none', md: 'block' }
+            }}
+          >
+            <Button
+              component={Link}
+              href="/learn"
+              sx={{                color: '#ffffff',
+                background: 'linear-gradient(135deg, rgba(130, 131, 133, 0.8) 0%, rgba(176, 180, 184, 0.8) 100%)',
+                borderColor: 'rgba(240, 246, 252, 0.7)',
+                border: '2px solid',
+                backdropFilter: 'blur(10px)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, rgb(212, 214, 216) 0%, rgb(231, 234, 236) 100%)',
+                  boxShadow: '0 0 25px rgba(240, 246, 252, 0.8), 0 0 50px rgba(240, 246, 252, 0.4)',
+                  color: 'rgba(107, 110, 114, 0.7)',
+                  transform: 'scale(1.05)',
+                },
+                borderRadius: '30px',
+                px: 2,
+                py: 1,
+                fontWeight: 'bold',
+                transition: 'all 0.3s ease',
+                display: 'flex',                flexDirection: 'column',
+                alignItems: 'center',
+                boxShadow: '0 0 15px rgba(240, 246, 252, 0.5), 0 0 30px rgba(240, 246, 252, 0.2)',
+                
+              }}
+            >
+              <ScienceIcon sx={{ mb: 1, fontSize: '1.8rem' }} />
+              <span className="font-space-grotesk">Learn Space Science</span>
+            </Button>
+          </Box>
+            
+          {/* Only show lunar phase on desktop */}
+          {!isMobile && <LunarPhase size={isMobile ? 40 : 80} />}
+          
+          {/* Only show stars on desktop */}
+          {!isMobile && stars.map(star => (
+            <Star 
+              key={star.id}
+              size={star.size}
+              top={star.top}
+              left={star.left}
+              delay={star.delay}
+            />          ))}          {/* Main Content with enhanced Luna styling */}
+          <Container
+            maxWidth="lg"
             sx={{
-              color: '#ffffff',
-              backgroundColor: 'rgba(93, 63, 211, 0.7)',
-              borderColor: 'rgba(149, 117, 205, 0.7)',
-              border: '2px solid',
-              '&:hover': {
-                backgroundColor: 'rgba(93, 63, 211, 0.9)',
-                boxShadow: '0 0 15px rgba(149, 117, 205, 0.7)',
-                transform: 'scale(1.05)',
-              },
-              backdropFilter: 'blur(5px)',
-              borderRadius: '30px',
-              px: 2,
-              py: 1,
-              fontWeight: 'bold',
-              transition: 'all 0.3s ease',
+              height: '100vh',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              boxShadow: '0 0 10px rgba(149, 117, 205, 0.5)',
+              justifyContent: 'flex-start',
+              padding: { xs: '20px 16px 120px 16px', md: '40px 24px 120px 24px' },
+              position: 'fixed',
+              top: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '100%',
+              maxWidth: { xs: '100%', lg: '1200px' },
+              background: 'rgba(17, 19, 22, 0.1)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: { xs: 0, md: '20px' },
+              border: { xs: 'none', md: '1px solid rgba(240, 246, 252, 0.1)' },
+              animation: `${cosmicBreath} 10s infinite ease-in-out`,
+              overflow: 'hidden',
             }}
-          >
-            <ScienceIcon sx={{ mb: 1, fontSize: '1.8rem' }} />
-            <span className="font-space-grotesk">Learn Space Science</span>
-          </Button>
-        </Box>
-          
-        {/* Only show lunar phase on desktop */}
-        {!isMobile && <LunarPhase size={isMobile ? 40 : 80} />}
-        
-        {/* Only show stars on desktop */}
-        {!isMobile && stars.map(star => (
-          <Star 
-            key={star.id}
-            size={star.size}
-            top={star.top}
-            left={star.left}
-            delay={star.delay}
-          />
-        ))}
-        
-        {/* Main Content */}
-        <Box
-          sx={{
-            width: '100%',
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: { xs: '50px 0 0', md: '100px 0 30px' },
-            position: 'relative',
-            overflow: 'hidden',
-            boxSizing: 'border-box',
-          }}
-        >
-          {/* Title */}
-          <Typography 
+          >{/* Enhanced Title with cosmic styling */}          <Typography 
             variant={isMobile ? "h6" : "h4"} 
             align="center" 
             sx={{
-              color: '#9575CD',
+              color: '#f0f6fc',
               fontFamily: 'var(--font-exo-2), sans-serif',
-              textShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+              textShadow: '0 0 10px rgba(240, 246, 252, 0.7), 0 0 20px rgba(240, 246, 252, 0.3), 0 0 40px rgba(240, 246, 252, 0.2)',
               fontWeight: 700,
               letterSpacing: isMobile ? '2px' : '3px',
-              padding: isMobile ? '0 0 10px' : '0 0 20px',
+              marginBottom: { xs: '15px', md: '20px' },
+              marginTop: { xs: '20px', md: '20px' },
               animation: `${pulse} 5s infinite ease-in-out`,
+              position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '100px',
+                height: '2px',
+                background: 'linear-gradient(90deg, transparent, rgba(240, 246, 252, 0.8), transparent)',
+                borderRadius: '2px',
+              },
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '60px',
+                height: '1px',
+                background: 'linear-gradient(90deg, transparent, rgba(240, 246, 252, 0.6), transparent)',
+                borderRadius: '1px',
+              }
             }}
           >
             LUNA.ai
-          </Typography>
-
-          {/* Chat container */}
+          </Typography>          {/* Enhanced Chat container with Luna styling */}
           <Box 
             ref={messagesContainerRef}
             sx={{ 
               width: '100%', 
-              maxWidth: '800px', 
+              maxWidth: '900px', 
               margin: '0 auto', 
-              px: { xs: 0, md: 0 },
               display: 'flex', 
               flexDirection: 'column', 
               flex: 1,
               overflow: 'auto',
-              // Add padding at the bottom to ensure messages aren't hidden
-              // More padding when input is fixed to prevent content from being hidden
-              pb: { 
-                xs: '70px', 
-                md: isInputFixed ? '90px' : '20px' 
+              minHeight: 0,
+              paddingBottom: '120px', // Fixed padding to prevent shifts
+              position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '1px',
+                background: 'linear-gradient(90deg, transparent, rgba(240, 246, 252, 0.4), transparent)',
+                zIndex: 1,
               }
             }}
-          >
-            {messages.map((message, index) => (
+          >{messages.map((message, index) => (
               <Box 
                 key={index}
                 sx={{
                   width: '100%',
-                  py: { xs: 2, md: 4 },
-                  px: { xs: 2, md: 4 },
+                  py: { xs: 2, md: 3 },
+                  px: { xs: 2, md: 3 },
                   bgcolor: message.role === 'assistant' 
-                    ? 'rgba(25, 25, 35, 0.75)' 
-                    : 'rgba(35, 35, 45, 0.6)',
+                    ? 'rgba(36, 41, 46, 0.8)' 
+                    : 'rgba(61, 68, 76, 0.7)',
                   borderBottom: message.role === 'assistant'
-                    ? '1px solid rgba(149, 117, 205, 0.3)'
-                    : '1px solid rgba(100, 181, 246, 0.3)',
+                    ? '1px solid rgba(240, 246, 252, 0.2)'
+                    : '1px solid rgba(200, 209, 217, 0.3)',
                   animation: `${fadeIn} 0.3s ease-out`,
                   backdropFilter: 'blur(10px)',
                   position: 'relative',
@@ -711,8 +875,8 @@ export default function Home() {
                     right: 0,
                     height: '1px',
                     background: message.role === 'assistant'
-                      ? 'linear-gradient(90deg, rgba(149, 117, 205, 0), rgba(149, 117, 205, 0.5), rgba(149, 117, 205, 0))'
-                      : 'linear-gradient(90deg, rgba(100, 181, 246, 0), rgba(100, 181, 246, 0.5), rgba(100, 181, 246, 0))',
+                      ? 'linear-gradient(90deg, rgba(240, 246, 252, 0), rgba(240, 246, 252, 0.4), rgba(240, 246, 252, 0))'
+                      : 'linear-gradient(90deg, rgba(200, 209, 217, 0), rgba(200, 209, 217, 0.4), rgba(200, 209, 217, 0))',
                   },
                   '&:first-of-type': {
                     borderTopLeftRadius: '12px',
@@ -726,21 +890,21 @@ export default function Home() {
               >
                 <Box
                   sx={{
-                    maxWidth: '800px',
+                    maxWidth: '100%',
                     margin: '0 auto',
                     width: '100%',
                   }}
-                >
-                  <Typography 
+                ><Typography 
                     variant="caption" 
                     sx={{ 
-                      color: message.role === 'assistant' ? '#9575CD' : '#64B5F6',
+                      color: message.role === 'assistant' ? '#f0f6fc' : '#c8d1d9',
                       textTransform: 'uppercase',
                       fontWeight: 600,
                       letterSpacing: '1px',
                       mb: 1,
                       display: 'block',
-                      fontSize: { xs: '0.65rem', md: '0.75rem' }
+                      fontSize: { xs: '0.65rem', md: '0.75rem' },
+                      textShadow: message.role === 'assistant' ? '0 0 5px rgba(240, 246, 252, 0.3)' : 'none'
                     }}
                   >
                     {message.role === 'assistant' ? 'LUNA' : 'You'}
@@ -752,9 +916,8 @@ export default function Home() {
                       margin: { xs: '6px 0', md: '8px 0' },
                       maxWidth: '100%',
                       overflow: 'auto',
-                      fontSize: { xs: '0.75rem', md: '0.85rem' },
-                      border: '1px solid rgba(149, 117, 205, 0.3)',
-                      boxShadow: '0 0 10px rgba(149, 117, 205, 0.1)',
+                      fontSize: { xs: '0.75rem', md: '0.85rem' },                      border: '1px solid rgba(240, 246, 252, 0.3)',
+                      boxShadow: '0 0 10px rgba(240, 246, 252, 0.1)',
                     },
                     '& .inline-code': {
                       backgroundColor: 'rgba(0, 0, 0, 0.2)',
@@ -790,186 +953,48 @@ export default function Home() {
                   </Box>
                 </Box>
               </Box>
-            ))}
-            
-            {/* Input area - positioned inline on desktop when not fixed */}
-            {!isInputFixed && !isMobile && (
-              <Box 
-                sx={{ 
-                  width: '100%',
-                  px: { xs: 2, md: 4 },
-                  py: { xs: 2, md: 3 },
-                  mt: 3
-                }}
-              >
-                <Paper
-                  elevation={3}
-                  sx={{
-                    bgcolor: 'rgba(25, 25, 35, 0.9)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(149, 117, 205, 0.3)',
-                    borderRadius: '12px',
-                    p: 2,
-                    background: 'linear-gradient(145deg, rgba(25, 25, 35, 0.9), rgba(30, 30, 45, 0.9))',
-                    animation: `${borderGlow} 4s infinite ease-in-out`,
-                    maxWidth: '800px',
-                    margin: '0 auto',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: -100,
-                      right: -100,
-                      height: '1px',
-                      background: 'linear-gradient(90deg, rgba(149, 117, 205, 0), rgba(149, 117, 205, 0.8), rgba(149, 117, 205, 0))',
-                      animation: `${subtleRotate} 8s infinite linear`,
-                      backgroundSize: '200% 200%',
-                    },
-                  }}
-                >
-                  <Stack 
-                    direction={'row'} 
-                    spacing={1} 
-                    alignItems="flex-end"
-                  >
-                    <TextField
-                      label="Message"
-                      fullWidth
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyDown={handleKeyPress}
-                      disabled={isLoading || isRecording}
-                      multiline
-                      maxRows={3}
-                      size="small"
-                      sx={{
-                        '& .MuiInputLabel-root': {
-                          fontSize: '1rem'
-                        },
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: '4px',
-                          paddingRight: '12px',
-                        }
-                      }}
-                    />
-
-                    {/* Add Learn Space Science button */}
-                    <Tooltip title="Learn Space Science">
-                      <Fab
-                        color="primary"
-                        component={Link}
-                        href="/learn"
-                        size="small"
-                        sx={{
-                          height: '48px',
-                          width: '48px',
-                          transition: 'transform 0.2s',
-                          background: 'linear-gradient(45deg, #5D3FD3 30%, #9575CD 90%)',
-                          boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
-                          '&:hover': {
-                            transform: 'scale(1.05)',
-                            boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
-                          },
-                          display: { xs: 'none', md: 'flex' },  // Only show on desktop
-                        }}
-                      >
-                        <ScienceIcon sx={{ fontSize: '1.5rem' }} />
-                      </Fab>
-                    </Tooltip>
-
-                    <Tooltip title="Explore Space Games">
-                      <Fab
-                        color="secondary"
-                        component={Link}
-                        href="/games"
-                        size="small"
-                        sx={{
-                          height: '48px',
-                          width: '48px',
-                          transition: 'transform 0.2s',
-                          background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
-                          boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
-                          '&:hover': {
-                            transform: 'scale(1.05)',
-                            boxShadow: '0 0 15px rgba(30, 136, 229, 1)',
-                          },
-                        }}
-                      >
-                        <GamesIcon sx={{ fontSize: '1.5rem' }} />
-                      </Fab>
-                    </Tooltip>
-                    <Fab
-                      color="primary"
-                      onClick={sendMessage}
-                      disabled={isLoading || isRecording}
-                      size="small"
-                      sx={{
-                        height: '48px',
-                        width: '48px',
-                        transition: 'transform 0.2s',
-                        background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
-                        boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
-                        '&:hover': {
-                          transform: 'scale(1.05)',
-                          boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
-                        },
-                        '&:active': {
-                          transform: 'scale(0.95)',
-                        },
-                      }}
-                    >
-                      <SendIcon sx={{ fontSize: '1.5rem' }} />
-                    </Fab>
-                  </Stack>
-                </Paper>
-              </Box>
-            )}
+            ))}            {/* Input area - positioned inline on desktop when not fixed */}
+            {/* This section has been removed - input is now always fixed */}
             
             {/* Invisible element to scroll to */}
             <div ref={messagesEndRef} />
-          </Box>
-
-          {/* Fixed Input area - shown on mobile or when scrolled down on desktop */}
-          {(isInputFixed || isMobile) && (
-            <Paper 
-              elevation={3}
-              sx={{ 
-                position: 'fixed', 
-                bottom: 0, 
+          </Box>          {/* Fixed Input area - Always shown */}
+          <Paper 
+            elevation={3}
+            sx={{ 
+              position: 'fixed', 
+              bottom: 0, 
+              left: 0,
+              right: 0,
+              width: '100%', 
+              bgcolor: 'rgba(36, 41, 46, 0.95)',
+              backdropFilter: 'blur(10px)',
+              borderTop: '1px solid rgba(240, 246, 252, 0.3)',
+              pt: { xs: 1.5, md: 2 },
+              pb: { xs: 2, md: 3 },
+              px: { xs: 1.5, md: 2 },
+              zIndex: 10,
+              animation: `${fadeIn} 0.3s ease-out`,
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
                 left: 0,
                 right: 0,
-                width: '100%', 
-                bgcolor: 'rgba(25, 25, 35, 0.9)',
-                backdropFilter: 'blur(10px)',
-                borderTop: '1px solid rgba(149, 117, 205, 0.3)',
-                pt: { xs: 1.5, md: 2 },
-                pb: { xs: 2, md: 3 },
-                px: { xs: 1.5, md: 2 },
-                zIndex: 10,
-                animation: `${fadeIn} 0.3s ease-out`,
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  background: 'linear-gradient(90deg, rgba(149, 117, 205, 0), rgba(149, 117, 205, 0.8), rgba(149, 117, 205, 0))',
-                },
-                boxShadow: '0 -5px 15px rgba(0,0,0,0.2), 0 -1px 3px rgba(149, 117, 205, 0.3)'
-              }}
-            >
+                height: '1px',
+                background: 'linear-gradient(90deg, rgba(240, 246, 252, 0), rgba(240, 246, 252, 0.6), rgba(240, 246, 252, 0))',
+              },
+              boxShadow: '0 -5px 15px rgba(0,0,0,0.3), 0 -1px 3px rgba(240, 246, 252, 0.2)'
+            }}
+          >
               <Stack 
                 direction={'row'} 
                 spacing={1} 
-                alignItems="flex-end"
-                sx={{
-                  maxWidth: '800px',  // Match the max-width of message containers
+                alignItems="flex-end"                sx={{
+                  maxWidth: '900px',  // Match the max-width of message containers
                   margin: '0 auto',
                   width: '100%',
-                  px: { xs: 0.5, md: 2 },  // Add some padding to align with messages
+                  px: { xs: 0.5, md: 1 },  // Add some padding to align with messages
                 }}
               >
                 <TextField
@@ -988,17 +1013,16 @@ export default function Home() {
                     },
                     '& .MuiOutlinedInput-root': {
                       borderRadius: { xs: '18px', md: '8px' },  // More rounded corners
-                      paddingRight: '12px',
-                      '& fieldset': {
-                        borderColor: 'rgba(149, 117, 205, 0.4)',
+                      paddingRight: '12px',                      '& fieldset': {
+                        borderColor: 'rgba(240, 246, 252, 0.4)',
                         transition: 'border-color 0.3s',
                       },
                       '&:hover fieldset': {
-                        borderColor: 'rgba(149, 117, 205, 0.7)',
+                        borderColor: 'rgba(240, 246, 252, 0.7)',
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#9575CD',
-                        boxShadow: '0 0 0 2px rgba(149, 117, 205, 0.2)',
+                        borderColor: 'rgba(240, 246, 252, 0.7)',
+                        boxShadow: '0 0 0 2px rgba(240, 246, 252, 0.2)',
                       },
                     }
                   }}
@@ -1015,12 +1039,11 @@ export default function Home() {
                       minHeight: { xs: '40px', md: '48px' },
                       height: { xs: '40px', md: '48px' },
                       width: { xs: '40px', md: '48px' },
-                      transition: 'transform 0.2s, box-shadow 0.2s',
-                      background: 'linear-gradient(45deg, #5D3FD3 30%, #9575CD 90%)',
-                      boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                      transition: 'transform 0.2s, box-shadow 0.2s',                      background: 'linear-gradient(45deg, rgba(240, 246, 252, 0.7) 30%, rgba(240, 246, 252, 0.7) 90%)',
+                      boxShadow: '0 0 10px rgba(240, 246, 252, 0.7)',
                       '&:hover': {
                         transform: 'scale(1.05)',
-                        boxShadow: '0 0 15px rgba(149, 117, 205, 1), 0 0 2px #fff',
+                        boxShadow: '0 0 15px rgba(240, 246, 252, 1), 0 0 2px #fff',
                       },
                       display: { xs: 'flex', md: 'none' },  // Only show on mobile
                     }}
@@ -1031,7 +1054,7 @@ export default function Home() {
 
                 <Tooltip title="Explore Space Games">
                   <Fab
-                    color="secondary"
+                    color="rgba(107, 110, 114, 0.7)"
                     component={Link}
                     href="/games"
                     size="small"
@@ -1040,7 +1063,7 @@ export default function Home() {
                       height: { xs: '40px', md: '48px' },
                       width: { xs: '40px', md: '48px' },
                       transition: 'transform 0.2s, box-shadow 0.2s',
-                      background: 'linear-gradient(45deg, #1E88E5 30%, #42A5F5 90%)',
+                      background: 'rgba(123, 166, 223, 0.7)',
                       boxShadow: '0 0 10px rgba(30, 136, 229, 0.7)',
                       '&:hover': {
                         transform: 'scale(1.05)',
@@ -1059,27 +1082,24 @@ export default function Home() {
                   size="small"
                   sx={{
                     minHeight: { xs: '40px', md: '48px' },
-                    height: { xs: '40px', md: '48px' },
-                    width: { xs: '40px', md: '48px' },
+                    height: { xs: '40px', md: '48px' },                    width: { xs: '40px', md: '48px' },
                     transition: 'transform 0.2s, box-shadow 0.2s',
-                    background: 'linear-gradient(45deg, #5D3FD3 30%, #7B68EE 90%)',
-                    boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                    background: 'linear-gradient(45deg, rgba(240, 246, 252, 0.7) 30%, rgba(240, 246, 252, 0.7) 90%)',
+                    boxShadow: '0 0 10px rgba(240, 246, 252, 0.7)',
                     '&:hover': {
                       transform: 'scale(1.05)',
-                      boxShadow: '0 0 15px rgba(149, 117, 205, 1), 0 0 2px #fff',
+                      boxShadow: '0 0 15px rgba(240, 246, 252, 1), 0 0 2px #fff',
                     },
                     '&:active': {
                       transform: 'scale(0.95)',
-                    },
-                  }}
-                >
+                    },                  }}                >
                   <SendIcon sx={{ fontSize: { xs: '1.2rem', md: '1.5rem' } }} />
                 </Fab>
               </Stack>
             </Paper>
-          )}
+        </Container>
         </Box>
       </ThemeProvider>
-    )
+    );
 }
 

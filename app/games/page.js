@@ -19,17 +19,17 @@ import dynamic from 'next/dynamic';
 
 // Use dynamic imports to prevent server-side rendering issues
 const SpaceFactGenerator = dynamic(() => import('./SpaceFactGenerator'), {
-  loading: () => <CircularProgress sx={{ color: '#9575CD', my: 10 }} />,
+  loading: () => <CircularProgress sx={{ color: 'rgba(240, 246, 252, 0.7)', my: 10 }} />,
   ssr: false
 });
 
 const GravitySimulator = dynamic(() => import('./GravitySimulator'), {
-  loading: () => <CircularProgress sx={{ color: '#9575CD', my: 10 }} />,
+  loading: () => <CircularProgress sx={{ color: 'rgba(240, 246, 252, 0.7)', my: 10 }} />,
   ssr: false
 });
 
 const NasaEyes = dynamic(() => import('./NasaEyes'), {
-  loading: () => <CircularProgress sx={{ color: '#9575CD', my: 10 }} />,
+  loading: () => <CircularProgress sx={{ color: 'rgba(240, 246, 252, 0.7)', my: 10 }} />,
   ssr: false
 });
 
@@ -58,7 +58,7 @@ export default function GamesPage() {
           background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
         }}
       >
-        <CircularProgress sx={{ color: '#9575CD' }} />
+        <CircularProgress sx={{ color: 'rgba(240, 246, 252, 0.7)' }} />
       </Box>
     );
   }
@@ -87,15 +87,14 @@ export default function GamesPage() {
         >
           <Button
             component={Link}
-            href="/"
-            startIcon={<HomeIcon />}
+            href="/"            startIcon={<HomeIcon />}
             size="small"
             sx={{
-              color: '#9575CD',
-              borderColor: 'rgba(149, 117, 205, 0.5)',
+              color: 'rgba(240, 246, 252, 0.7)',
+              borderColor: 'rgba(240, 246, 252, 0.5)',
               '&:hover': {
-                borderColor: '#9575CD',
-                backgroundColor: 'rgba(149, 117, 205, 0.1)',
+                borderColor: 'rgba(240, 246, 252, 0.7)',
+                backgroundColor: 'rgba(240, 246, 252, 0.1)',
               },
               backdropFilter: 'blur(5px)',
               borderRadius: '30px',
@@ -108,15 +107,14 @@ export default function GamesPage() {
 
           <Button
             component={Link}
-            href="/chat"
-            startIcon={<ArrowBackIcon />}
+            href="/chat"            startIcon={<ArrowBackIcon />}
             size="small"
             sx={{
-              color: '#9575CD',
-              borderColor: 'rgba(149, 117, 205, 0.5)',
+              color: 'rgba(240, 246, 252, 0.7)',
+              borderColor: 'rgba(240, 246, 252, 0.5)',
               '&:hover': {
-                borderColor: '#9575CD',
-                backgroundColor: 'rgba(149, 117, 205, 0.1)',
+                borderColor: 'rgba(240, 246, 252, 0.7)',
+                backgroundColor: 'rgba(240, 246, 252, 0.1)',
               },
               backdropFilter: 'blur(5px)',
               borderRadius: '30px',
@@ -149,10 +147,9 @@ export default function GamesPage() {
             centered
             textColor="secondary"
             indicatorColor="secondary"
-            sx={{ 
-              mb: 4,
+            sx={{              mb: 4,
               '& .MuiTab-root': { color: 'rgba(255,255,255,0.7)' },
-              '& .Mui-selected': { color: '#9575CD !important' }
+              '& .Mui-selected': { color: 'rgba(240, 246, 252, 0.7) !important' }
             }}
           >
             <Tab label="Space Facts" />

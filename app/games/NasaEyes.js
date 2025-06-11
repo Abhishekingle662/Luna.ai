@@ -47,7 +47,7 @@ export default function NasaEyes() {
   ];
 
   if (!mounted) {
-    return <CircularProgress sx={{ color: '#9575CD', my: 10 }} />;
+    return <CircularProgress sx={{ color: 'rgba(240, 246, 252, 0.7)', my: 10 }} />;
   }
 
   return (
@@ -93,11 +93,10 @@ export default function NasaEyes() {
                 image={option.image}
                 alt={option.title}
               />
-              <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                <Typography 
+              <CardContent sx={{ flexGrow: 1, p: 3 }}>                <Typography 
                   variant="h6" 
                   sx={{ 
-                    color: '#9575CD',
+                    color: 'rgba(240, 246, 252, 0.7)',
                     mb: 1,
                     fontFamily: 'var(--font-space-grotesk), sans-serif',
                   }}
@@ -113,14 +112,13 @@ export default function NasaEyes() {
                   endIcon={<LaunchIcon />}
                   href={option.link}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
+                  rel="noopener noreferrer"                  sx={{
                     mt: 'auto',
-                    color: '#9575CD',
-                    borderColor: 'rgba(149, 117, 205, 0.5)',
+                    color: 'rgba(240, 246, 252, 0.7)',
+                    borderColor: 'rgba(240, 246, 252, 0.5)',
                     '&:hover': {
-                      borderColor: '#9575CD',
-                      backgroundColor: 'rgba(149, 117, 205, 0.1)',
+                      borderColor: 'rgba(240, 246, 252, 0.7)',
+                      backgroundColor: 'rgba(240, 246, 252, 0.1)',
                     }
                   }}
                 >

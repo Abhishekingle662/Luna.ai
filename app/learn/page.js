@@ -1,76 +1,219 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { 
-  Box, 
+import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { Home, MessageCircle, Gamepad2, BookOpen, Calculator, Atom, Telescope, Rocket } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import {
+  ThemeProvider, 
+  createTheme, 
+  CssBaseline, 
+  Container, 
   Typography, 
+  Grid, 
   Card, 
   CardContent, 
   CardMedia, 
-  Grid, 
   Button, 
-  Container,
-  IconButton,
-  Tabs,
-  Tab,
-  Paper,
-  Zoom,
-  CssBaseline,
-  useMediaQuery
+  Box, 
+  IconButton, 
+  Tabs, 
+  Tab, 
+  Paper, 
+  Zoom
 } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import ChatIcon from '@mui/icons-material/Chat';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Link from 'next/link';
-import { keyframes } from '@mui/system';
-import dynamic from 'next/dynamic';
-import GamesIcon from '@mui/icons-material/Games';
-import ScienceIcon from '@mui/icons-material/Science';
-import CalculateIcon from '@mui/icons-material/Calculate';
+import { 
+  ArrowBack as ArrowBackIcon, 
+  Games as GamesIcon, 
+  Calculate as CalculateIcon, 
+  Chat as ChatIcon 
+} from '@mui/icons-material';
 
-// Import particles background dynamically to avoid SSR issues
-const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false });
+// Dynamic import for ParticlesBg to avoid SSR issues
+const ParticlesBg = dynamic(() => import('particles-bg'), { 
+  ssr: false,
+  loading: () => <div className="bg-lunar-deep" />
+});
 
-// Ensure MUI components are available
-const { Card: MuiCard } = require('@mui/material');
+// Navigation Header Component
+const NavigationHeader = () => (
+  <header 
+    className="fixed top-0 left-0 right-0 z-50 border-b"
+    style={{
+      backgroundColor: 'rgba(17, 19, 22, 0.9)',
+      backdropFilter: 'blur(24px)',
+      borderColor: 'rgba(61, 68, 76, 0.3)',
+      boxShadow: '0 10px 15px -3px rgba(240, 246, 252, 0.1)'
+    }}
+  >
+    <div className="max-w-6xl mx-auto px-6 py-3">
+      <nav className="flex justify-center items-center space-x-6">
+        <Link 
+          href="/" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <Home size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Home</span>
+        </Link>
+        
+        <Link 
+          href="/chat" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <MessageCircle size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Chat</span>
+        </Link>
+        
+        <Link 
+          href="/games" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <Gamepad2 size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Games</span>
+        </Link>
+        
+        <Link 
+          href="/learn/mathphysics" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <Calculator size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Math & Physics</span>
+        </Link>
+      </nav>
+    </div>
 
-// Define animations
-const float = keyframes`
-  0% {
-    transform: translateY(0px) translateX(0px);
-  }
-  50% {
-    transform: translateY(-15px) translateX(10px);
-  }
-  100% {
-    transform: translateY(0px) translateX(0px);
-  }
-`;
+    <style jsx>{`
+      .nav-item:hover {
+        color: #f0f6fc !important;
+        background-color: rgba(61, 68, 76, 0.25);
+        box-shadow: 0 10px 15px -3px rgba(240, 246, 252, 0.1);
+      }
+      .nav-item::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(6px);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(240, 246, 252, 0.8), transparent);
+        border-radius: 1px;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .nav-item:hover::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        box-shadow: 0 0 8px rgba(240, 246, 252, 0.4);
+      }
+    `}</style>
+  </header>
+)
 
-const pulse = keyframes`
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(149, 117, 205, 0.7);
+// Learning topic categories
+const learningCategories = [
+  {
+    id: 'fundamentals',
+    title: 'Space Fundamentals',
+    icon: Telescope,
+    description: 'Learn the basics of astronomy and space science',
+    topics: [
+      { title: 'The Solar System', description: 'Explore planets, moons, and other celestial bodies' },
+      { title: 'Stars and Galaxies', description: 'Understanding stellar evolution and cosmic structures' },
+      { title: 'Space Exploration History', description: 'Journey through humanity\'s quest to explore space' },
+      { title: 'Astronomical Instruments', description: 'Tools that help us observe the universe' }
+    ]
+  },
+  {
+    id: 'physics',
+    title: 'Astrophysics',
+    icon: Atom,
+    description: 'Dive into the physics that governs the cosmos',
+    topics: [
+      { title: 'Gravity and Orbits', description: 'How celestial bodies interact through gravitational forces' },
+      { title: 'Light and Radiation', description: 'Understanding electromagnetic spectrum in space' },
+      { title: 'Black Holes and Relativity', description: 'Extreme physics in the most exotic objects' },
+      { title: 'Quantum Mechanics in Space', description: 'How quantum effects shape the universe' }
+    ]
+  },
+  {
+    id: 'math',
+    title: 'Mathematical Concepts',
+    icon: Calculator,
+    description: 'Mathematical principles behind space phenomena',
+    topics: [
+      { title: 'Orbital Mechanics', description: 'Calculate trajectories and spacecraft paths' },
+      { title: 'Distance and Scale', description: 'Understanding cosmic measurements and scales' },
+      { title: 'Physics Equations', description: 'Key formulas used in astrophysics' },
+      { title: 'Statistics in Astronomy', description: 'Data analysis in astronomical research' }
+    ]
+  },
+  {
+    id: 'exploration',
+    title: 'Space Missions',
+    icon: Rocket,
+    description: 'Learn about past, current, and future space missions',
+    topics: [
+      { title: 'Historic Missions', description: 'Apollo, Voyager, and other landmark missions' },
+      { title: 'Current Missions', description: 'Active space exploration programs' },
+      { title: 'Future Plans', description: 'Upcoming missions to Mars, Moon, and beyond' },
+      { title: 'Mission Planning', description: 'How space missions are designed and executed' }
+    ]
   }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(149, 117, 205, 0.9);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(149, 117, 205, 0.7);
-  }
-`;
+]
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
+// Topic Card Component
+const TopicCard = ({ topic, index }) => (
+  <motion.div
+    className="card cursor-pointer group"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: index * 0.1 }}
+    whileHover={{ y: -5 }}
+  >
+    <h3 className="text-xl font-space-grotesk font-semibold text-lunar-accent mb-3 group-hover:lunar-glow transition-all duration-300">
+      {topic.title}
+    </h3>
+    <p className="font-lato text-lunar-light leading-relaxed">
+      {topic.description}
+    </p>
+    <div className="mt-4 flex justify-end">
+      <span className="text-sm font-lato text-lunar-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        Learn more →
+      </span>
+    </div>
+  </motion.div>
+)
+
+// Category Section Component
+const CategorySection = ({ category, isActive }) => {
+  if (!isActive) return null;
+  
+  return (
+    <motion.div
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {category.topics.map((topic, index) => (
+        <TopicCard key={topic.title} topic={topic} index={index} />
+      ))}
+    </motion.div>
+  );
+}
 
 // Space topics data
 const spaceTopics = [
@@ -148,43 +291,65 @@ const spaceTopics = [
   }
 ];
 
+// Remove the duplicate function definition and keep only one export default
 export default function LearnPage() {
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const [isMobile, setIsMobile] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
+  // Check for mobile on client side only
+  useEffect(() => {
+    const checkMobile = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth <= 600);
+      }
+    };
+    
+    checkMobile();
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }
+  }, []);
 
   // Space-themed light theme
   const theme = createTheme({
     palette: {
       mode: 'dark',
-      primary: {
-        main: '#9575CD', // Purple for space theme
-      },
-      secondary: {
-        main: '#1E88E5', // Blue
-      },
+      primary: { main: '#f0f6fc' }, // accent
+      secondary: { main: '#3d444c' },
       background: {
-        default: '#121212',
-        paper: 'rgba(25, 25, 35, 0.85)',
+        default: '#111316',
+        paper: '#24292e',
       },
       text: {
-        primary: '#E0E0E0',
+        primary: '#c8d1d9',
+        secondary: '#c8d1d9',
       },
     },
     typography: {
-      fontFamily: 'var(--font-space-grotesk), "Roboto", "Arial", sans-serif',
+      fontFamily: 'Lato, sans-serif',
+      h1: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h2: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h3: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h4: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h5: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h6: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      body1: { color: '#c8d1d9' },
+      body2: { color: '#c8d1d9' },
     },
     components: {
       MuiCard: {
         styleOverrides: {
           root: {
-            backgroundColor: 'rgba(25, 25, 35, 0.7)',
-            backdropFilter: 'blur(10px)',
+            backgroundColor: '#24292e',
+            border: '1px solid #3d444c',
+            borderRadius: '0.75rem',
             transition: 'transform 0.3s, box-shadow 0.3s',
             '&:hover': {
-              transform: 'translateY(-5px)',
-              boxShadow: '0 10px 20px rgba(149, 117, 205, 0.4)',
+              transform: 'translateY(-4px)',
+              boxShadow: '0 4px 20px rgba(240, 246, 252, 0.1)',
             },
           },
         },
@@ -192,10 +357,59 @@ export default function LearnPage() {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: '30px',
+            borderRadius: '0.75rem',
             textTransform: 'none',
-            fontWeight: 'bold',
-            padding: '8px 20px',
+            fontWeight: 600,
+            fontFamily: 'Space Grotesk, sans-serif',
+            padding: '12px 24px',
+          },
+          contained: {
+            backgroundColor: '#f0f6fc',
+            color: '#111316',
+            backgroundImage: 'url("https://www.transparenttextures.com/patterns/rocky-wall.png")',
+            backgroundBlendMode: 'overlay',
+            boxShadow: 'none',
+            '&:hover': {
+              backgroundColor: '#f0f6fc',
+              color: '#111316',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 0 20px rgba(240, 246, 252, 0.3)',
+            },
+          },
+          outlined: {
+            border: '1px solid #f0f6fc',
+            color: '#f0f6fc',
+            backgroundColor: 'transparent',
+            '&:hover': {
+              backgroundColor: '#f0f6fc',
+              color: '#111316',
+            },
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#24292e',
+            border: '1px solid #3d444c',
+            borderRadius: '0.75rem',
+          },
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+            backgroundColor: '#f0f6fc',
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            color: '#c8d1d9',
+            '&.Mui-selected': {
+              color: '#f0f6fc',
+            },
           },
         },
       },
@@ -221,139 +435,165 @@ export default function LearnPage() {
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-
-      {/* Particles background */}
-      <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={isMobile ? 25 : 50} />
-      
-      {/* Main container */}
-      <Container maxWidth="lg" sx={{ minHeight: '100vh', pt: { xs: 8, md: 12 }, pb: 10 }}>
-        {/* Navigation buttons */}
-        <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 10 }}>
-          <Button
-            component={Link}
-            href="/chat"
-            startIcon={<ArrowBackIcon />}
-            variant="outlined"
-            sx={{
-              color: '#9575CD',
-              borderColor: 'rgba(149, 117, 205, 0.5)',
-              backdropFilter: 'blur(5px)',
-              '&:hover': {
-                borderColor: '#9575CD',
-                backgroundColor: 'rgba(149, 117, 205, 0.1)',
-              },
+      {/* Twinkling starfield background */}
+      <div className="starfield-bg" />      <NavigationHeader />      <Container maxWidth="lg" sx={{ minHeight: '100vh', pt: { xs: 12, md: 16 }, pb: 10 }}>
+        {/* Enhanced Header */}
+        <Box sx={{ textAlign: 'center', mb: 10, position: 'relative', mt: { xs: 2, md: 4 } }}>
+          {/* Decorative background glow */}
+          <Box 
+            sx={{ 
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: { xs: '300px', md: '500px' },
+              height: { xs: '300px', md: '500px' },
+              background: 'radial-gradient(circle, rgba(240, 246, 252, 0.08) 0%, transparent 70%)',
+              borderRadius: '50%',
+              zIndex: -1,
+              animation: 'pulse 4s ease-in-out infinite',
             }}
-          >
-            Back to Chat
-          </Button>
-        </Box>
-
-        {/* Games button */}
-        <Box sx={{ position: 'fixed', top: 20, right: 20, zIndex: 10 }}>
-          <Button
-            component={Link}
-            href="/games"
-            startIcon={<GamesIcon />}
-            variant="outlined"
-            sx={{
-              color: '#64B5F6',
-              borderColor: 'rgba(100, 181, 246, 0.5)',
-              backdropFilter: 'blur(5px)',
-              '&:hover': {
-                borderColor: '#64B5F6',
-                backgroundColor: 'rgba(100, 181, 246, 0.1)',
-              },
-            }}
-          >
-            Space Games
-          </Button>
-        </Box>
-
-        {/* Math and Physics button */}
-        <Box sx={{ position: 'fixed', top: 90, right: 20, zIndex: 10 }}>
-          <Button
-            component={Link}
-            href="/learn/mathphysics"
-            startIcon={<CalculateIcon />}
-            variant="outlined"
-            sx={{
-              color: '#64B5F6',
-              borderColor: 'rgba(100, 181, 246, 0.5)',
-              backdropFilter: 'blur(5px)',
-              '&:hover': {
-                borderColor: '#64B5F6',
-                backgroundColor: 'rgba(100, 181, 246, 0.1)',
-              },
-            }}
-          >
-            Space Math & Physics
-          </Button>
-        </Box>
-
-        {/* Header */}
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          />
+          
           <Typography 
-            variant="h3" 
+            variant="h1" 
             component="h1"
-            sx={{
-              color: '#9575CD',
-              fontFamily: 'var(--font-exo-2), sans-serif',
-              textShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
-              fontWeight: 700,
-              letterSpacing: { xs: '2px', md: '3px' },
-              mb: 2,
-              animation: `${pulse} 5s infinite ease-in-out`,
+            sx={{ 
+              fontFamily: 'Space Grotesk, sans-serif', 
+              color: 'transparent',
+              background: 'linear-gradient(135deg, rgba(240, 246, 252, 1) 0%, rgba(240, 246, 252, 0.7) 50%, rgba(240, 246, 252, 1) 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              fontWeight: 800,
+              fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
+              letterSpacing: { xs: '2px', md: '4px' },
+              textShadow: '0 0 30px rgba(240, 246, 252, 0.3)',
+              mb: 4,
+              position: 'relative',
+              lineHeight: 1.1,
+              animation: 'cosmic-glow 4s ease-in-out infinite alternate',              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '120%',
+                height: '120%',
+                background: 'linear-gradient(45deg, transparent, rgba(240, 246, 252, 0.05), transparent)',
+                borderRadius: '50%',
+                zIndex: -1,
+                animation: 'rotate 20s linear infinite',
+              },
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: '-15px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '120px',
+                height: '3px',
+                background: 'linear-gradient(90deg, transparent, rgba(240, 246, 252, 0.6), transparent)',
+                borderRadius: '2px',
+                animation: 'pulse 2s ease-in-out infinite',
+              },
+              '@keyframes cosmic-glow': {
+                '0%': {
+                  textShadow: '0 0 20px rgba(240, 246, 252, 0.3), 0 0 40px rgba(240, 246, 252, 0.1)',
+                  transform: 'scale(1)',
+                },
+                '100%': {
+                  textShadow: '0 0 40px rgba(240, 246, 252, 0.5), 0 0 80px rgba(240, 246, 252, 0.2)',
+                  transform: 'scale(1.01)',
+                },
+              },
+              '@keyframes rotate': {
+                '0%': { transform: 'translate(-50%, -50%) rotate(0deg)' },
+                '100%': { transform: 'translate(-50%, -50%) rotate(360deg)' },
+              },
+              '@keyframes pulse': {
+                '0%, 100%': { opacity: 0.3 },
+                '50%': { opacity: 1 },
+              },
             }}
           >
             Space Science Academy
           </Typography>
+          
           <Typography 
-            variant="h6" 
+            variant="h5" 
             sx={{ 
-              color: '#E0E0E0', 
-              maxWidth: '700px', 
-              mx: 'auto',
-              opacity: 0.9,
+              color: '#c8d1d9', 
+              maxWidth: '900px', 
+              mx: 'auto', 
+              opacity: 0.85, 
+              fontFamily: 'Lato, sans-serif',
+              fontWeight: 300,
+              lineHeight: 1.7,
+              fontSize: { xs: '1.1rem', md: '1.4rem' },
+              textShadow: '0 2px 15px rgba(0, 0, 0, 0.2)',
+              px: { xs: 2, md: 0 },
+              animation: 'fadeInUp 1.2s ease-out 0.6s both',
+              '@keyframes fadeInUp': {
+                '0%': {
+                  opacity: 0,
+                  transform: 'translateY(30px)',
+                },
+                '100%': {
+                  opacity: 0.9,
+                  transform: 'translateY(0)',
+                },
+              },
             }}
           >
             Explore the wonders of our universe through these educational topics
           </Typography>
+            {/* Floating particles effect */}
+          <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', zIndex: -2 }}>
+            {[...Array(4)].map((_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  position: 'absolute',
+                  width: '3px',
+                  height: '3px',
+                  background: 'rgba(240, 246, 252, 0.4)',
+                  borderRadius: '50%',
+                  left: `${20 + Math.random() * 60}%`,
+                  top: `${20 + Math.random() * 60}%`,
+                  animation: `float-particle-${i} ${4 + Math.random() * 3}s ease-in-out infinite`,
+                  '@keyframes float-particle-0': {
+                    '0%, 100%': { transform: 'translateY(0) translateX(0)', opacity: 0.2 },
+                    '50%': { transform: 'translateY(-25px) translateX(15px)', opacity: 0.6 },
+                  },
+                  '@keyframes float-particle-1': {
+                    '0%, 100%': { transform: 'translateY(0) translateX(0)', opacity: 0.3 },
+                    '50%': { transform: 'translateY(-20px) translateX(-10px)', opacity: 0.7 },
+                  },
+                  '@keyframes float-particle-2': {
+                    '0%, 100%': { transform: 'translateY(0) translateX(0)', opacity: 0.2 },
+                    '50%': { transform: 'translateY(-30px) translateX(20px)', opacity: 0.5 },
+                  },
+                  '@keyframes float-particle-3': {
+                    '0%, 100%': { transform: 'translateY(0) translateX(0)', opacity: 0.4 },
+                    '50%': { transform: 'translateY(-22px) translateX(-15px)', opacity: 0.8 },
+                  },
+                }}
+              />
+            ))}
+          </Box>
         </Box>
-
         {selectedTopic ? (
           /* Topic detail view */
           <Zoom in={animateIn}>
-            <Paper 
-              elevation={3}
-              sx={{
-                p: { xs: 2, md: 4 },
-                backgroundColor: 'rgba(25, 25, 35, 0.8)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '12px',
-                border: '1px solid rgba(149, 117, 205, 0.3)',
-                animation: `${fadeIn} 0.5s ease-out`,
-              }}
-            >
+            <Paper elevation={3} className="card" sx={{ p: { xs: 2, md: 4 }, animation: 'fadeIn 0.5s ease-out' }}>
               <Box sx={{ mb: 3 }}>
-                <Button 
-                  startIcon={<ArrowBackIcon />} 
-                  onClick={handleBackClick}
-                  sx={{ mb: 2 }}
-                >
+                <Button startIcon={<ArrowBackIcon />} onClick={handleBackClick} variant="outlined" sx={{ mb: 2 }}>
                   Back to Topics
                 </Button>
-                <Typography 
-                  variant="h4" 
-                  sx={{ 
-                    mb: 3, 
-                    color: '#9575CD',
-                    fontWeight: 'bold',
-                  }}
-                >
+                <Typography variant="h4" className="lunar-glow" sx={{ mb: 3, fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 'bold' }}>
                   {selectedTopic.title}
                 </Typography>
               </Box>
@@ -364,58 +604,29 @@ export default function LearnPage() {
                     component="img"
                     src={selectedTopic.image}
                     alt={selectedTopic.title}
-                    sx={{
-                      width: '100%',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                      mb: { xs: 2, md: 0 },
-                    }}
+                    sx={{ width: '100%', borderRadius: '0.75rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', mb: { xs: 2, md: 0 } }}
                   />
                 </Grid>
                 <Grid item xs={12} md={7}>
-                  <Typography variant="body1" sx={{ mb: 3, fontSize: '1.1rem' }}>
+                  <Typography variant="body1" sx={{ mb: 3, fontSize: '1.1rem', color: '#c8d1d9', fontFamily: 'Lato, sans-serif' }}>
                     {selectedTopic.description}
                   </Typography>
-                  
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      mb: 2, 
-                      color: '#9575CD',
-                      fontWeight: 'bold',
-                    }}
-                  >
+                  <Typography variant="h6" sx={{ mb: 2, color: '#f0f6fc', fontWeight: 'bold', fontFamily: 'Space Grotesk, sans-serif' }}>
                     Key Facts
                   </Typography>
-                  
                   <Box component="ul" sx={{ pl: 2 }}>
                     {selectedTopic.facts.map((fact, index) => (
-                      <Box 
-                        component="li" 
-                        key={index} 
-                        sx={{ 
-                          mb: 2,
-                          animation: `${fadeIn} ${0.3 + index * 0.1}s ease-out`,
-                        }}
-                      >
+                      <Box component="li" key={index} sx={{ mb: 2, color: '#c8d1d9', fontFamily: 'Lato, sans-serif' }}>
                         <Typography variant="body1">{fact}</Typography>
                       </Box>
                     ))}
                   </Box>
-                  
                   <Box sx={{ mt: 4 }}>
                     <Button
                       variant="contained"
                       component={Link}
                       href={`/chat?topic=${selectedTopic.id}`}
                       startIcon={<ChatIcon />}
-                      sx={{
-                        background: 'linear-gradient(45deg, #5D3FD3 30%, #9575CD 90%)',
-                        boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
-                        '&:hover': {
-                          boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
-                        },
-                      }}
                     >
                       Ask LUNA about {selectedTopic.title}
                     </Button>
@@ -434,23 +645,13 @@ export default function LearnPage() {
                 onChange={handleTabChange}
                 variant="scrollable"
                 scrollButtons="auto"
-                sx={{ 
-                  mb: 3,
-                  '& .MuiTabs-indicator': {
-                    backgroundColor: '#9575CD',
-                  }
-                }}
+                sx={{ mb: 3 }}
               >
                 {spaceTopics.map((topic, index) => (
                   <Tab 
                     key={topic.id} 
                     label={topic.title}
-                    sx={{
-                      color: '#E0E0E0',
-                      '&.Mui-selected': {
-                        color: '#9575CD',
-                      }
-                    }} 
+                    sx={{ color: '#c8d1d9', fontFamily: 'Space Grotesk, sans-serif', '&.Mui-selected': { color: '#f0f6fc' } }} 
                   />
                 ))}
               </Tabs>
@@ -462,26 +663,13 @@ export default function LearnPage() {
                 // Mobile: Show only current tab
                 <Grid item xs={12}>
                   <Zoom in={true}>
-                    <Card 
-                      onClick={() => handleTopicClick(spaceTopics[currentTab])}
-                      sx={{ 
-                        cursor: 'pointer',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                      }}
-                    >
-                      <CardMedia
-                        component="img"
-                        height="200"
-                        image={spaceTopics[currentTab].image}
-                        alt={spaceTopics[currentTab].title}
-                      />
+                    <Card onClick={() => handleTopicClick(spaceTopics[currentTab])} className="card" sx={{ cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <CardMedia component="img" height="200" image={spaceTopics[currentTab].image} alt={spaceTopics[currentTab].title} />
                       <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#9575CD' }}>
+                        <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#f0f6fc', fontFamily: 'Space Grotesk, sans-serif' }}>
                           {spaceTopics[currentTab].title}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: '#c8d1d9', fontFamily: 'Lato, sans-serif' }}>
                           {spaceTopics[currentTab].description}
                         </Typography>
                       </CardContent>
@@ -493,26 +681,13 @@ export default function LearnPage() {
                 spaceTopics.map((topic, index) => (
                   <Grid item xs={12} sm={6} md={4} key={topic.id}>
                     <Zoom in={true} style={{ transitionDelay: `${index * 100}ms` }}>
-                      <Card
-                        onClick={() => handleTopicClick(topic)}
-                        sx={{ 
-                          cursor: 'pointer',
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                        }}
-                      >
-                        <CardMedia
-                          component="img"
-                          height="200"
-                          image={topic.image}
-                          alt={topic.title}
-                        />
+                      <Card onClick={() => handleTopicClick(topic)} className="card" sx={{ cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <CardMedia component="img" height="200" image={topic.image} alt={topic.title} />
                         <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#9575CD' }}>
+                          <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#f0f6fc', fontFamily: 'Space Grotesk, sans-serif' }}>
                             {topic.title}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" sx={{ color: '#c8d1d9', fontFamily: 'Lato, sans-serif' }}>
                             {topic.description}
                           </Typography>
                         </CardContent>
@@ -527,23 +702,8 @@ export default function LearnPage() {
         
         {/* Chat button */}
         <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 10 }}>
-          <IconButton 
-            component={Link} 
-            href="/chat"
-            color="primary"
-            size="large"
-            sx={{ 
-              bgcolor: 'rgba(25, 25, 35, 0.7)',
-              backdropFilter: 'blur(5px)',
-              p: 2,
-              boxShadow: '0 0 15px rgba(149, 117, 205, 0.7)',
-              '&:hover': {
-                bgcolor: 'rgba(35, 35, 45, 0.8)',
-                animation: `${pulse} 2s infinite`,
-              }
-            }}
-          >
-            <ChatIcon sx={{ fontSize: '2rem' }} />
+          <IconButton component={Link} href="/chat" color="primary" size="large" sx={{ bgcolor: '#24292e', backdropFilter: 'blur(5px)', p: 2, boxShadow: '0 0 15px rgba(240, 246, 252, 0.2)', '&:hover': { bgcolor: '#3d444c' } }}>
+            <ChatIcon sx={{ fontSize: '2rem', color: '#111316' }} />
           </IconButton>
         </Box>
       </Container>

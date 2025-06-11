@@ -31,6 +31,37 @@ import { keyframes } from '@mui/system';
 import dynamic from 'next/dynamic';
 import { styled } from '@mui/material/styles';
 import GravitySection from '../../components/GravitySection';
+import { Home, MessageCircle, Gamepad2, Calculator } from 'lucide-react';
+
+// Navigation Header Component
+const NavigationHeader = () => (
+  <header className="nav-header p-4 fixed top-0 left-0 right-0 z-50 bg-lunar-dark/80 backdrop-blur-lg border-b border-lunar-gray">
+    <div className="flex items-center justify-between max-w-7xl mx-auto">
+      <Link href="/" className="text-2xl font-space-grotesk font-bold text-lunar-accent lunar-glow">
+        Luna.ai
+      </Link>
+      
+      <nav className="flex items-center space-x-6">
+        <Link href="/" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
+          <Home size={20} />
+          <span className="hidden sm:inline font-lato">Home</span>
+        </Link>
+        <Link href="/chat" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
+          <MessageCircle size={20} />
+          <span className="hidden sm:inline font-lato">Chat</span>
+        </Link>
+        <Link href="/games" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
+          <Gamepad2 size={20} />
+          <span className="hidden sm:inline font-lato">Games</span>
+        </Link>
+        <Link href="/learn" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
+          <Calculator size={20} />
+          <span className="hidden sm:inline font-lato">Learn</span>
+        </Link>
+      </nav>
+    </div>
+  </header>
+);
 
 // Dynamic import for MathJax
 const MathJax = dynamic(
@@ -44,8 +75,24 @@ const MathJax = dynamic(
   }
 );
 
-// Import particles background dynamically to avoid SSR issues
-const ParticlesBg = dynamic(() => import('particles-bg'), { ssr: false });
+// Import particles background dynamically with error handling
+const ParticlesBg = dynamic(() => 
+  import('particles-bg').catch((error) => {
+    console.warn('Failed to load particles-bg:', error);
+    // Return a fallback component that renders nothing
+    return { default: () => null };
+  }), { 
+  ssr: false,
+  loading: () => <div style={{ 
+    position: 'fixed', 
+    top: 0, 
+    left: 0, 
+    width: '100%', 
+    height: '100%', 
+    background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
+    zIndex: -1 
+  }} />
+});
 
 // Define animations
 const float = keyframes`
@@ -63,27 +110,27 @@ const float = keyframes`
 const pulse = keyframes`
   0% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(149, 117, 205, 0.7);
+    box-shadow: 0 0 10px rgba(240, 246, 252, 0.7);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(149, 117, 205, 0.9);
+    box-shadow: 0 0 25px rgba(240, 246, 252, 0.9);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(149, 117, 205, 0.7);
+    box-shadow: 0 0 10px rgba(240, 246, 252, 0.7);
   }
 `;
 
 const glow = keyframes`
   0% {
-    text-shadow: 0 0 5px rgba(149, 117, 205, 0.7);
+    text-shadow: 0 0 5px rgba(240, 246, 252, 0.7);
   }
   50% {
-    text-shadow: 0 0 15px rgba(149, 117, 205, 1), 0 0 20px rgba(149, 117, 205, 0.8);
+    text-shadow: 0 0 15px rgba(240, 246, 252, 1), 0 0 20px rgba(240, 246, 252, 0.8);
   }
   100% {
-    text-shadow: 0 0 5px rgba(149, 117, 205, 0.7);
+    text-shadow: 0 0 5px rgba(240, 246, 252, 0.7);
   }
 `;
 
@@ -256,37 +303,43 @@ export default function MathPhysicsPage() {
   const [animateIn, setAnimateIn] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
 
-  // Space-themed light theme
+  // Lunar Shadow monochrome theme
   const theme = createTheme({
     palette: {
       mode: 'dark',
-      primary: {
-        main: '#9575CD', // Purple for space theme
-      },
-      secondary: {
-        main: '#1E88E5', // Blue
-      },
+      primary: { main: '#f0f6fc' }, // accent
+      secondary: { main: '#3d444c' },
       background: {
-        default: '#121212',
-        paper: 'rgba(25, 25, 35, 0.85)',
+        default: '#111316',
+        paper: '#24292e',
       },
       text: {
-        primary: '#E0E0E0',
+        primary: '#c8d1d9',
+        secondary: '#c8d1d9',
       },
     },
     typography: {
-      fontFamily: 'var(--font-space-grotesk), "Roboto", "Arial", sans-serif',
+      fontFamily: 'Lato, sans-serif',
+      h1: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h2: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h3: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h4: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h5: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      h6: { fontFamily: 'Space Grotesk, sans-serif', color: '#f0f6fc', fontWeight: 700 },
+      body1: { color: '#c8d1d9' },
+      body2: { color: '#c8d1d9' },
     },
     components: {
       MuiCard: {
         styleOverrides: {
           root: {
-            backgroundColor: 'rgba(25, 25, 35, 0.7)',
-            backdropFilter: 'blur(10px)',
+            backgroundColor: '#24292e',
+            border: '1px solid #3d444c',
+            borderRadius: '0.75rem',
             transition: 'transform 0.3s, box-shadow 0.3s',
             '&:hover': {
-              transform: 'translateY(-5px)',
-              boxShadow: '0 10px 20px rgba(149, 117, 205, 0.4)',
+              transform: 'translateY(-4px)',
+              boxShadow: '0 4px 20px rgba(240, 246, 252, 0.1)',
             },
           },
         },
@@ -294,10 +347,59 @@ export default function MathPhysicsPage() {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: '30px',
+            borderRadius: '0.75rem',
             textTransform: 'none',
-            fontWeight: 'bold',
-            padding: '8px 20px',
+            fontWeight: 600,
+            fontFamily: 'Space Grotesk, sans-serif',
+            padding: '12px 24px',
+          },
+          contained: {
+            backgroundColor: '#f0f6fc',
+            color: '#111316',
+            backgroundImage: 'url("https://www.transparenttextures.com/patterns/rocky-wall.png")',
+            backgroundBlendMode: 'overlay',
+            boxShadow: 'none',
+            '&:hover': {
+              backgroundColor: '#f0f6fc',
+              color: '#111316',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 0 20px rgba(240, 246, 252, 0.3)',
+            },
+          },
+          outlined: {
+            border: '1px solid #f0f6fc',
+            color: '#f0f6fc',
+            backgroundColor: 'transparent',
+            '&:hover': {
+              backgroundColor: '#f0f6fc',
+              color: '#111316',
+            },
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#24292e',
+            border: '1px solid #3d444c',
+            borderRadius: '0.75rem',
+          },
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+            backgroundColor: '#f0f6fc',
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            color: '#c8d1d9',
+            '&.Mui-selected': {
+              color: '#f0f6fc',
+            },
           },
         },
       },
@@ -327,46 +429,42 @@ export default function MathPhysicsPage() {
   const handleExpandClick = (id) => {
     setExpandedId(expandedId === id ? null : id);
   };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <NavigationHeader />
 
       {/* Particles background */}
-      <ParticlesBg type="cobweb" bg={true} color="#8364E8" num={isMobile ? 25 : 50} />
-      
-      {/* Main container */}
-      <Container maxWidth="lg" sx={{ minHeight: '100vh', pt: { xs: 8, md: 12 }, pb: 10 }}>
-        {/* Navigation buttons */}
-        <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 10 }}>
-          <Button
-            component={Link}
-            href="/learn"
-            startIcon={<ArrowBackIcon />}
-            variant="outlined"
-            sx={{
-              color: '#9575CD',
-              borderColor: 'rgba(149, 117, 205, 0.5)',
-              backdropFilter: 'blur(5px)',
-              '&:hover': {
-                borderColor: '#9575CD',
-                backgroundColor: 'rgba(149, 117, 205, 0.1)',
-              },
-            }}
-          >
-            Back to Learn
-          </Button>
-        </Box>
-
-        {/* Header */}
+      <ParticlesBg type="cobweb" bg={true} color="#f0f6fc" num={isMobile ? 25 : 50} />        {/* Main container */}
+      <Container maxWidth="lg" sx={{ minHeight: '100vh', pt: { xs: 12, md: 14 }, pb: 10 }}>
+        {/* Header with integrated back button */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography 
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
+            <Button
+              component={Link}
+              href="/learn"
+              startIcon={<ArrowBackIcon />}
+              variant="outlined"
+              sx={{
+                color: 'rgba(240, 246, 252, 0.9)',
+                borderColor: 'rgba(240, 246, 252, 0.5)',
+                backdropFilter: 'blur(5px)',
+                mr: 3,
+                '&:hover': {
+                  borderColor: 'rgba(240, 246, 252, 0.9)',
+                  backgroundColor: 'rgba(240, 246, 252, 0.1)',
+                },
+              }}
+            >
+              Back to Learn
+            </Button>
+          </Box>          <Typography 
             variant="h3" 
             component="h1"
             sx={{
-              color: '#9575CD',
+              color: 'rgba(240, 246, 252, 0.9)',
               fontFamily: 'var(--font-exo-2), sans-serif',
-              textShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+              textShadow: '0 0 10px rgba(240, 246, 252, 0.7)',
               fontWeight: 700,
               letterSpacing: { xs: '2px', md: '3px' },
               mb: 2,
@@ -395,10 +493,9 @@ export default function MathPhysicsPage() {
               elevation={3}
               sx={{
                 p: { xs: 2, md: 4 },
-                backgroundColor: 'rgba(25, 25, 35, 0.8)',
-                backdropFilter: 'blur(10px)',
+                backgroundColor: 'rgba(25, 25, 35, 0.8)',                backdropFilter: 'blur(10px)',
                 borderRadius: '12px',
-                border: '1px solid rgba(149, 117, 205, 0.3)',
+                border: '1px solid rgba(240, 246, 252, 0.3)',
                 animation: `${fadeIn} 0.5s ease-out`,
               }}
             >
@@ -409,12 +506,11 @@ export default function MathPhysicsPage() {
                   sx={{ mb: 2 }}
                 >
                   Back to Topics
-                </Button>
-                <Typography 
+                </Button>                <Typography 
                   variant="h4" 
                   sx={{ 
                     mb: 3, 
-                    color: '#9575CD',
+                    color: 'rgba(240, 246, 252, 0.9)',
                     fontWeight: 'bold',
                   }}
                 >
@@ -429,18 +525,17 @@ export default function MathPhysicsPage() {
                   {selectedTopic.id === 'relativity' && <RelativitySection />}
                   {selectedTopic.id === 'quantum' && <QuantumPhysicsSection />}
                   {selectedTopic.id === 'thermodynamics' && <ThermodynamicsSection />}
-                  
-                  <Box sx={{ mt: 4 }}>
+                    <Box sx={{ mt: 4 }}>
                     <Button
                       variant="contained"
                       component={Link}
                       href={`/chat?topic=${selectedTopic.id}`}
                       startIcon={<ChatIcon />}
                       sx={{
-                        background: 'linear-gradient(45deg, #5D3FD3 30%, #9575CD 90%)',
-                        boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                        background: 'linear-gradient(45deg, rgba(240, 246, 252, 0.7) 30%, rgba(240, 246, 252, 0.7) 90%)',
+                        boxShadow: '0 0 10px rgba(240, 246, 252, 0.7)',
                         '&:hover': {
-                          boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
+                          boxShadow: '0 0 15px rgba(240, 246, 252, 1)',
                         },
                       }}
                     >
@@ -460,24 +555,22 @@ export default function MathPhysicsPage() {
                 value={currentTab}
                 onChange={handleTabChange}
                 variant="scrollable"
-                scrollButtons="auto"
-                sx={{ 
+                scrollButtons="auto"                sx={{ 
                   mb: 3,
                   '& .MuiTabs-indicator': {
-                    backgroundColor: '#9575CD',
+                    backgroundColor: 'rgba(240, 246, 252, 0.9)',
                   }
                 }}
               >
                 {physicsTopics.map((topic, index) => (
                   <Tab 
                     key={topic.id} 
-                    label={topic.title}
-                    sx={{
+                    label={topic.title}                    sx={{
                       color: '#E0E0E0',
                       '&.Mui-selected': {
-                        color: '#9575CD',
+                        color: 'rgba(240, 246, 252, 0.9)',
                       }
-                    }} 
+                    }}
                   />
                 ))}
               </Tabs>
@@ -498,8 +591,7 @@ export default function MathPhysicsPage() {
                         flexDirection: 'column',
                       }}
                     >
-                      <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#9575CD' }}>
+                      <CardContent sx={{ flexGrow: 1 }}>                        <Typography gutterBottom variant="h5" component="h2" sx={{ color: 'rgba(240, 246, 252, 0.9)' }}>
                           {physicsTopics[currentTab].title}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -529,24 +621,22 @@ export default function MathPhysicsPage() {
                           },
                         }}
                       >
-                        <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#9575CD' }}>
+                        <CardContent sx={{ flexGrow: 1 }}>                          <Typography gutterBottom variant="h5" component="h2" sx={{ color: 'rgba(240, 246, 252, 0.9)' }}>
                             {topic.title}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
                             {topic.description}
                           </Typography>
                         </CardContent>
-                        <Box sx={{ p: 2 }}>
-                          <Button
+                        <Box sx={{ p: 2 }}>                          <Button
                             variant="contained"
                             fullWidth
                             onClick={() => handleTopicClick(topic)}
                             sx={{
-                              background: 'linear-gradient(45deg, #5D3FD3 30%, #9575CD 90%)',
-                              boxShadow: '0 0 10px rgba(149, 117, 205, 0.7)',
+                              background: 'linear-gradient(45deg, rgba(240, 246, 252, 0.7) 30%, rgba(240, 246, 252, 0.7) 90%)',
+                              boxShadow: '0 0 10px rgba(240, 246, 252, 0.7)',
                               '&:hover': {
-                                boxShadow: '0 0 15px rgba(149, 117, 205, 1)',
+                                boxShadow: '0 0 15px rgba(240, 246, 252, 1)',
                               },
                             }}
                           >
@@ -572,8 +662,7 @@ export default function MathPhysicsPage() {
             sx={{ 
               bgcolor: 'rgba(25, 25, 35, 0.7)',
               backdropFilter: 'blur(5px)',
-              p: 2,
-              boxShadow: '0 0 15px rgba(149, 117, 205, 0.7)',
+              p: 2,              boxShadow: '0 0 15px rgba(240, 246, 252, 0.7)',
               '&:hover': {
                 bgcolor: 'rgba(35, 35, 45, 0.8)',
                 animation: `${pulse} 2s infinite`,

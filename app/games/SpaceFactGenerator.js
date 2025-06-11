@@ -302,7 +302,7 @@ export default function SpaceFactGenerator() {
 
   // If not mounted yet (server-side), return a loader
   if (!mounted) {
-    return <CircularProgress sx={{ color: '#9575CD', my: 10 }} />;
+    return <CircularProgress sx={{ color: 'rgba(240, 246, 252, 0.7)', my: 10 }} />;
   }
   
   return (
@@ -342,11 +342,10 @@ export default function SpaceFactGenerator() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        px: { xs: 2, md: 0 },
+        justifyContent: 'center',      px: { xs: 2, md: 0 },
       }}>
         {loading ? (
-          <CircularProgress sx={{ color: '#9575CD', my: 10 }} />
+          <CircularProgress sx={{ color: 'rgba(240, 246, 252, 0.7)', my: 10 }} />
         ) : currentFact ? (
           <Card 
             sx={{ 
@@ -409,9 +408,11 @@ export default function SpaceFactGenerator() {
                 startIcon={<AutorenewIcon />}
                 onClick={getRandomFact}
                 sx={{
-                  bgcolor: 'rgba(149, 117, 205, 0.8)',
+                  bgcolor: 'rgba(240, 246, 252, 0.8)',
+                  color: 'rgba(107, 110, 114, 0.9)',
                   '&:hover': {
-                    bgcolor: 'rgba(149, 117, 205, 1)',
+                    bgcolor: 'rgba(107, 110, 114, 0.8)',
+                    color: 'rgba(240, 246, 252, 0.9)',
                   }
                 }}
               >

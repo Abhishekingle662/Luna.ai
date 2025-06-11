@@ -1,574 +1,419 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Slider,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  Card,
-  CardMedia,
-  Tooltip,
-  TextField,
-  InputAdornment,
-  IconButton,
-} from '@mui/material';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import InfoIcon from '@mui/icons-material/Info';
-import { keyframes } from '@mui/system';
+import { motion, AnimatePresence } from 'framer-motion';
+import { RotateCcw, Play, Pause, Info, Zap, Settings } from 'lucide-react';
 
-// Animation for bouncing effect
-const bounce = keyframes`
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(var(--bounce-height, -100px));
-  }
-`;
+// Physics constants
+const GRAVITY_CONSTANT = 0.1;
+const DAMPING = 0.999;
 
-// Planet data with gravity values (m/s²)
-const planetData = [
+// Preset scenarios
+const scenarios = [
   {
-    name: 'Mercury',
-    gravity: 3.7,
-    color: '#A9A9A9',
-    image: 'https://images.unsplash.com/photo-1614732484003-ef9881555dc0?q=80&w=150&auto=format',
-    description: 'The smallest and innermost planet in the Solar System.'
+    name: "Earth-Moon System",
+    description: "Simplified Earth-Moon gravitational interaction",
+    bodies: [
+      { id: 1, x: 200, y: 200, vx: 0, vy: 0, mass: 100, radius: 20, color: '#4F46E5', name: 'Earth' },
+      { id: 2, x: 350, y: 200, vx: 0, vy: 2, mass: 20, radius: 8, color: '#E5E7EB', name: 'Moon' }
+    ]
   },
   {
-    name: 'Venus',
-    gravity: 8.87,
-    color: '#E6C229',
-    image: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?q=80&w=150&auto=format',
-    description: 'Venus has a thick atmosphere causing a runaway greenhouse effect.'
+    name: "Binary Star System",
+    description: "Two massive stars orbiting their common center",
+    bodies: [
+      { id: 1, x: 180, y: 200, vx: 0, vy: 1, mass: 80, radius: 16, color: '#F59E0B', name: 'Star A' },
+      { id: 2, x: 320, y: 200, vx: 0, vy: -1, mass: 80, radius: 16, color: '#EF4444', name: 'Star B' }
+    ]
   },
   {
-    name: 'Earth',
-    gravity: 9.81,
-    color: '#1E90FF',
-    image: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=150&auto=format',
-    description: 'Our home planet with moderate gravity and suitable conditions for life.'
-  },
-  {
-    name: 'Moon',
-    gravity: 1.62,
-    color: '#D3D3D3',
-    image: 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?q=80&w=150&auto=format',
-    description: 'Earth\'s only natural satellite with about 1/6 of Earth\'s gravity.'
-  },
-  {
-    name: 'Mars',
-    gravity: 3.71,
-    color: '#FF4500',
-    image: 'https://images.unsplash.com/photo-1614728894747-a83421789f10?q=80&w=150&auto=format',
-    description: 'The Red Planet has about 38% of Earth\'s surface gravity.'
-  },
-  {
-    name: 'Jupiter',
-    gravity: 24.79,
-    color: '#DEB887',
-    image: 'https://images.unsplash.com/photo-1614732414444-096e5f1122d5?q=80&w=150&auto=format',
-    description: 'The largest planet in our solar system with 2.5 times Earth\'s gravity.'
-  },
-  {
-    name: 'Saturn',
-    gravity: 10.44,
-    color: '#FFD700',
-    image: 'https://images.unsplash.com/photo-1614732484003-ef9881555dc0?q=80&w=150&auto=format',
-    description: 'Known for its rings, Saturn has slightly stronger gravity than Earth.'
-  },
-  {
-    name: 'Uranus',
-    gravity: 8.69,
-    color: '#00CED1',
-    image: 'https://images.unsplash.com/photo-1614314107768-6018061c5bc1?q=80&w=150&auto=format',
-    description: 'The third-largest planet with gravity slightly less than Earth\'s.'
-  },
-  {
-    name: 'Neptune',
-    gravity: 11.15,
-    color: '#4169E1',
-    image: 'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?q=80&w=150&auto=format',
-    description: 'The windiest planet with gravity slightly stronger than Earth\'s.'
-  },
-  {
-    name: 'Pluto',
-    gravity: 0.62,
-    color: '#8B4513',
-    image: 'https://images.unsplash.com/photo-1614314107769-2018061c5bc1?q=80&w=150&auto=format',
-    description: 'A dwarf planet with very low gravity, about 6% of Earth\'s.'
+    name: "Three Body Problem",
+    description: "Chaotic three-body gravitational interaction",
+    bodies: [
+      { id: 1, x: 200, y: 150, vx: 1, vy: 0, mass: 60, radius: 12, color: '#8B5CF6', name: 'Body 1' },
+      { id: 2, x: 300, y: 200, vx: 0, vy: 1, mass: 60, radius: 12, color: '#06D6A0', name: 'Body 2' },
+      { id: 3, x: 250, y: 280, vx: -1, vy: -1, mass: 60, radius: 12, color: '#F72585', name: 'Body 3' }
+    ]
   }
 ];
 
-// Object types for simulation
-const objectTypes = ['ball', 'human', 'feather', 'car'];
-
-// Export the component with a consistent name
 export default function GravitySimulator() {
-  const [selectedPlanet, setSelectedPlanet] = useState('Earth');
-  const [mass, setMass] = useState(70); // kg
-  const [bounceHeight, setBounceHeight] = useState(100); // px
-  const [objectType, setObjectType] = useState('ball');
-  const [simulationSpeed, setSimulationSpeed] = useState(1);
-  const [useCustomGravity, setUseCustomGravity] = useState(false);
-  const [customGravity, setCustomGravity] = useState(9.81);
-  const [surfaceWeight, setSurfaceWeight] = useState(70 * 9.81); // N = mass * gravity
-  
-  // Get the selected planet data
-  const planet = planetData.find(p => p.name === selectedPlanet);
-  
-  // Calculate gravity value based on selection
-  const gravityValue = useCustomGravity ? customGravity : (planet ? planet.gravity : 9.81);
-  
-  // Update surface weight when relevant values change
+  const [bodies, setBodies] = useState(scenarios[0].bodies);
+  const [isRunning, setIsRunning] = useState(false);
+  const [currentScenario, setCurrentScenario] = useState(0);
+  const [showTrails, setShowTrails] = useState(true);
+  const [trails, setTrails] = useState([]);
+  const [gravityStrength, setGravityStrength] = useState(1);
+  const [selectedBody, setSelectedBody] = useState(null);
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+
   useEffect(() => {
-    setSurfaceWeight(mass * gravityValue);
-  }, [mass, gravityValue]);
-  
-  // Get the appropriate emoji for the selected object
-  const getObjectEmoji = () => {
-    switch(objectType) {
-      case 'ball': return '🏀';
-      case 'human': return '🧍';
-      case 'feather': return '🪶';
-      case 'car': return '🚗';
-      default: return '🏀';
+    if (isRunning) {
+      animationRef.current = requestAnimationFrame(updateSimulation);
+    } else {
+      cancelAnimationFrame(animationRef.current);
+    }
+    return () => cancelAnimationFrame(animationRef.current);
+  }, [isRunning, bodies, gravityStrength]);
+
+  const updateSimulation = () => {
+    setBodies(prevBodies => {
+      const newBodies = prevBodies.map(body => ({ ...body }));
+      
+      // Calculate gravitational forces
+      for (let i = 0; i < newBodies.length; i++) {
+        let fx = 0, fy = 0;
+        
+        for (let j = 0; j < newBodies.length; j++) {
+          if (i !== j) {
+            const dx = newBodies[j].x - newBodies[i].x;
+            const dy = newBodies[j].y - newBodies[i].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 0) {
+              const force = (GRAVITY_CONSTANT * gravityStrength * newBodies[i].mass * newBodies[j].mass) / (distance * distance);
+              fx += force * dx / distance;
+              fy += force * dy / distance;
+            }
+          }
+        }
+        
+        // Update velocity and position
+        newBodies[i].vx += fx / newBodies[i].mass;
+        newBodies[i].vy += fy / newBodies[i].mass;
+        newBodies[i].vx *= DAMPING;
+        newBodies[i].vy *= DAMPING;
+        newBodies[i].x += newBodies[i].vx;
+        newBodies[i].y += newBodies[i].vy;
+        
+        // Boundary conditions
+        if (newBodies[i].x < 0 || newBodies[i].x > 500) newBodies[i].vx *= -0.8;
+        if (newBodies[i].y < 0 || newBodies[i].y > 400) newBodies[i].vy *= -0.8;
+        newBodies[i].x = Math.max(0, Math.min(500, newBodies[i].x));
+        newBodies[i].y = Math.max(0, Math.min(400, newBodies[i].y));
+      }
+      
+      // Update trails
+      if (showTrails) {
+        setTrails(prevTrails => {
+          const newTrails = [...prevTrails];
+          newBodies.forEach(body => {
+            newTrails.push({ x: body.x, y: body.y, color: body.color, bodyId: body.id });
+          });
+          return newTrails.slice(-500); // Keep last 500 trail points
+        });
+      }
+      
+      return newBodies;
+    });
+    
+    if (isRunning) {
+      animationRef.current = requestAnimationFrame(updateSimulation);
     }
   };
-  
-  // Normalize bounce height based on gravity (lower gravity = higher bounce)
-  const getNormalizedBounceHeight = () => {
-    // Base height is from slider
-    const baseHeight = bounceHeight;
-    
-    // Earth gravity is the reference (9.81 m/s²)
-    const gravityRatio = 9.81 / gravityValue;
-    
-    // Adjust height based on gravity (higher ratio = higher bounce)
-    // We use sqrt for more natural physics feel (not linear)
-    return baseHeight * Math.sqrt(gravityRatio);
+
+  const resetSimulation = () => {
+    setIsRunning(false);
+    setBodies(scenarios[currentScenario].bodies);
+    setTrails([]);
   };
-  
+
+  const loadScenario = (index) => {
+    setIsRunning(false);
+    setCurrentScenario(index);
+    setBodies(scenarios[index].bodies);
+    setTrails([]);
+  };
+
+  const toggleSimulation = () => {
+    setIsRunning(!isRunning);
+  };
+
+  const clearTrails = () => {
+    setTrails([]);
+  };
+
   return (
-    <Box sx={{ p: { xs: 1, sm: 2 } }}>
-      <Grid container spacing={3}>
-        {/* Controls */}
-        <Grid item xs={12} md={4}>
-          <Paper
-            sx={{
-              bgcolor: 'rgba(25, 25, 35, 0.8)',
-              p: 3,
-              borderRadius: '15px',
-              border: '1px solid rgba(149, 117, 205, 0.3)',
-              boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
-              height: '100%',
-            }}
-          >
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                color: '#9575CD',
-                mb: 2,
-                fontFamily: 'var(--font-space-grotesk), sans-serif',
-              }}
-            >
-              Simulation Controls
-            </Typography>
-            
-            {/* Planet selector */}
-            <Box sx={{ mb: 3 }}>
-              <FormControl fullWidth disabled={useCustomGravity}>
-                <InputLabel 
-                  id="planet-select-label"
-                  sx={{ 
-                    color: useCustomGravity ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.7)'
-                  }}
-                >
-                  Select Planet
-                </InputLabel>
-                <Select
-                  labelId="planet-select-label"
-                  id="planet-select"
-                  value={selectedPlanet}
-                  label="Select Planet"
-                  onChange={(e) => setSelectedPlanet(e.target.value)}
-                  sx={{
-                    color: useCustomGravity ? 'rgba(255,255,255,0.4)' : '#fff',
-                    '.MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'rgba(149, 117, 205, 0.5)',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'rgba(149, 117, 205, 0.8)',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#9575CD',
-                    },
-                  }}
-                >
-                  {planetData.map((planet) => (
-                    <MenuItem key={planet.name} value={planet.name}>
-                      {planet.name} - {planet.gravity.toFixed(2)} m/s²
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-            
-            {/* Mass control */}
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.8)', mb: 1 }}>
-                Object Mass: {mass} kg
-              </Typography>
-              <Slider
-                value={mass}
-                min={1}
-                max={200}
-                onChange={(_, newValue) => setMass(newValue)}
-                valueLabelDisplay="auto"
-                sx={{
-                  color: '#9575CD',
-                  '& .MuiSlider-thumb': {
-                    backgroundColor: '#9575CD',
-                  },
-                  '& .MuiSlider-track': {
-                    backgroundColor: '#9575CD',
-                  },
-                }}
-              />
-            </Box>
-            
-            {/* Object type selector */}
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.8)', mb: 1 }}>
-                Object Type
-              </Typography>
-              <Grid container spacing={1}>
-                {objectTypes.map((type) => (
-                  <Grid item xs={3} key={type}>
-                    <Button
-                      variant={objectType === type ? 'contained' : 'outlined'}
-                      onClick={() => setObjectType(type)}
-                      sx={{
-                        minWidth: '40px',
-                        p: 1,
-                        bgcolor: objectType === type ? 'rgba(149, 117, 205, 0.8)' : 'transparent',
-                        borderColor: 'rgba(149, 117, 205, 0.5)',
-                        '&:hover': {
-                          bgcolor: objectType === type ? 'rgba(149, 117, 205, 0.9)' : 'rgba(149, 117, 205, 0.1)',
-                        },
-                      }}
-                    >
-                      {type === 'ball' && '🏀'}
-                      {type === 'human' && '🧍'}
-                      {type === 'feather' && '🪶'}
-                      {type === 'car' && '🚗'}
-                    </Button>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-            
-            {/* Bounce height control */}
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.8)', mb: 1 }}>
-                Bounce Height
-              </Typography>
-              <Slider
-                value={bounceHeight}
-                min={20}
-                max={300}
-                onChange={(_, newValue) => setBounceHeight(newValue)}
-                valueLabelDisplay="auto"
-                sx={{
-                  color: '#9575CD',
-                  '& .MuiSlider-thumb': {
-                    backgroundColor: '#9575CD',
-                  },
-                  '& .MuiSlider-track': {
-                    backgroundColor: '#9575CD',
-                  },
-                }}
-              />
-            </Box>
+    <div className="max-w-6xl mx-auto p-6">
+      {/* Header */}
+      <motion.div 
+        className="text-center mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="flex items-center justify-center space-x-3 mb-4">
+          <Zap className="text-lunar-accent" size={32} />
+          <h2 className="text-3xl font-space-grotesk font-bold text-lunar-light">
+            Gravity Simulator
+          </h2>
+          <Zap className="text-lunar-accent" size={32} />
+        </div>
+        <p className="text-lunar-muted font-lato">
+          Explore the fundamental force that shapes our universe
+        </p>
+      </motion.div>
 
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.8)', mb: 1 }}>
-                Simulation Speed
-              </Typography>
-              <Slider
-                value={simulationSpeed}
-                min={0.5}
-                max={2}
-                step={0.1}
-                onChange={(_, newValue) => setSimulationSpeed(newValue)}
-                valueLabelDisplay="auto"
-                sx={{
-                  color: '#9575CD',
-                  '& .MuiSlider-thumb': {
-                    backgroundColor: '#9575CD',
-                  },
-                  '& .MuiSlider-track': {
-                    backgroundColor: '#9575CD',
-                  },
-                }}
-              />
-            </Box>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Controls Panel */}
+        <motion.div 
+          className="lg:col-span-1"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <div className="card space-y-6">
+            <h3 className="text-xl font-space-grotesk font-bold text-lunar-light mb-4">
+              Controls
+            </h3>
 
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ color: 'rgba(255,255,255,0.8)', mb: 1, display: 'flex', alignItems: 'center' }}>
-                Custom Gravity
-                <Tooltip title="Enable to set your own gravity value">
-                  <InfoIcon fontSize="small" sx={{ ml: 1, color: 'rgba(149, 117, 205, 0.8)' }} />
-                </Tooltip>
-              </Typography>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <Button
-                    variant={useCustomGravity ? "contained" : "outlined"}
-                    onClick={() => setUseCustomGravity(!useCustomGravity)}
-                    sx={{
-                      bgcolor: useCustomGravity ? 'rgba(149, 117, 205, 0.8)' : 'transparent',
-                      color: '#fff',
-                      borderColor: 'rgba(149, 117, 205, 0.5)',
-                      '&:hover': {
-                        bgcolor: useCustomGravity ? 'rgba(149, 117, 205, 0.9)' : 'rgba(149, 117, 205, 0.1)',
-                      },
-                    }}
-                  >
-                    {useCustomGravity ? "Enabled" : "Disabled"}
-                  </Button>
-                </Grid>
-                <Grid item xs>
-                  <Slider
-                    value={customGravity}
-                    min={0.1}
-                    max={30}
-                    step={0.1}
-                    onChange={(_, newValue) => setCustomGravity(newValue)}
-                    valueLabelDisplay="auto"
-                    disabled={!useCustomGravity}
-                    sx={{
-                      color: useCustomGravity ? '#9575CD' : 'rgba(149, 117, 205, 0.3)',
-                      '& .MuiSlider-thumb': {
-                        backgroundColor: '#9575CD',
-                      },
-                      '& .MuiSlider-track': {
-                        backgroundColor: '#9575CD',
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    value={customGravity}
-                    type="number"
-                    size="small"
-                    disabled={!useCustomGravity}
-                    onChange={(e) => setCustomGravity(Math.max(0.1, Math.min(30, parseFloat(e.target.value) || 0.1)))}
-                    InputProps={{
-                      endAdornment: <InputAdornment position="end">m/s²</InputAdornment>,
-                      sx: { color: useCustomGravity ? '#fff' : 'rgba(255, 255, 255, 0.5)' }
-                    }}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': { borderColor: 'rgba(149, 117, 205, 0.5)' },
-                        '&:hover fieldset': { borderColor: 'rgba(149, 117, 205, 0.8)' },
-                        '&.Mui-focused fieldset': { borderColor: '#9575CD' },
-                      },
-                      '& .MuiInputBase-input': { color: '#fff' },
-                      width: '100%',
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-            
-            {/* Weight on selected planet calculation */}
-            <Box sx={{ 
-              bgcolor: 'rgba(25, 25, 35, 0.5)', 
-              p: 2, 
-              borderRadius: 2,
-              border: '1px solid rgba(149, 117, 205, 0.2)',
-              mt: 4 
-            }}>
-              <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1 }}>
-                Physics Data:
-              </Typography>
-              <Grid container spacing={1}>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                    Gravity:
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: '#9575CD', fontWeight: 'bold' }}>
-                    {gravityValue.toFixed(2)} m/s²
-                  </Typography>
-                </Grid>
-                
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                    Weight on {useCustomGravity ? 'Custom' : planet?.name}:
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: '#9575CD', fontWeight: 'bold' }}>
-                    {surfaceWeight.toFixed(2)} N
-                  </Typography>
-                </Grid>
-                
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.9)' }}>
-                    Bounce Time:
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: '#9575CD', fontWeight: 'bold' }}>
-                    {(Math.sqrt(2 * getNormalizedBounceHeight() / 100 / gravityValue) * 2).toFixed(2)} s
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-          </Paper>
-        </Grid>
-        
-        {/* Simulation visualization */}
-        <Grid item xs={12} md={8}>
-          <Paper
-            sx={{
-              bgcolor: 'rgba(25, 25, 35, 0.8)',
-              p: 3,
-              height: '100%',
-              minHeight: '500px',
-              borderRadius: '15px',
-              border: '1px solid rgba(149, 117, 205, 0.3)',
-              boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
-              display: 'flex',
-              flexDirection: 'column',
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-          >
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                color: '#9575CD',
-                mb: 2,
-                fontFamily: 'var(--font-space-grotesk), sans-serif',
-              }}
-            >
-              {useCustomGravity ? 'Custom Gravity' : planet?.name} Simulation
-            </Typography>
-            
-            {/* Planet info */}
-            {!useCustomGravity && planet && (
-              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-                <Card sx={{ 
-                  width: 100, 
-                  mr: 2,
-                  bgcolor: 'transparent',
-                  boxShadow: 'none',
-                }}>
-                  <CardMedia
-                    component="img"
-                    image={planet.image}
-                    alt={planet.name}
-                    sx={{ 
-                      height: 100,
-                      borderRadius: '50%',
-                      border: `2px solid ${planet.color}`,
-                    }}
-                  />
-                </Card>
-                <Box>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', mb: 1 }}>
-                    {planet.description}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-                    Relative gravity: {(planet.gravity / 9.81).toFixed(2)}× Earth
-                  </Typography>
-                </Box>
-              </Box>
-            )}
-            
-            {/* Simulation area */}
-            <Box sx={{ 
-              flex: 1, 
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
-              position: 'relative',
-              bgcolor: 'rgba(0, 0, 0, 0.3)',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              border: '1px solid rgba(149, 117, 205, 0.2)',
-              p: 2,
-            }}>
-              {/* Stars background for space feel */}
-              <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-                {[...Array(50)].map((_, i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      position: 'absolute',
-                      width: Math.random() * 3 + 1 + 'px',
-                      height: Math.random() * 3 + 1 + 'px',
-                      backgroundColor: '#fff',
-                      borderRadius: '50%',
-                      top: Math.random() * 100 + '%',
-                      left: Math.random() * 100 + '%',
-                      opacity: Math.random() * 0.7 + 0.3,
-                    }}
-                  />
-                ))}
-              </Box>
-              
-              {/* Bouncing object */}
-              <Box
-                sx={{
-                  fontSize: objectType === 'human' ? '40px' : '60px',
-                  alignSelf: 'center',
-                  mb: 2,
-                  animation: `${bounce} ${2 / simulationSpeed}s infinite ease-in-out`,
-                  transformOrigin: 'center bottom',
-                  position: 'relative',
-                  '--bounce-height': `-${getNormalizedBounceHeight()}px`,
-                }}
+            {/* Simulation Controls */}
+            <div className="space-y-4">
+              <button
+                onClick={toggleSimulation}
+                className={`w-full btn-primary flex items-center justify-center space-x-2 ${isRunning ? 'bg-red-600 hover:bg-red-700' : ''}`}
               >
-                {getObjectEmoji()}
-              </Box>
+                {isRunning ? <Pause size={20} /> : <Play size={20} />}
+                <span>{isRunning ? 'Pause' : 'Start'} Simulation</span>
+              </button>
+
+              <button
+                onClick={resetSimulation}
+                className="w-full btn-secondary flex items-center justify-center space-x-2"
+              >
+                <RotateCcw size={20} />
+                <span>Reset</span>
+              </button>
+            </div>
+
+            {/* Scenario Selection */}
+            <div>
+              <h4 className="text-lg font-space-grotesk font-semibold text-lunar-light mb-3">
+                Scenarios
+              </h4>
+              <div className="space-y-2">
+                {scenarios.map((scenario, index) => (
+                  <button
+                    key={index}
+                    onClick={() => loadScenario(index)}
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${
+                      currentScenario === index 
+                        ? 'bg-lunar-accent/20 border border-lunar-accent/50' 
+                        : 'bg-lunar-medium/30 hover:bg-lunar-medium/50'
+                    }`}
+                  >
+                    <div className="font-space-grotesk font-semibold text-lunar-light">
+                      {scenario.name}
+                    </div>
+                    <div className="text-sm text-lunar-muted font-lato">
+                      {scenario.description}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Settings */}
+            <div>
+              <h4 className="text-lg font-space-grotesk font-semibold text-lunar-light mb-3 flex items-center space-x-2">
+                <Settings size={18} />
+                <span>Settings</span>
+              </h4>
               
-              {/* Surface */}
-              <Box sx={{ 
-                height: '30px', 
-                bgcolor: useCustomGravity ? 'rgba(149, 117, 205, 0.3)' : planet?.color || '#1E90FF',
-                opacity: 0.4,
-                width: '100%',
-                borderRadius: '5px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Typography variant="caption" sx={{ color: '#fff' }}>
-                  Surface
-                </Typography>
-              </Box>
-            </Box>
-            
-            {/* Educational note */}
-            <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', mt: 2, textAlign: 'center' }}>
-              Gravity affects how objects move and behave. On planets with stronger gravity, objects fall faster and bounce less high.
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-lato text-lunar-muted mb-2">
+                    Gravity Strength: {gravityStrength.toFixed(1)}x
+                  </label>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="3"
+                    step="0.1"
+                    value={gravityStrength}
+                    onChange={(e) => setGravityStrength(parseFloat(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="showTrails"
+                    checked={showTrails}
+                    onChange={(e) => setShowTrails(e.target.checked)}
+                    className="rounded"
+                  />
+                  <label htmlFor="showTrails" className="text-sm font-lato text-lunar-light">
+                    Show Trails
+                  </label>
+                </div>
+
+                {showTrails && (
+                  <button
+                    onClick={clearTrails}
+                    className="w-full btn-secondary text-sm"
+                  >
+                    Clear Trails
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Simulation Canvas */}
+        <motion.div 
+          className="lg:col-span-2"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <div className="card">
+            <div className="relative bg-lunar-deep rounded-lg border border-lunar-medium/30 overflow-hidden">
+              <svg
+                width="500"
+                height="400"
+                className="w-full h-auto"
+                viewBox="0 0 500 400"
+              >
+                {/* Grid lines */}
+                <defs>
+                  <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                    <path
+                      d="M 50 0 L 0 0 0 50"
+                      fill="none"
+                      stroke="rgb(61, 68, 76)"
+                      strokeWidth="0.5"
+                      opacity="0.3"
+                    />
+                  </pattern>
+                </defs>
+                <rect width="500" height="400" fill="url(#grid)" />
+
+                {/* Trails */}
+                {showTrails && trails.map((trail, index) => (
+                  <circle
+                    key={index}
+                    cx={trail.x}
+                    cy={trail.y}
+                    r="1"
+                    fill={trail.color}
+                    opacity={0.3}
+                  />
+                ))}
+
+                {/* Bodies */}
+                {bodies.map((body) => (
+                  <g key={body.id}>
+                    {/* Body glow effect */}
+                    <circle
+                      cx={body.x}
+                      cy={body.y}
+                      r={body.radius + 4}
+                      fill={body.color}
+                      opacity="0.3"
+                      filter="blur(2px)"
+                    />
+                    {/* Main body */}
+                    <circle
+                      cx={body.x}
+                      cy={body.y}
+                      r={body.radius}
+                      fill={body.color}
+                      stroke="#ffffff"
+                      strokeWidth="1"
+                      opacity="0.9"
+                      className="cursor-pointer"
+                      onClick={() => setSelectedBody(body)}
+                    />
+                    {/* Body label */}
+                    <text
+                      x={body.x}
+                      y={body.y - body.radius - 8}
+                      textAnchor="middle"
+                      className="text-xs fill-lunar-light font-lato"
+                    >
+                      {body.name}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+
+              {/* Status indicator */}
+              <div className="absolute top-4 right-4 flex items-center space-x-2">
+                <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+                <span className="text-sm font-lato text-lunar-light">
+                  {isRunning ? 'Running' : 'Paused'}
+                </span>
+              </div>
+            </div>
+
+            {/* Body Info Panel */}
+            <AnimatePresence>
+              {selectedBody && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="mt-4 p-4 bg-lunar-medium/30 rounded-lg border border-lunar-medium/50"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-space-grotesk font-semibold text-lunar-light flex items-center space-x-2">
+                      <Info size={16} />
+                      <span>{selectedBody.name}</span>
+                    </h4>
+                    <button
+                      onClick={() => setSelectedBody(null)}
+                      className="text-lunar-muted hover:text-lunar-light"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm font-lato">
+                    <div>
+                      <span className="text-lunar-muted">Mass:</span>
+                      <span className="text-lunar-light ml-2">{selectedBody.mass}</span>
+                    </div>
+                    <div>
+                      <span className="text-lunar-muted">Radius:</span>
+                      <span className="text-lunar-light ml-2">{selectedBody.radius}px</span>
+                    </div>
+                    <div>
+                      <span className="text-lunar-muted">Velocity X:</span>
+                      <span className="text-lunar-light ml-2">{selectedBody.vx.toFixed(2)}</span>
+                    </div>
+                    <div>
+                      <span className="text-lunar-muted">Velocity Y:</span>
+                      <span className="text-lunar-light ml-2">{selectedBody.vy.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Information Panel */}
+      <motion.div 
+        className="mt-8 card-secondary"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
+        <h3 className="text-xl font-space-grotesk font-bold text-lunar-light mb-4 flex items-center space-x-2">
+          <Info size={20} />
+          <span>About Gravity</span>
+        </h3>
+        <p className="text-lunar-muted font-lato leading-relaxed">
+          Gravity is one of the four fundamental forces of nature. This simulator demonstrates how massive objects 
+          attract each other with a force proportional to their masses and inversely proportional to the square 
+          of the distance between them. Try different scenarios to see how gravity shapes orbital mechanics, 
+          from planetary systems to binary stars.
+        </p>
+      </motion.div>
+    </div>
   );
 }

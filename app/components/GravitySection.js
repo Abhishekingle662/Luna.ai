@@ -27,28 +27,31 @@ export default function GravitySection() {
     setActiveTab(newValue);
   };
   
-  return (
-    <Box>
-      <Typography variant="h5" sx={{ mb: 2, color: '#9575CD', fontWeight: 'bold' }}>
+  return (    <Box>
+      <Typography variant="h5" sx={{ 
+        mb: 2, 
+        color: '#f0f6fc', 
+        fontWeight: 'bold',
+        textShadow: '0 0 10px rgba(240, 246, 252, 0.5)'
+      }}>
         Gravity and Orbits
       </Typography>
       
       <Typography variant="body1" sx={{ mb: 4 }}>
         Explore the fascinating world of gravity and orbits. Learn about Newton&apos;s Law of Universal Gravitation, Kepler&apos;s Laws, and more through interactive visualizations.
       </Typography>
-      
-      <Tabs 
+        <Tabs 
         value={activeTab} 
         onChange={handleTabChange} 
         sx={{ 
           mb: 4,
           '& .MuiTabs-indicator': {
-            backgroundColor: '#9575CD',
+            backgroundColor: '#f0f6fc',
           },
           '& .MuiTab-root': {
-            color: '#E0E0E0',
+            color: '#c8d1d9',
             '&.Mui-selected': {
-              color: '#9575CD',
+              color: '#f0f6fc',
             }
           }
         }}
@@ -99,27 +102,24 @@ export default function GravitySection() {
             Kepler&apos;s Three Laws describe the motion of planets around the Sun:
           </Typography>
           
-          <Box component="ul" sx={{ pl: 2, my: 3 }}>
-            <Box component="li" sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#9575CD' }}>
+          <Box component="ul" sx={{ pl: 2, my: 3 }}>            <Box component="li" sx={{ mb: 3 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#f0f6fc' }}>
                 First Law: The Law of Ellipses
               </Typography>
               <Typography variant="body1">
                 Planets move in elliptical orbits with the Sun at one focus.
               </Typography>
             </Box>
-            
-            <Box component="li" sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#9575CD' }}>
+              <Box component="li" sx={{ mb: 3 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#f0f6fc' }}>
                 Second Law: The Law of Equal Areas
               </Typography>
               <Typography variant="body1">
                 A line connecting a planet to the Sun sweeps out equal areas in equal time intervals.
               </Typography>
             </Box>
-            
-            <Box component="li" sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#9575CD' }}>
+              <Box component="li" sx={{ mb: 3 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#f0f6fc' }}>
                 Third Law: The Law of Harmonies
               </Typography>
               <Typography variant="body1">
@@ -143,8 +143,11 @@ export default function GravitySection() {
           <Typography variant="body1" sx={{ mb: 3 }}>
             Einstein&apos;s Theory of General Relativity revolutionized our understanding of gravity, showing that it&apos;s not a force but a curvature of spacetime caused by mass and energy.
           </Typography>
-          
-          <Typography variant="h6" sx={{ mb: 2, color: '#9575CD' }}>
+            <Typography variant="h6" sx={{ 
+            mb: 2, 
+            color: '#f0f6fc',
+            textShadow: '0 0 10px rgba(240, 246, 252, 0.5)'
+          }}>
             Einstein&apos;s Field Equation
           </Typography>
           
