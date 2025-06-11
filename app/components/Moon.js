@@ -28,12 +28,11 @@ export default function Moon(props) {
     if (scene && !error) {
       console.log('Moon model loaded successfully! 🌙')
     }  }, [scene, error])
-  
-  useFrame(() => {
+    useFrame(() => {
     if (!ref.current || !scene) return
     
-    // rotate clockwise as you scroll down (slower rotation)
-    ref.current.rotation.y = scrollProgress * Math.PI * 0.5  // Reduced from 2 to 1
+    // Slowest rotation - much slower than before
+    ref.current.rotation.y = scrollProgress * Math.PI * 0.1  // Reduced from 0.5 to 0.1 for slowest rotation
     
     // Keep moon at a consistent distance, but slightly move it back to prevent covering text
     const baseZ = props.position?.[2] ?? 0

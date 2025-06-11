@@ -29,18 +29,20 @@ export default function Earth(props) {
     if (scene && !error) {
       console.log('Earth model loaded successfully! 🌍')
     }
-  }, [scene, error])
-  useFrame(() => {
+  }, [scene, error]);  useFrame(() => {
     if (!ref.current || !scene) return
-      // Only apply scroll-based rotation if not being manually controlled
-    if (!props.disableScrollRotation) {
-      // rotate counterclockwise as you scroll down (slowest rotation)
-      ref.current.rotation.y = -scrollProgress * Math.PI * 0.1  // Reduced from 2 to 0.5
+    
+    // Earth rotation is now disabled during scroll - no rotation
+    // Only apply scroll-based rotation if explicitly enabled
+    if (props.enableScrollRotation) {
+      ref.current.rotation.y = -scrollProgress * Math.PI * 0.1
     }
-      // Keep Earth at a distant position, minimal movement
+    
+    // Keep Earth at a distant position, minimal movement
     const baseZ = props.position?.[2] ?? 0
     ref.current.position.z = baseZ - scrollProgress * 0.5 // Much less movement
-      // Use Earth's scale (much smaller and distant)
+    
+    // Use Earth's scale (much smaller and distant)
     const baseScale = Array.isArray(props.scale) ? props.scale[0] : props.scale || 0.5
     const minScale = baseScale * 0.8 // Scale down to 80% at maximum scroll
     const currentScale = baseScale - (scrollProgress * (baseScale - minScale))

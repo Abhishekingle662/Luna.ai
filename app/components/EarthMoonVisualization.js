@@ -27,14 +27,17 @@ function EarthMoonSystem({ isAnimating = true }) {
       const orbitRadius = 4
       moonRef.current.position.x = Math.cos(time) * orbitRadius
       moonRef.current.position.z = Math.sin(time) * orbitRadius
-      // Moon also rotates (tidally locked - same rotation as orbit, but slower)
-      moonRef.current.rotation.y = time * 0.5  // Reduced from time to time * 0.5
+      // Moon also rotates (tidally locked - same rotation as orbit, but slower)      moonRef.current.rotation.y = time * 0.5  // Reduced from time to time * 0.5
     }
   })
 
   return (
     <>
-      <Starfield count={1000} radius={50} depth={100} />
+      <Starfield 
+        scale={0.8} 
+        position={[0, 0, -30]}
+        autoRotate={false}
+      />
       <ambientLight intensity={0.3} />
       <directionalLight position={[10, 10, 5]} intensity={1} />
       

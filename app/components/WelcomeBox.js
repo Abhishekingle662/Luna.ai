@@ -86,8 +86,7 @@ export default function WelcomeBox() {
           }} className="spinner" />
           <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>Loading Luna.ai...</div>
         </div>
-      ) : (        <>
-          <div style={{ marginBottom: '0.5rem' }}>Welcome to</div>
+      ) : (        <>          <div style={{ marginBottom: '0.5rem' }}>Welcome to</div>
           <div style={{ 
             fontSize: '2rem', 
             color: '#f0f6fc', 
@@ -95,8 +94,10 @@ export default function WelcomeBox() {
             textShadow: '0 0 10px rgba(240, 246, 252, 0.7), 0 0 20px rgba(240, 246, 252, 0.3)',
             animation: 'twinkle 1.5s infinite'
           }}>Luna.ai</div>
-          <div style={{ fontSize: '0.9rem', opacity: 0.9, fontWeight: '300' }}>
+          <div style={{ fontSize: '0.9rem', opacity: 0.9, fontWeight: '300', marginBottom: '0.5rem' }}>
             Click to start your cosmic journey
+          </div>          <div style={{ fontSize: '0.75rem', opacity: 0.7, fontStyle: 'italic' }}>
+            🌙 Drag to rotate the Moon!
           </div>
         </>)}
     </motion.div>
