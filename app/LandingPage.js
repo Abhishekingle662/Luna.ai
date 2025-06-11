@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { motion } from 'framer-motion'
 import Moon from './components/Moon'
+import Earth from './components/Earth'
 import Starfield from './components/Starfield'
 import WelcomeBox from './components/WelcomeBox'
 
@@ -25,11 +26,11 @@ export default function LandingPage() {
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden' }}
         >
           <color attach="background" args={['#000']} />
-          <Starfield count={2000} radius={300} depth={400} />
-          <ambientLight intensity={0.4} />
+          <Starfield count={2000} radius={300} depth={400} />          <ambientLight intensity={0.4} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
-          {/* Position moon at about 45% from left (0.9 units right from center) and slightly elevated */}
-          <Moon position={[0.9, 0.5, 0]} scale={0.8} />
+          {/* Position Moon prominently in view, Earth far behind/to the side - only visible when rotating */}
+          <Moon position={[2.2, 1.2, 0]} scale={0.8} />
+          <Earth position={[-250.0, -10.0, -250.0]} scale={0.4} />
           {/* disable wheel zoom so scroll drives our scroll animation */}
           <OrbitControls enablePan={false} enableZoom={false} />
         </Canvas>
@@ -42,8 +43,10 @@ export default function LandingPage() {
           position: 'relative',
           zIndex: 1,
           paddingTop: '100vh',
-          backgroundColor: '#111',
+          backgroundColor: 'rgb(255, 255, 255, .3)',
           color: '#eee',
+          borderRadius: '5%',
+          boxShadow: ' 5px 10px 20px #888888 inset',
           fontFamily: 'Poppins, sans-serif',
           lineHeight: 1.6,
           padding: '2rem',

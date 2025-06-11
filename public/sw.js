@@ -13,6 +13,7 @@ const STATIC_RESOURCES = [
 // 3D models and heavy assets to cache
 const ASSET_RESOURCES = [
   '/models/moon.glb',
+  '/models/planet_earth.glb',
   '/images/subtle-space-bg.png',
   '/images/subtle-stars-bg.png'
 ]

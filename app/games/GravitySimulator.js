@@ -9,12 +9,11 @@ const GRAVITY_CONSTANT = 0.1;
 const DAMPING = 0.999;
 
 // Preset scenarios
-const scenarios = [
-  {
+const scenarios = [  {
     name: "Earth-Moon System",
     description: "Simplified Earth-Moon gravitational interaction",
     bodies: [
-      { id: 1, x: 200, y: 200, vx: 0, vy: 0, mass: 100, radius: 20, color: '#4F46E5', name: 'Earth' },
+      { id: 1, x: 200, y: 200, vx: 0, vy: 0, mass: 100, radius: 20, color: '#4A90E2', name: 'Earth' },
       { id: 2, x: 350, y: 200, vx: 0, vy: 2, mass: 20, radius: 8, color: '#E5E7EB', name: 'Moon' }
     ]
   },

@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
   Card,           
-  CardContent,    
-  CardMedia,      
+  CardContent,
   Grid, 
   Button, 
   Container,
@@ -15,84 +14,166 @@ import {
   Tab,
   Paper,
   Zoom,
-  CssBaseline,
-  useMediaQuery,
-  Slider,
-  TextField,
-  Collapse
+  CssBaseline
 } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ChatIcon from '@mui/icons-material/Chat';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Link from 'next/link';
 import { keyframes } from '@mui/system';
-import dynamic from 'next/dynamic';
 import { styled } from '@mui/material/styles';
-import GravitySection from '../../components/GravitySection';
 import { Home, MessageCircle, Gamepad2, Calculator } from 'lucide-react';
 
 // Navigation Header Component
 const NavigationHeader = () => (
-  <header className="nav-header p-4 fixed top-0 left-0 right-0 z-50 bg-lunar-dark/80 backdrop-blur-lg border-b border-lunar-gray">
-    <div className="flex items-center justify-between max-w-7xl mx-auto">
-      <Link href="/" className="text-2xl font-space-grotesk font-bold text-lunar-accent lunar-glow">
-        Luna.ai
-      </Link>
-      
-      <nav className="flex items-center space-x-6">
-        <Link href="/" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
-          <Home size={20} />
-          <span className="hidden sm:inline font-lato">Home</span>
+  <header 
+    className="fixed top-0 left-0 right-0 z-50 border-b"
+    style={{
+      backgroundColor: 'rgba(17, 19, 22, 0.9)',
+      backdropFilter: 'blur(24px)',
+      borderColor: 'rgba(61, 68, 76, 0.3)',
+      boxShadow: '0 10px 15px -3px rgba(240, 246, 252, 0.1)'
+    }}
+  >
+    <div className="max-w-6xl mx-auto px-6 py-3">
+      <nav className="flex justify-center items-center space-x-6">
+        <Link 
+          href="/" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <Home size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Home</span>
         </Link>
-        <Link href="/chat" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
-          <MessageCircle size={20} />
-          <span className="hidden sm:inline font-lato">Chat</span>
+        
+        <Link 
+          href="/chat" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <MessageCircle size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Chat</span>
         </Link>
-        <Link href="/games" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
-          <Gamepad2 size={20} />
-          <span className="hidden sm:inline font-lato">Games</span>
+        
+        <Link 
+          href="/games" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <Gamepad2 size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Games</span>
         </Link>
-        <Link href="/learn" className="flex items-center space-x-2 text-lunar-light hover:text-lunar-accent transition-colors">
-          <Calculator size={20} />
-          <span className="hidden sm:inline font-lato">Learn</span>
+        
+        <Link 
+          href="/learn/mathphysics" 
+          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
+          style={{
+            color: '#c8d1d9',
+          }}
+        >
+          <Calculator size={18} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Math & Physics</span>
         </Link>
       </nav>
     </div>
+
+    <style jsx>{`
+      .nav-item:hover {
+        color: #f0f6fc !important;
+        background-color: rgba(61, 68, 76, 0.25);
+        box-shadow: 0 10px 15px -3px rgba(240, 246, 252, 0.1);
+      }
+      .nav-item::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(6px);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(240, 246, 252, 0.8), transparent);
+        border-radius: 1px;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .nav-item:hover::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        box-shadow: 0 0 8px rgba(240, 246, 252, 0.4);
+      }
+    `}</style>
   </header>
 );
 
-// Dynamic import for MathJax
-const MathJax = dynamic(
-  async () => {
-    const MathJaxModule = await import('react-mathjax2');
-    return MathJaxModule.MathJax;
-  },
-  {
-    ssr: false,
-    loading: () => <div>Loading MathJax...</div>,
-  }
-);
+// Remove MathJax dynamic import
 
-// Import particles background dynamically with error handling
-const ParticlesBg = dynamic(() => 
-  import('particles-bg').catch((error) => {
-    console.warn('Failed to load particles-bg:', error);
-    // Return a fallback component that renders nothing
-    return { default: () => null };
-  }), { 
-  ssr: false,
-  loading: () => <div style={{ 
-    position: 'fixed', 
-    top: 0, 
-    left: 0, 
-    width: '100%', 
-    height: '100%', 
-    background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)',
-    zIndex: -1 
-  }} />
-});
+// Remove the ParticlesBg import and replace with CSS-only background
+
+// Add this CSS background instead
+const BackgroundEffect = () => (
+  <>
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: `
+          radial-gradient(ellipse at top, rgba(240, 246, 252, 0.1) 0%, transparent 50%),
+          radial-gradient(ellipse at bottom, rgba(240, 246, 252, 0.05) 0%, transparent 50%),
+          linear-gradient(135deg, #111316 0%, #1a1d23 50%, #111316 100%)
+        `,
+        zIndex: -1,
+      }}
+    />
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: `
+          radial-gradient(circle at 20% 80%, rgba(240, 246, 252, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(240, 246, 252, 0.03) 0%, transparent 50%)
+        `,
+        animation: 'float 20s ease-in-out infinite alternate',
+        zIndex: -1,
+      }}
+    />    <style jsx>{`
+      @keyframes float {
+        0% {
+          transform: translateY(0px) translateX(0px);
+        }
+        50% {
+          transform: translateY(-15px) translateX(10px);
+        }
+        100% {
+          transform: translateY(0px) translateX(0px);
+        }
+      }
+      
+      @keyframes pulse {
+        0% {
+          animation-timing-function: ease-out;
+        }
+        50% {
+          animation-timing-function: ease-in;
+        }
+        100% {
+          animation-timing-function: ease-out;
+        }
+      }
+    `}</style>
+  </>
+);
 
 // Define animations
 const float = keyframes`
@@ -296,14 +377,142 @@ function ThermodynamicsSection() {
   return <Typography>Content for Thermodynamics section will go here.</Typography>;
 }
 
+// Inline Gravity Section Component
+const GravitySection = () => (
+  <Box>
+    <Typography variant="h5" sx={{ mb: 3, color: '#f0f6fc', fontWeight: 600 }}>
+      Understanding Gravity and Orbital Mechanics
+    </Typography>
+    
+    <Typography variant="body1" sx={{ mb: 3, color: '#c8d1d9', lineHeight: 1.7 }}>
+      Gravity is the fundamental force that governs the motion of celestial bodies in our universe. 
+      From the smallest asteroids to the largest galaxies, gravity shapes the cosmic dance of matter through space and time.
+    </Typography>
+
+    <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid item xs={12} md={6}>
+        <Paper sx={{ p: 3, backgroundColor: 'rgba(240, 246, 252, 0.05)', border: '1px solid rgba(240, 246, 252, 0.1)' }}>
+          <Typography variant="h6" sx={{ mb: 2, color: '#f0f6fc' }}>Key Equations</Typography>
+          
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle2" sx={{ color: '#f0f6fc', fontWeight: 600 }}>
+              Newton's Law of Universal Gravitation
+            </Typography>
+            <Box sx={{ 
+              p: 2, 
+              backgroundColor: 'rgba(240, 246, 252, 0.1)', 
+              borderRadius: 1, 
+              fontFamily: 'Georgia, serif',
+              fontSize: '1.1rem',
+              color: '#f0f6fc',
+              textAlign: 'center',
+              my: 1
+            }}>
+              F = G × (m₁ × m₂) / r²
+            </Box>
+            <Typography variant="body2" sx={{ color: '#c8d1d9' }}>
+              The gravitational force between two objects is proportional to their masses and inversely proportional to the square of the distance between them.
+            </Typography>
+          </Box>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle2" sx={{ color: '#f0f6fc', fontWeight: 600 }}>
+              Orbital Velocity
+            </Typography>
+            <Box sx={{ 
+              p: 2, 
+              backgroundColor: 'rgba(240, 246, 252, 0.1)', 
+              borderRadius: 1, 
+              fontFamily: 'Georgia, serif',
+              fontSize: '1.1rem',
+              color: '#f0f6fc',
+              textAlign: 'center',
+              my: 1
+            }}>
+              v = √(GM/r)
+            </Box>
+            <Typography variant="body2" sx={{ color: '#c8d1d9' }}>
+              The velocity needed for an object to maintain a stable circular orbit around a celestial body.
+            </Typography>
+          </Box>
+        </Paper>
+      </Grid>
+
+      <Grid item xs={12} md={6}>
+        <Paper sx={{ p: 3, backgroundColor: 'rgba(240, 246, 252, 0.05)', border: '1px solid rgba(240, 246, 252, 0.1)' }}>
+          <Typography variant="h6" sx={{ mb: 2, color: '#f0f6fc' }}>Fascinating Facts</Typography>
+          
+          <Box component="ul" sx={{ pl: 2, color: '#c8d1d9' }}>
+            <Typography component="li" sx={{ mb: 1 }}>
+              Earth's gravity gives objects a downward acceleration of 9.8 m/s²
+            </Typography>
+            <Typography component="li" sx={{ mb: 1 }}>
+              The Moon's gravity is about 1/6th of Earth's gravity
+            </Typography>
+            <Typography component="li" sx={{ mb: 1 }}>
+              Black holes have gravity so strong that not even light can escape
+            </Typography>
+            <Typography component="li" sx={{ mb: 1 }}>
+              Einstein's theory describes gravity as curved spacetime
+            </Typography>
+          </Box>
+        </Paper>
+      </Grid>
+    </Grid>
+
+    <Paper sx={{ p: 3, backgroundColor: 'rgba(240, 246, 252, 0.05)', border: '1px solid rgba(240, 246, 252, 0.1)' }}>
+      <Typography variant="h6" sx={{ mb: 2, color: '#f0f6fc' }}>Orbital Mechanics in Action</Typography>
+      <Typography variant="body1" sx={{ color: '#c8d1d9', lineHeight: 1.7 }}>
+        Understanding gravity allows us to predict the orbits of planets, moons, and satellites. 
+        Space missions rely on precise gravitational calculations to achieve orbit, perform slingshot maneuvers, 
+        and land on distant worlds. The same principles that keep the Moon in orbit around Earth also 
+        govern the motion of galaxies across the cosmos.
+      </Typography>
+    </Paper>
+  </Box>
+);
+
 export default function MathPhysicsPage() {
-  const isMobile = useMediaQuery('(max-width:600px)');
   const [currentTab, setCurrentTab] = useState(0);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  // Lunar Shadow monochrome theme
+  // All hooks must be at the top - before any conditional returns
+  // Client-side hydration fix
+  useEffect(() => {
+    setIsClient(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Add loading state effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Reset animation when topic changes
+  useEffect(() => {
+    setAnimateIn(false);
+    setTimeout(() => {
+      setAnimateIn(true);
+    }, 100);
+  }, [selectedTopic]);
+
+  // Lunar Shadow monochrome theme - Define FIRST before any returns
   const theme = createTheme({
     palette: {
       mode: 'dark',
@@ -402,17 +611,75 @@ export default function MathPhysicsPage() {
             },
           },
         },
-      },
-    },
+      },    },
   });
 
-  useEffect(() => {
-    // Reset animation when topic changes
-    setAnimateIn(false);
-    setTimeout(() => {
-      setAnimateIn(true);
-    }, 100);
-  }, [selectedTopic]);
+  // Skeleton loading component
+  const SkeletonCard = () => (
+    <Card sx={{ backgroundColor: '#24292e', height: '200px' }}>
+      <CardContent>
+        <div style={{
+          height: '24px',
+          backgroundColor: '#3d444c',
+          borderRadius: '4px',
+          marginBottom: '12px',
+          animation: 'pulse 1.5s ease-in-out infinite alternate'
+        }} />
+        <div style={{
+          height: '16px',
+          backgroundColor: '#3d444c',
+          borderRadius: '4px',
+          width: '80%',
+          marginBottom: '8px'
+        }} />
+        <div style={{
+          height: '16px',
+          backgroundColor: '#3d444c',
+          borderRadius: '4px',
+          width: '60%'
+        }} />
+      </CardContent>
+    </Card>
+  );
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          background: '#111316',
+          flexDirection: 'column'
+        }}>
+          <div style={{
+            color: '#f0f6fc',
+            fontSize: '1.5rem',
+            fontFamily: 'Space Grotesk, sans-serif',
+            marginBottom: '20px',
+            textAlign: 'center'
+          }}>
+            Loading Luna.ai Math & Physics...
+          </div>
+          <Container maxWidth="lg" sx={{ pt: 8 }}>
+            <Grid container spacing={3}>
+              {[...Array(6)].map((_, index) => (
+                <Grid item key={index} xs={12} sm={6} md={4}>
+                  <SkeletonCard />
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </div>      </ThemeProvider>
+    );  }
+
+  // Prevent hydration mismatch by only rendering after client mount
+  if (!isClient) {
+    return null;
+  }
 
   const handleTopicClick = (topic) => {
     setSelectedTopic(topic);
@@ -435,7 +702,7 @@ export default function MathPhysicsPage() {
       <NavigationHeader />
 
       {/* Particles background */}
-      <ParticlesBg type="cobweb" bg={true} color="#f0f6fc" num={isMobile ? 25 : 50} />        {/* Main container */}
+      <BackgroundEffect />        {/* Main container */}
       <Container maxWidth="lg" sx={{ minHeight: '100vh', pt: { xs: 12, md: 14 }, pb: 10 }}>
         {/* Header with integrated back button */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>

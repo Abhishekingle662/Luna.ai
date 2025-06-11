@@ -23,16 +23,38 @@ const exo2 = Exo_2({
 
 export const metadata = {
   title: "Luna.ai",
-  description: "Your Cosmic Guide to Exploring the Universe!", 
+  description: "Your Cosmic Guide to Exploring the Universe!",
+  robots: "index, follow",
+  other: {
+    'color-scheme': 'dark',
+  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>        <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <html lang="en">      <head>
+        {/* DNS Prefetch for performance */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        
+        {/* Preconnect for fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Optimized font loading */}
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet" />
+        
+        {/* Critical CSS hint */}
+        <meta name="critical-css" content="true" />
+        
+        {/* Performance hints */}
+        <meta httpEquiv="x-dns-prefetch-control" content="on" />
         
         {/* Favicon links */}
         <link rel="icon" href="/favicon_io/favicon.ico" sizes="any" />
@@ -42,7 +64,7 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/favicon_io/apple-touch-icon.png" />
         <link rel="manifest" href="/favicon_io/site.webmanifest" />
         
-      </head>      <body className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable} bg-lunar-deep text-lunar-light font-lato`}>
+      </head><body className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable} bg-lunar-deep text-lunar-light font-lato`}>
         <ClientAnalytics />
         <ClientLayout>{children}</ClientLayout>
         <Analytics />

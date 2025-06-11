@@ -2,14 +2,14 @@ import React, { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 
-export default function Moon(props) {
+export default function Earth(props) {
   const ref = useRef()
   // track page scroll progress 0 → 1
   const [scrollProgress, setScrollProgress] = useState(0)
   const [error, setError] = useState(null)
 
   // Always call useGLTF at the top level
-  const gltfData = useGLTF('/models/the_moon.glb')
+  const gltfData = useGLTF('/models/planet_earth.glb')
   
   useEffect(() => {
     const onScroll = () => {
@@ -23,46 +23,50 @@ export default function Moon(props) {
   // Handle loading and error states
   const scene = gltfData?.scene
   const isLoading = !scene
+  
   // Log loading status for debugging
   useEffect(() => {
     if (scene && !error) {
-      console.log('Moon model loaded successfully! 🌙')
-    }  }, [scene, error])
-  
+      console.log('Earth model loaded successfully! 🌍')
+    }
+  }, [scene, error])
   useFrame(() => {
     if (!ref.current || !scene) return
-    
-    // rotate clockwise as you scroll down (slower rotation)
-    ref.current.rotation.y = scrollProgress * Math.PI * 0.5  // Reduced from 2 to 1
-    
-    // Keep moon at a consistent distance, but slightly move it back to prevent covering text
+      // Only apply scroll-based rotation if not being manually controlled
+    if (!props.disableScrollRotation) {
+      // rotate counterclockwise as you scroll down (slowest rotation)
+      ref.current.rotation.y = -scrollProgress * Math.PI * 0.1  // Reduced from 2 to 0.5
+    }
+      // Keep Earth at a distant position, minimal movement
     const baseZ = props.position?.[2] ?? 0
-    ref.current.position.z = baseZ + scrollProgress * 2
-    
-    // Use a much larger base scale for dramatic size increase
-    const baseScale = 3 // Fixed large scale - ignoring props.scale
-    const minScale = baseScale * 0.85 // Scale down to only 85% instead of 70%
+    ref.current.position.z = baseZ - scrollProgress * 0.5 // Much less movement
+      // Use Earth's scale (much smaller and distant)
+    const baseScale = Array.isArray(props.scale) ? props.scale[0] : props.scale || 0.5
+    const minScale = baseScale * 0.8 // Scale down to 80% at maximum scroll
     const currentScale = baseScale - (scrollProgress * (baseScale - minScale))
     ref.current.scale.setScalar(currentScale)
   })
+
   // Show loading state or error if needed
   if (isLoading) {
     return (      
-    <mesh ref={ref} {...props}>
+      <mesh ref={ref} {...props}>
         <sphereGeometry args={[0.8, 32, 32]} />
-        <meshStandardMaterial color="#c8d1d9" opacity={0.7} transparent />
+        <meshStandardMaterial color="#4A90E2" opacity={0.7} transparent />
       </mesh>
     )
   }
+  
   if (error || !scene) {
-    console.error('Error loading moon model:', error);
+    console.error('Error loading Earth model:', error);
     return (
       <mesh ref={ref} {...props}>
         <sphereGeometry args={[0.8, 32, 32]} />
-        <meshStandardMaterial color="#f0f6fc" />
+        <meshStandardMaterial color="#4A90E2" />
       </mesh>
     )
   }
+
   return (
     <primitive
       ref={ref}
@@ -74,8 +78,8 @@ export default function Moon(props) {
   )
 }
 
-// Preload the moon model (client-side only)
+// Preload the Earth model (client-side only)
 if (typeof window !== 'undefined') {
   // Preload with three.js useGLTF
-  useGLTF.preload('/models/moon.glb')
+  useGLTF.preload('/models/planet_earth.glb')
 }

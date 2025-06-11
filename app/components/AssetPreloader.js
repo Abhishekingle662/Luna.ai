@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 // List of assets to preload and cache
 const ASSETS_TO_PRELOAD = [
   { url: '/models/moon.glb', type: 'model', priority: 'high' },
+  { url: '/models/planet_earth.glb', type: 'model', priority: 'high' },
   // Add more assets here as needed
   // { url: '/textures/stars.jpg', type: 'texture', priority: 'low' },
 ]
