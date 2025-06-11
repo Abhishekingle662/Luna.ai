@@ -150,12 +150,11 @@ export default function EarthMoonVisualization() {
       }}>
         <Typography variant="body2" sx={{ color: '#c8d1d9' }}>
           <strong>Key Facts:</strong>
-        </Typography>
-        <Typography variant="caption" sx={{ color: '#8b949e', mt: 1, display: 'block' }}>
+        </Typography>        <Typography variant="caption" sx={{ color: '#8b949e', mt: 1, display: 'block' }}>
           • The Moon orbits Earth at an average distance of 384,400 km<br/>
-          • Moon's orbital period: ~27.3 days<br/>
+          • Moon&apos;s orbital period: ~27.3 days<br/>
           • Moon is tidally locked to Earth (same side always faces Earth)<br/>
-          • Earth's rotation: ~24 hours, Moon's orbit: ~27.3 days
+          • Earth&apos;s rotation: ~24 hours, Moon&apos;s orbit: ~27.3 days
         </Typography>
       </Box>
     </Paper>

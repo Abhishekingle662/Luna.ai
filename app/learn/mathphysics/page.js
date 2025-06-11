@@ -394,9 +394,8 @@ const GravitySection = () => (
         <Paper sx={{ p: 3, backgroundColor: 'rgba(240, 246, 252, 0.05)', border: '1px solid rgba(240, 246, 252, 0.1)' }}>
           <Typography variant="h6" sx={{ mb: 2, color: '#f0f6fc' }}>Key Equations</Typography>
           
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" sx={{ color: '#f0f6fc', fontWeight: 600 }}>
-              Newton's Law of Universal Gravitation
+          <Box sx={{ mb: 3 }}>            <Typography variant="subtitle2" sx={{ color: '#f0f6fc', fontWeight: 600 }}>
+              Newton&apos;s Law of Universal Gravitation
             </Typography>
             <Box sx={{ 
               p: 2, 
@@ -442,18 +441,15 @@ const GravitySection = () => (
         <Paper sx={{ p: 3, backgroundColor: 'rgba(240, 246, 252, 0.05)', border: '1px solid rgba(240, 246, 252, 0.1)' }}>
           <Typography variant="h6" sx={{ mb: 2, color: '#f0f6fc' }}>Fascinating Facts</Typography>
           
-          <Box component="ul" sx={{ pl: 2, color: '#c8d1d9' }}>
-            <Typography component="li" sx={{ mb: 1 }}>
-              Earth's gravity gives objects a downward acceleration of 9.8 m/s²
-            </Typography>
-            <Typography component="li" sx={{ mb: 1 }}>
-              The Moon's gravity is about 1/6th of Earth's gravity
+          <Box component="ul" sx={{ pl: 2, color: '#c8d1d9' }}>            <Typography component="li" sx={{ mb: 1 }}>
+              Earth&apos;s gravity gives objects a downward acceleration of 9.8 m/s²
+            </Typography>            <Typography component="li" sx={{ mb: 1 }}>
+              The Moon&apos;s gravity is about 1/6th of Earth&apos;s gravity
             </Typography>
             <Typography component="li" sx={{ mb: 1 }}>
               Black holes have gravity so strong that not even light can escape
-            </Typography>
-            <Typography component="li" sx={{ mb: 1 }}>
-              Einstein's theory describes gravity as curved spacetime
+            </Typography>            <Typography component="li" sx={{ mb: 1 }}>
+              Einstein&apos;s theory describes gravity as curved spacetime
             </Typography>
           </Box>
         </Paper>

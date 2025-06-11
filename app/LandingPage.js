@@ -81,9 +81,8 @@ export default function LandingPage() {
         </section>        <section style={{ marginTop: '4rem', paddingBottom: '4rem' }}>
           <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Experience the Cosmos</h2>          <p style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>
             Enjoy a focused lunar exploration experience! Scroll down this page to automatically approach the Moon, then use your mouse to rotate around it for detailed surface views. The interaction is designed to complement the scroll-based journey without interfering with the page navigation.
-          </p>
-          <p style={{ fontSize: '1.1rem', lineHeight: '1.8', marginTop: '1.5rem' }}>
-            <strong>How to explore:</strong> As you scroll down, the camera smoothly moves closer to the Moon. Once you're close, drag to rotate your view around the Moon for different perspectives. This creates a perfect balance between guided exploration and interactive freedom.
+          </p>          <p style={{ fontSize: '1.1rem', lineHeight: '1.8', marginTop: '1.5rem' }}>
+            <strong>How to explore:</strong> As you scroll down, the camera smoothly moves closer to the Moon. Once you&apos;re close, drag to rotate your view around the Moon for different perspectives. This creates a perfect balance between guided exploration and interactive freedom.
           </p>
         </section>
         {/* add more sections as needed */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RotateCcw, Play, Pause, Info, Zap, Settings } from 'lucide-react';
 
@@ -46,17 +46,7 @@ export default function GravitySimulator() {
   const [selectedBody, setSelectedBody] = useState(null);
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
-
-  useEffect(() => {
-    if (isRunning) {
-      animationRef.current = requestAnimationFrame(updateSimulation);
-    } else {
-      cancelAnimationFrame(animationRef.current);
-    }
-    return () => cancelAnimationFrame(animationRef.current);
-  }, [isRunning, bodies, gravityStrength]);
-
-  const updateSimulation = () => {
+  const updateSimulation = useCallback(() => {
     setBodies(prevBodies => {
       const newBodies = prevBodies.map(body => ({ ...body }));
       
@@ -110,7 +100,16 @@ export default function GravitySimulator() {
     if (isRunning) {
       animationRef.current = requestAnimationFrame(updateSimulation);
     }
-  };
+  }, [gravityStrength, showTrails, isRunning]);
+
+  useEffect(() => {
+    if (isRunning) {
+      animationRef.current = requestAnimationFrame(updateSimulation);
+    } else {
+      cancelAnimationFrame(animationRef.current);
+    }
+    return () => cancelAnimationFrame(animationRef.current);
+  }, [isRunning, updateSimulation]);
 
   const resetSimulation = () => {
     setIsRunning(false);

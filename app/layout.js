@@ -38,18 +38,6 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">      <head>
-        {/* DNS Prefetch for performance */}
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        
-        {/* Preconnect for fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Optimized font loading */}
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet" />
-        
         {/* Critical CSS hint */}
         <meta name="critical-css" content="true" />
         
