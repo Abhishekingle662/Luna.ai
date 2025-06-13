@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { Color } from 'three';
+import { Image } from 'lucide-react';
 
 // Keyframes for twinkling and glowing effects
 const twinkleKeyframes = `
@@ -12,6 +14,14 @@ const twinkleKeyframes = `
     0% { text-shadow: 0 0 10px rgba(240, 246, 252, 0.5); }
     50% { text-shadow: 0 0 20px rgba(240, 246, 252, 0.8), 0 0 30px rgba(240, 246, 252, 0.4); }
     100% { text-shadow: 0 0 10px rgba(240, 246, 252, 0.5); }
+  }
+  @keyframes logoRotate {
+    0% { transform: rotateY(0deg) rotateX(-5deg); }
+    100% { transform: rotateY(360deg) rotateX(-5deg); }
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 `;
 
@@ -25,6 +35,25 @@ if (typeof document !== 'undefined') {
 export default function WelcomeBox() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  // Track scroll progress for hiding/showing the WelcomeBox
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.body.scrollHeight - window.innerHeight
+      const progress = window.scrollY / max
+      setScrollProgress(progress)
+      
+      // Debug logging for scroll interactions
+      if (progress > 0.8 && scrollProgress <= 0.8) {
+        console.log('🌙 WelcomeBox hiding - Luna Avatar appearing!')
+      } else if (progress <= 0.8 && scrollProgress > 0.8) {
+        console.log('👋 WelcomeBox reappearing - Luna Avatar hiding!')
+      }
+    }
+    
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [scrollProgress])
 
   // Prefetch the chat route on component mount for faster navigation
   useEffect(() => {
@@ -33,7 +62,6 @@ export default function WelcomeBox() {
 
   const handleChatRedirect = () => {
     setIsLoading(true)
-    // Use window.location as fallback to ensure proper navigation
     try {
       router.push('/chat')
     } catch (error) {
@@ -42,64 +70,122 @@ export default function WelcomeBox() {
     }
   }
 
-  const style = {
+  // Minimal Luna.ai Logo styles
+  const logoContainerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '0.5rem'
+  }
+
+  const logoStyle = {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    marginRight: '0.5rem',
+    boxShadow: '0 0 10px rgba(240, 246, 252, 0.3)',
+    animation: 'logoRotate 12s linear infinite',
+    border: '1px solid rgba(240, 246, 252, 0.2)'
+  }
+
+
+  const containerStyle = {
     position: 'absolute',
-    top: '5%',
-    right: '5%',
-    background: 'rgba(36, 41, 46, 0.9)',
-    color: '#f0f6fc',
-    padding: '1.5rem 2rem',
-    borderRadius: '12px',
+    top: '2rem',
+    right: '2rem',
+    background: 'rgba(15, 20, 25, 0.85)',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(240, 246, 252, 0.15)',
+    borderRadius: '16px',
+    padding: '1.25rem 1.5rem',
     fontFamily: 'Space Grotesk, sans-serif',
     textAlign: 'center',
-    lineHeight: 1.4,
     cursor: 'pointer',
-    border: '1px solid rgba(240, 246, 252, 0.3)',
-    boxShadow: '0 4px 20px rgba(240, 246, 252, 0.2), 0 0 10px rgba(240, 246, 252, 0.1)',
-    transition: 'all 0.3s ease',
-    maxWidth: '280px',
-    zIndex: 10
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',    zIndex: 10,
+    minWidth: '200px',
+    maxWidth: '240px'
   }
+  
   const hoverStyle = {
-    transform: 'scale(1.05)',
-    boxShadow: '0 6px 30px rgba(240, 246, 252, 0.4), 0 0 20px rgba(240, 246, 252, 0.3)',
-    border: '1px solid rgba(240, 246, 252, 0.6)',
-    textShadow: '0 0 10px rgba(240, 246, 252, 0.5)'
-  }
+    transform: 'translateY(-2px)',
+    background: 'rgb(128, 128, 128)',
+    border: '1px solid rgba(240, 246, 252, 0.3)',
+    boxShadow: '0 8px 32px rgba(240, 246, 252, 0.15)',
+    color: 'black',
+  }  // Hide WelcomeBox when Luna Avatar appears (80% scroll progress)
+  const shouldHide = scrollProgress > 0.8
+
   return (
     <motion.div
-      style={style}
-      animate={{ y: [0, -10, 0] }}
-      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-      whileHover={hoverStyle}
-      onClick={handleChatRedirect}
+      style={{
+        ...containerStyle,
+        pointerEvents: shouldHide ? 'none' : 'auto'
+      }}
+      whileHover={shouldHide ? {} : hoverStyle}
+      onClick={shouldHide ? undefined : handleChatRedirect}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ 
+        opacity: shouldHide ? 0 : 1, 
+        y: shouldHide ? -20 : 0,
+        scale: shouldHide ? 0.9 : 1
+      }}
+      transition={{ 
+        duration: 0.3, 
+        ease: "easeInOut"
+      }}
     >
-      {isLoading ? (        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {isLoading ? (
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          color: '#f0f6fc'
+        }}>
           <div style={{ 
-            width: '20px', 
-            height: '20px', 
+            width: '16px', 
+            height: '16px', 
             border: '2px solid rgba(240, 246, 252, 0.3)',
             borderTop: '2px solid #f0f6fc',
             borderRadius: '50%',
             marginBottom: '0.5rem',
             animation: 'spin 1s linear infinite'
-          }} className="spinner" />
-          <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>Loading Luna.ai...</div>
+          }} />
+          <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>Starting...</div>
         </div>
-      ) : (        <>          <div style={{ marginBottom: '0.5rem' }}>Welcome to</div>
-          <div style={{ 
-            fontSize: '2rem', 
-            color: '#f0f6fc', 
-            marginBottom: '0.5rem',
-            textShadow: '0 0 10px rgba(240, 246, 252, 0.7), 0 0 20px rgba(240, 246, 252, 0.3)',
-            animation: 'twinkle 1.5s infinite'
-          }}>Luna.ai</div>
-          <div style={{ fontSize: '0.9rem', opacity: 0.9, fontWeight: '300', marginBottom: '0.5rem' }}>
-            Click to start your cosmic journey
-          </div>          <div style={{ fontSize: '0.75rem', opacity: 0.7, fontStyle: 'italic' }}>
-            🌙 Drag to rotate the Moon!
+      ) : (
+        <>
+          <div style={logoContainerStyle}>
+            <Image 
+              src="/favicon_io/android-chrome-192x192.png" 
+              alt="Luna.ai" 
+              style={logoStyle}
+            />
+            <span style={{ 
+              fontSize: '1.1rem',
+              fontWeight: '600',
+              color: '#f0f6fc',
+              letterSpacing: '0.5px'
+            }}>Luna.ai</span>
           </div>
-        </>)}
+          
+          <div style={{ 
+            fontSize: '0.8rem',
+            color: 'rgba(240, 246, 252, 0.8)',
+            marginBottom: '0.75rem',
+            lineHeight: '1.3'
+          }}>
+            Start your cosmic journey
+          </div>
+          
+          <div style={{ 
+            fontSize: '0.7rem',
+            color: 'rgba(240, 246, 252, 0.6)',
+            fontStyle: 'italic'
+          }}>
+            Click to explore →
+          </div>
+        </>
+      )}
     </motion.div>
   )
 }

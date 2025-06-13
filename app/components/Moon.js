@@ -1,12 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
+import LunaAvatar from './LunaAvatar'
 
 export default function Moon(props) {
   const ref = useRef()
   // track page scroll progress 0 → 1
   const [scrollProgress, setScrollProgress] = useState(0)
   const [error, setError] = useState(null)
+  const [materialsInitialized, setMaterialsInitialized] = useState(false)
+  const originalMaterials = useRef(new Map())
 
   // Always call useGLTF at the top level
   const gltfData = useGLTF('/models/the_moon.glb')
@@ -22,13 +25,30 @@ export default function Moon(props) {
 
   // Handle loading and error states
   const scene = gltfData?.scene
-  const isLoading = !scene
-  // Log loading status for debugging
+  const isLoading = !scene  // Log loading status for debugging
   useEffect(() => {
-    if (scene && !error) {
+    if (scene && !error && !materialsInitialized) {
       console.log('Moon model loaded successfully! 🌙')
-    }  }, [scene, error])
-    useFrame(() => {
+      
+      // Store original material properties for safe restoration
+      scene.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const materials = Array.isArray(child.material) ? child.material : [child.material]
+          materials.forEach((mat, index) => {
+            const key = `${child.uuid}_${index}`
+            originalMaterials.current.set(key, {
+              transparent: mat.transparent,
+              opacity: mat.opacity,
+              material: mat
+            })
+          })
+        }
+      })
+      setMaterialsInitialized(true)
+    }
+  }, [scene, error, materialsInitialized])
+
+  useFrame(() => {
     if (!ref.current || !scene) return
     
     // Slowest rotation - much slower than before
@@ -43,6 +63,31 @@ export default function Moon(props) {
     const minScale = baseScale * 0.85 // Scale down to only 85% instead of 70%
     const currentScale = baseScale - (scrollProgress * (baseScale - minScale))
     ref.current.scale.setScalar(currentScale)
+      // Make moon transparent when user gets close (last 20% of scroll)
+    if (materialsInitialized && scrollProgress > 0.8) {
+      const transparencyProgress = (scrollProgress - 0.8) / 0.2
+      const opacity = Math.max(0.3, 1 - (transparencyProgress * 0.7)) // Fade to 30% opacity, never below
+      
+      // Apply transparency to moon materials safely
+      originalMaterials.current.forEach((originalData, key) => {
+        const mat = originalData.material
+        if (mat && mat.opacity !== undefined) {
+          mat.transparent = true
+          mat.opacity = opacity
+          mat.needsUpdate = true
+        }
+      })
+    } else if (materialsInitialized) {
+      // Reset to original opacity safely
+      originalMaterials.current.forEach((originalData, key) => {
+        const mat = originalData.material
+        if (mat && mat.opacity !== undefined) {
+          mat.transparent = originalData.transparent
+          mat.opacity = originalData.opacity
+          mat.needsUpdate = true
+        }
+      })
+    }
   })
   // Show loading state or error if needed
   if (isLoading) {
@@ -61,15 +106,26 @@ export default function Moon(props) {
         <meshStandardMaterial color="#f0f6fc" />
       </mesh>
     )
-  }
-  return (
-    <primitive
-      ref={ref}
-      object={scene}
-      {...props}
-      onPointerOver={() => (document.body.style.cursor = 'grab')}
-      onPointerOut={() => (document.body.style.cursor = 'auto')}
-    />
+  }  return (
+    <>
+      <primitive
+        ref={ref}
+        object={scene}
+        {...props}
+        onPointerOver={() => (document.body.style.cursor = 'grab')}
+        onPointerOut={() => (document.body.style.cursor = 'auto')}
+      />
+      
+      {/* Luna Avatar positioned at the center of the Moon */}
+      <LunaAvatar 
+        position={[
+          (props.position?.[0] ?? 0), 
+          (props.position?.[1] ?? 0), 
+          (props.position?.[2] ?? 0)
+        ]} 
+        scrollProgress={scrollProgress}
+      />
+    </>
   )
 }
 
