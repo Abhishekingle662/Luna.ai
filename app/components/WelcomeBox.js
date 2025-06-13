@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { Color } from 'three';
 import { Image } from 'lucide-react';
 
 // Keyframes for twinkling and glowing effects
@@ -155,7 +154,7 @@ export default function WelcomeBox() {
       ) : (
         <>
           <div style={logoContainerStyle}>
-            <Image 
+            <Img
               src="/favicon_io/android-chrome-192x192.png" 
               alt="Luna.ai" 
               style={logoStyle}
