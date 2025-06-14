@@ -33,7 +33,7 @@ export default function LandingPage() {
   }, [])  // Track scroll progress for hiding/showing content
   useEffect(() => {
     let maxScrollPosition = null
-    const LUNA_THRESHOLD = 0.8
+    const LUNA_THRESHOLD = 1
 
     const onScroll = () => {
       const max = document.body.scrollHeight - window.innerHeight
@@ -150,11 +150,12 @@ export default function LandingPage() {
             rotationSpeed={0.0008}
           />          <ambientLight intensity={0.4} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
+            {/* Additional soft lighting for Luna's appearance - moved closer to center */}
+          <pointLight position={[0, 0, 2]} intensity={0.3} color="#87ceeb" distance={3} decay={2} />          {/* Position Moon much closer to camera and centered for better focus */}
+          <Moon position={[0, 0, 2]} scale={1.2} />
           
-          {/* Additional soft lighting for Luna&apos;s appearance */}
-          <pointLight position={[2.2, 1.2, 0]} intensity={0.3} color="#87ceeb" distance={2} decay={2} />{/* Position Moon prominently in view, Earth far behind/to the side - only visible when rotating */}
-          <Moon position={[2.2, 1.2, 0]} scale={0.8} />
           <Earth position={[-250.0, -10.0, -250.0]} scale={0.4} />
+          
           {/* Custom scroll-driven camera controller */}
           <ScrollCamera />        </Canvas>
 
@@ -223,22 +224,7 @@ export default function LandingPage() {
           </p>
         </section>
         
-        <section style={{ marginTop: '4rem' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>What Makes Us Special? ✨</h2>          
-          <ul style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>
-            <li>🖱️ <strong>Mouse Magic:</strong> Drag to rotate the Moon (it&apos;s surprisingly therapeutic)</li>
-            <li>🌙 <strong>Ultra-Realistic Moon:</strong> So detailed you can almost taste the cheese</li>
-            <li>📜 <strong>Scroll-Powered Spaceship:</strong> Your scroll wheel is now a rocket engine</li>
-            <li>🌟 <strong>Starfield That Actually Stars:</strong> Each star has been personally interviewed for quality</li>
-            <li>📱 <strong>Touch-Friendly:</strong> Works on mobile, because space exploration shouldn&apos;t be limited to desktops</li>
-            <li>⚡ <strong>Ludicrously Fast:</strong> Loads faster than you can say &apos;one small step for man&apos;</li>
-            <li>🎭 <strong>Drama-Free Zone:</strong> Unlike real space missions, nothing will explode here*</li>
-          </ul>
-          <p style={{ fontSize: '0.9rem', fontStyle: 'italic', marginTop: '1rem' }}>
-            *Disclaimer: Your mind might be blown by our awesome design
-          </p>
-        </section>
-        
+       
         <section style={{ marginTop: '4rem', paddingBottom: '4rem' }}>
           <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Ready for Takeoff? 🚀</h2>
           <p style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>

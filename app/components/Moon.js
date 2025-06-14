@@ -47,26 +47,47 @@ export default function Moon(props) {
       setMaterialsInitialized(true)
     }
   }, [scene, error, materialsInitialized])
-
   useFrame(() => {
     if (!ref.current || !scene) return
     
     // Slowest rotation - much slower than before
-    ref.current.rotation.y = scrollProgress * Math.PI * 0.1  // Reduced from 0.5 to 0.1 for slowest rotation
+    ref.current.rotation.y = scrollProgress * Math.PI * 0.1
     
-    // Keep moon at a consistent distance, but slightly move it back to prevent covering text
-    const baseZ = props.position?.[2] ?? 0
-    ref.current.position.z = baseZ + scrollProgress * 2
+    // Move moon from starting position towards camera as user scrolls
+    const baseZ = props.position?.[2] ?? 2
+    const targetZ = 3.5  // Keep moon further back (was 5)
+    ref.current.position.z = baseZ + scrollProgress * (targetZ - baseZ)
     
-    // Use a much larger base scale for dramatic size increase
-    const baseScale = 3 // Fixed large scale - ignoring props.scale
-    const minScale = baseScale * 0.85 // Scale down to only 85% instead of 70%
-    const currentScale = baseScale - (scrollProgress * (baseScale - minScale))
+    // Change these target positions to move moon relative to avatar
+    const baseX = props.position?.[0] ?? 0
+    const baseY = props.position?.[1] ?? 0
+    
+    // Position moon behind avatar (same X, Y but different Z in avatar positioning)
+    const targetX = 0     // Center horizontally with avatar
+    const targetY = 0     // Same height as avatar
+    
+    ref.current.position.x = baseX + scrollProgress * (targetX - baseX)
+    ref.current.position.y = baseY + scrollProgress * (targetY - baseY)
+    
+    // Scale up the moon dramatically as it approaches
+    const baseScale = 1.2
+    const maxScale = 4.0
+    const currentScale = baseScale + scrollProgress * (maxScale - baseScale)
     ref.current.scale.setScalar(currentScale)
-      // Make moon transparent when user gets close (last 20% of scroll)
+    
+    // Dispatch moon position for LunaAvatar to follow
+    window.dispatchEvent(new CustomEvent('moonPosition', { 
+      detail: { 
+        position: [ref.current.position.x, ref.current.position.y, ref.current.position.z],
+        scale: currentScale,
+        scrollProgress 
+      } 
+    }))
+    
+    // Make moon transparent when user gets close (last 20% of scroll)
     if (materialsInitialized && scrollProgress > 0.8) {
       const transparencyProgress = (scrollProgress - 0.8) / 0.2
-      const opacity = Math.max(0.3, 1 - (transparencyProgress * 0.7)) // Fade to 30% opacity, never below
+      const opacity = Math.max(0.8, 1 - (transparencyProgress * 0.7))
       
       // Apply transparency to moon materials safely
       originalMaterials.current.forEach((originalData, key) => {
@@ -116,12 +137,12 @@ export default function Moon(props) {
         onPointerOut={() => (document.body.style.cursor = 'auto')}
       />
       
-      {/* Luna Avatar positioned at the center of the Moon */}
+      {/* Luna Avatar positioned in front of the Moon */}
       <LunaAvatar 
         position={[
-          (props.position?.[0] ?? 0), 
-          (props.position?.[1] ?? 0), 
-          (props.position?.[2] ?? 0)
+          (props.position?.[0] ?? 0) + 0,    // Center with moon
+          (props.position?.[1] ?? 0) + 0,    // Same height as moon  
+          (props.position?.[2] ?? 0) + 2.0   // Move avatar further forward (was 1.0)
         ]} 
         scrollProgress={scrollProgress}
       />
