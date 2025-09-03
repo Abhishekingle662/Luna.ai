@@ -1,14 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text, useGLTF } from '@react-three/drei'
+import { useRouter } from 'next/navigation'
 
 export default function LunaAvatar({ scrollProgress, ...props }) {
   const groupRef = useRef()
+  const router = useRouter()
   const [isVisible, setIsVisible] = useState(false)
   const [animationTime, setAnimationTime] = useState(0)
   const [hasError, setHasError] = useState(false)
   const [entranceAnimation, setEntranceAnimation] = useState(0)
   const [moonData, setMoonData] = useState({ position: [0, 0, 2], scale: 1.2 })
+  const [isHovered, setIsHovered] = useState(false)
+  const [isClicked, setIsClicked] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(false)
   
   // Dynamic signboard states
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
@@ -23,8 +28,35 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
     "Ready to embark on this\njourney together?"
   ]
   
+  // Ensure currentMessageIndex is valid
+  const currentMessage = messages[currentMessageIndex] || messages[0] || ""
+  
   // Load Luna model
   const { scene: lunaScene, error: lunaError } = useGLTF('/models/luna.glb')
+  
+  // Handle click/touch events
+  const handleLunaClick = (event) => {
+    event.stopPropagation()
+    setIsClicked(true)
+    
+    // Add a small delay for visual feedback before navigation
+    setTimeout(() => {
+      router.push('/chat')
+    }, 200)
+  }
+  
+  const handleLunaHover = (event) => {
+    event.stopPropagation()
+    setIsHovered(true)
+    setShowTooltip(true)
+  }
+  
+  const handleLunaLeave = (event) => {
+    event.stopPropagation()
+    setIsHovered(false)
+    setIsClicked(false)
+    setShowTooltip(false)
+  }
   
   // Listen for moon position updates
   useEffect(() => {
@@ -115,7 +147,12 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
     
     // Scale up with distance - avatar gets larger as it approaches camera
     const distanceScale = 1 + scrollProgress * 1.5 // Scale up to 2.5x when fully scrolled
-    const finalScale = breathingScale * entranceScale * distanceScale
+    
+    // Add hover and click effects
+    const hoverScale = isHovered ? 1.1 : 1.0
+    const clickScale = isClicked ? 0.95 : 1.0
+    
+    const finalScale = breathingScale * entranceScale * distanceScale * hoverScale * clickScale
     groupRef.current.scale.setScalar(finalScale)
     
     // Entrance opacity animation
@@ -131,6 +168,7 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
   
   // Generate glitch effects
   const getGlitchText = (text) => {
+    if (!text || typeof text !== 'string') return ""
     if (!isGlitching) return text
     
     const glitchChars = '█▓▒░!@#$%^&*()_+-=[]{}|;:,.<>?'
@@ -181,7 +219,7 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
           anchorX="center"
           anchorY="middle"
         >
-          Luna (Loading...)
+          {"Luna (Loading...)"}
         </Text>
       </group>
     )
@@ -189,10 +227,10 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
 
   return (
     <group ref={groupRef} {...props}>
-      {/* Luna 3D Model */}
+      {/* Luna 3D Model - No longer clickable */}
       <primitive 
         object={lunaScene.clone()} 
-        scale={[0.1, 0.1, 0.1]} 
+        scale={[0.15, 0.15, 0.15]} 
         position={[-0.6, -0.5, -1]}
         rotation={[0, -20.2, -0.1]}
       />
@@ -201,9 +239,21 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
       {(() => {
         const basePosition = getGlitchPosition()
         return (
-          <>
-            {/* Border mesh */}
-            <mesh position={[basePosition[0], basePosition[1], basePosition[2] - 0.002]}>
+          <group>
+            {/* Border mesh - Clickable */}
+            <mesh 
+              position={[basePosition[0], basePosition[1], basePosition[2] - 0.002]}
+              onClick={handleLunaClick}
+              onPointerOver={handleLunaHover}
+              onPointerOut={handleLunaLeave}
+              style={{ 
+                cursor: isClicked 
+                  ? 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'><circle cx=\'16\' cy=\'16\' r=\'12\' fill=\'%23ff6600\' stroke=\'%23ffffff\' stroke-width=\'2\'/><text x=\'16\' y=\'20\' font-family=\'Arial\' font-size=\'12\' fill=\'%23ffffff\' text-anchor=\'middle\'>🚀</text></svg>"), auto'
+                  : isHovered 
+                    ? 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'><circle cx=\'16\' cy=\'16\' r=\'12\' fill=\'%2300aaff\' stroke=\'%23ffffff\' stroke-width=\'2\'/><text x=\'16\' y=\'20\' font-family=\'Arial\' font-size=\'12\' fill=\'%23ffffff\' text-anchor=\'middle\'>🌙</text></svg>"), auto'
+                    : 'pointer' 
+              }}
+            >
               <planeGeometry args={[1.35, 0.35]} />
               <meshBasicMaterial 
                 color={isGlitching ? "#ff0066" : "#4a90e2"}
@@ -212,8 +262,20 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
               />
             </mesh>
             
-            {/* Dynamic Signboard background */}
-            <mesh position={[basePosition[0], basePosition[1], basePosition[2] - 0.001]}>
+            {/* Dynamic Signboard background - Clickable */}
+            <mesh 
+              position={[basePosition[0], basePosition[1], basePosition[2] - 0.001]}
+              onClick={handleLunaClick}
+              onPointerOver={handleLunaHover}
+              onPointerOut={handleLunaLeave}
+              style={{ 
+                cursor: isClicked 
+                  ? 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'><circle cx=\'16\' cy=\'16\' r=\'12\' fill=\'%23ff6600\' stroke=\'%23ffffff\' stroke-width=\'2\'/><text x=\'16\' y=\'20\' font-family=\'Arial\' font-size=\'12\' fill=\'%23ffffff\' text-anchor=\'middle\'>🚀</text></svg>"), auto'
+                  : isHovered 
+                    ? 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'><circle cx=\'16\' cy=\'16\' r=\'12\' fill=\'%2300aaff\' stroke=\'%23ffffff\' stroke-width=\'2\'/><text x=\'16\' y=\'20\' font-family=\'Arial\' font-size=\'12\' fill=\'%23ffffff\' text-anchor=\'middle\'>🌙</text></svg>"), auto'
+                    : 'pointer' 
+              }}
+            >
               <planeGeometry args={[1.3, 0.3]} />
               <meshBasicMaterial 
                 color={isGlitching ? "#ffffff" : "#1a365d"} 
@@ -222,7 +284,7 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
               />
             </mesh>
             
-            {/* Dynamic Text with glitch effects */}
+            {/* Dynamic Text with glitch effects - Clickable */}
             <Text
               position={basePosition}
               fontSize={0.08}
@@ -231,10 +293,61 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
               anchorY="middle"
               outlineWidth={0.001}
               outlineColor={isGlitching ? "#000000" : "#ffffff"}
+              onClick={handleLunaClick}
+              onPointerOver={handleLunaHover}
+              onPointerOut={handleLunaLeave}
+              style={{ 
+                cursor: isClicked 
+                  ? 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'><circle cx=\'16\' cy=\'16\' r=\'12\' fill=\'%23ff6600\' stroke=\'%23ffffff\' stroke-width=\'2\'/><text x=\'16\' y=\'20\' font-family=\'Arial\' font-size=\'12\' fill=\'%23ffffff\' text-anchor=\'middle\'>🚀</text></svg>"), auto'
+                  : isHovered 
+                    ? 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 32 32\'><circle cx=\'16\' cy=\'16\' r=\'12\' fill=\'%2300aaff\' stroke=\'%23ffffff\' stroke-width=\'2\'/><text x=\'16\' y=\'20\' font-family=\'Arial\' font-size=\'12\' fill=\'%23ffffff\' text-anchor=\'middle\'>🌙</text></svg>"), auto'
+                    : 'pointer' 
+              }}
             >
-              {getGlitchText(messages[currentMessageIndex])}
+              {getGlitchText(currentMessage)}
             </Text>
-          </>
+          </group>
+        )
+      })()}
+      
+      {/* Hover Tooltip */}
+      {showTooltip && (() => {
+        const basePosition = getGlitchPosition()
+        return (
+          <group>
+            {/* Tooltip background */}
+            <mesh position={[basePosition[0], basePosition[1] + 0.25, basePosition[2] + 0.01]}>
+              <planeGeometry args={[1.8, 0.4]} />
+              <meshBasicMaterial 
+                color="#2a2a2a" 
+                transparent 
+                opacity={0.9}
+              />
+            </mesh>
+            
+            {/* Tooltip border */}
+            <mesh position={[basePosition[0], basePosition[1] + 0.25, basePosition[2] + 0.005]}>
+              <planeGeometry args={[1.85, 0.45]} />
+              <meshBasicMaterial 
+                color="#4a90e2" 
+                transparent 
+                opacity={0.8}
+              />
+            </mesh>
+            
+            {/* Tooltip text */}
+            <Text
+              position={[basePosition[0], basePosition[1] + 0.25, basePosition[2] + 0.02]}
+              fontSize={0.06}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+              outlineWidth={0.002}
+              outlineColor="#000000"
+            >
+              Click to start chatting with Luna.ai
+            </Text>
+          </group>
         )
       })()}
       

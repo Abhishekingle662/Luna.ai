@@ -21,6 +21,31 @@ const twinkleKeyframes = `
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+  @keyframes chatPulse {
+    0%, 100% { 
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.7);
+    }
+    50% { 
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(74, 144, 226, 0);
+    }
+  }
+  @keyframes chatIndicator {
+    0%, 100% { 
+      opacity: 1;
+      transform: translateY(0px);
+    }
+    50% { 
+      opacity: 0.7;
+      transform: translateY(-3px);
+    }
+  }
+  @keyframes messageBounce {
+    0%, 100% { transform: translateX(0px); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+  }
 `;
 
 // Inject styles into head
@@ -34,6 +59,7 @@ export default function WelcomeBox() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
   // Track scroll progress for hiding/showing the WelcomeBox
   useEffect(() => {
     const onScroll = () => {
@@ -52,6 +78,17 @@ export default function WelcomeBox() {
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [scrollProgress])
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Prefetch the chat route on component mount for faster navigation
   useEffect(() => {
@@ -89,27 +126,30 @@ export default function WelcomeBox() {
 
   const containerStyle = {
     position: 'absolute',
-    top: '2rem',
-    right: '2rem',
-    background: 'rgba(15, 20, 25, 0.85)',
-    backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(240, 246, 252, 0.15)',
+    top: isMobile ? '1rem' : '2rem',
+    right: isMobile ? '1rem' : '2rem',
+    background: 'rgba(15, 20, 25, 0.9)',
+    backdropFilter: 'blur(15px)',
+    border: '2px solid rgba(74, 144, 226, 0.3)',
     borderRadius: '16px',
-    padding: '1.25rem 1.5rem',
+    padding: isMobile ? '1rem 1.25rem' : '1.25rem 1.5rem',
     fontFamily: 'Space Grotesk, sans-serif',
     textAlign: 'center',
     cursor: 'pointer',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',    zIndex: 10,
-    minWidth: '200px',
-    maxWidth: '240px'
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    zIndex: 10,
+    minWidth: isMobile ? '180px' : '220px',
+    maxWidth: isMobile ? '200px' : '260px',
+    animation: 'chatPulse 3s infinite ease-in-out',
+    boxShadow: '0 8px 32px rgba(74, 144, 226, 0.2), 0 0 0 1px rgba(240, 246, 252, 0.1)'
   }
   
   const hoverStyle = {
-    transform: 'translateY(-2px)',
-    background: 'rgb(128, 128, 128)',
-    border: '1px solid rgba(240, 246, 252, 0.3)',
-    boxShadow: '0 8px 32px rgba(240, 246, 252, 0.15)',
-    color: 'black',
+    transform: 'translateY(-3px) scale(1.02)',
+    background: 'rgba(74, 144, 226, 0.15)',
+    border: '2px solid rgba(74, 144, 226, 0.6)',
+    boxShadow: '0 12px 40px rgba(74, 144, 226, 0.3), 0 0 0 1px rgba(240, 246, 252, 0.2)',
+    color: '#f0f6fc',
   }  // Hide WelcomeBox when Luna Avatar appears (80% scroll progress)
   const shouldHide = scrollProgress > 0.8
 
@@ -160,28 +200,55 @@ export default function WelcomeBox() {
               
             />
             <span style={{ 
-              fontSize: '1.1rem',
+              fontSize: isMobile ? '1rem' : '1.1rem',
               fontWeight: '600',
               color: '#f0f6fc',
               letterSpacing: '0.5px'
             }}>Luna.ai</span>
           </div>
           
-          <div style={{ 
-            fontSize: '0.8rem',
-            color: 'rgba(240, 246, 252, 0.8)',
+          {/* Chat indicator */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
             marginBottom: '0.75rem',
-            lineHeight: '1.3'
+            animation: 'chatIndicator 2s infinite ease-in-out'
           }}>
-            Start your cosmic journey
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#4a90e2',
+              boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)',
+              animation: 'pulse 2s infinite'
+            }} />
+            <span style={{ 
+              fontSize: isMobile ? '0.7rem' : '0.8rem',
+              color: '#4a90e2',
+              fontWeight: '500',
+              letterSpacing: '0.5px'
+            }}>💬 Chat Available</span>
           </div>
           
           <div style={{ 
-            fontSize: '0.7rem',
-            color: 'rgba(240, 246, 252, 0.6)',
-            fontStyle: 'italic'
+            fontSize: isMobile ? '0.7rem' : '0.8rem',
+            color: 'rgba(240, 246, 252, 0.9)',
+            marginBottom: '0.75rem',
+            lineHeight: '1.3',
+            fontWeight: '500'
           }}>
-            Click to explore →
+            Talk with Luna.ai
+          </div>
+          
+          <div style={{ 
+            fontSize: isMobile ? '0.6rem' : '0.7rem',
+            color: 'rgba(240, 246, 252, 0.7)',
+            fontStyle: 'italic',
+            animation: 'messageBounce 3s infinite ease-in-out'
+          }}>
+            Click to start chatting →
           </div>
         </>
       )}
