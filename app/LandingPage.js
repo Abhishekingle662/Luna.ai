@@ -8,6 +8,7 @@ import Starfield from './components/Starfield'
 import WelcomeBox from './components/WelcomeBox'
 import ScrollCamera from './components/ScrollCamera'
 import InteractionHints from './components/IllustrationNotice'
+import Navigation from './components/Navigation'
 
 export default function LandingPage() {
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -128,6 +129,7 @@ export default function LandingPage() {
   }, [scrollProgress])
   return (
     <div>
+      <Navigation />
       {/* sticky 3D scene + overlays */}
       <section
         style={{
@@ -277,8 +279,8 @@ export default function LandingPage() {
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              backgroundColor: '#4a90e2',
-              boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)',
+              backgroundColor: '#9575cd',
+              boxShadow: '0 0 8px rgba(149, 117, 205, 0.6)',
               animation: 'pulse 2s infinite'
             }} />
             <span>🌙 Luna Focus Mode</span>

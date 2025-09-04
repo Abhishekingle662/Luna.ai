@@ -13,6 +13,7 @@ import Link from '@mui/material/Link'
 import GamesIcon from '@mui/icons-material/Games';
 import HomeIcon from '@mui/icons-material/Home'; 
 import ScienceIcon from '@mui/icons-material/Science';
+// Navigation is rendered globally in ClientLayout
 
 
 // Import particles background dynamically to avoid SSR issues
@@ -685,33 +686,7 @@ export default function Home() {
             overflow: 'hidden',
           }}
         >
-          {/* Enhanced Navigation with Luna styling */}
-          <Box sx={{ position: 'fixed', top: 20, left: 20, zIndex: 10, display: { xs: 'none', md: 'block' } }}>
-            <Button
-              component={Link}
-              href="/"
-              startIcon={<HomeIcon />}              sx={{
-                color: '#f0f6fc',
-                borderColor: 'rgba(240, 246, 252, 0.5)',
-                background: 'rgba(17, 19, 22, 0.7)',
-                backdropFilter: 'blur(10px)',
-                '&:hover': {
-                  borderColor: 'rgba(240, 246, 252, 0.7)',
-                  backgroundColor: 'rgba(240, 246, 252, 0.2)',
-                  boxShadow: '0 0 15px rgba(240, 246, 252, 0.4)',
-                  transform: 'scale(1.05)',
-                },
-                borderRadius: '30px',
-                px: 2,
-                py: 1,
-                transition: 'all 0.3s ease',
-                boxShadow: '0 0 10px rgba(240, 246, 252, 0.3)',
-              }}
-              variant="outlined"
-            >
-              Home
-            </Button>
-          </Box>
+          {/* Navigation is rendered globally in ClientLayout */}
 
           {/* Enhanced Learn Space Science Button */}
           <Box 

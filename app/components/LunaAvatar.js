@@ -210,7 +210,7 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
       <group ref={groupRef} {...props}>
         <mesh position={[0, 0, 0]}>
           <sphereGeometry args={[0.2]} />
-          <meshStandardMaterial color="#e6f3ff" emissive="#4a90e2" emissiveIntensity={0.5} />
+          <meshStandardMaterial color="#e6f3ff" emissive="#9575cd" emissiveIntensity={0.5} />
         </mesh>
         <Text
           position={[0, -0.4, 0]}
@@ -256,7 +256,7 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
             >
               <planeGeometry args={[1.35, 0.35]} />
               <meshBasicMaterial 
-                color={isGlitching ? "#ff0066" : "#4a90e2"}
+                color={isGlitching ? "#ff0066" : "#9575cd"}
                 transparent 
                 opacity={0.6}
               />
@@ -329,7 +329,7 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
             <mesh position={[basePosition[0], basePosition[1] + 0.25, basePosition[2] + 0.005]}>
               <planeGeometry args={[1.85, 0.45]} />
               <meshBasicMaterial 
-                color="#4a90e2" 
+                color="#9575cd" 
                 transparent 
                 opacity={0.8}
               />

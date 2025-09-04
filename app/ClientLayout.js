@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import LandingPage from './LandingPage';
+import Navigation from './components/Navigation';
 import { useEffect } from 'react';
 
 export default function ClientLayout({ children }) {
@@ -12,7 +13,16 @@ export default function ClientLayout({ children }) {
     window.scrollTo(0, 0);
   }, []);
 
-  return isHomePage ? <LandingPage /> : children;
+  if (isHomePage) {
+    return <LandingPage />;
+  }
+
+  return (
+    <>
+      {children}
+      <Navigation />
+    </>
+  );
 }
 
 

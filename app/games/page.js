@@ -15,6 +15,7 @@ import {
 import Link from 'next/link';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HomeIcon from '@mui/icons-material/Home';
+import Navigation from '../components/Navigation';
 import dynamic from 'next/dynamic';
 
 // Use dynamic imports to prevent server-side rendering issues
@@ -73,58 +74,10 @@ export default function GamesPage() {
         py: { xs: 4, md: 6 }
       }}
     >
+      <Navigation />
+      
       {/* Header */}
-      <Container maxWidth="lg">
-        {/* Navigation Buttons */}
-        <Stack 
-          direction="row" 
-          spacing={2} 
-          sx={{ 
-            mb: 3, 
-            justifyContent: 'flex-start', 
-            display: { xs: isMobile ? 'none' : 'flex', md: 'flex' } 
-          }}
-        >
-          <Button
-            component={Link}
-            href="/"            startIcon={<HomeIcon />}
-            size="small"
-            sx={{
-              color: 'rgba(240, 246, 252, 0.7)',
-              borderColor: 'rgba(240, 246, 252, 0.5)',
-              '&:hover': {
-                borderColor: 'rgba(240, 246, 252, 0.7)',
-                backgroundColor: 'rgba(240, 246, 252, 0.1)',
-              },
-              backdropFilter: 'blur(5px)',
-              borderRadius: '30px',
-              px: 2,
-            }}
-            variant="outlined"
-          >
-            Home
-          </Button>
-
-          <Button
-            component={Link}
-            href="/chat"            startIcon={<ArrowBackIcon />}
-            size="small"
-            sx={{
-              color: 'rgba(240, 246, 252, 0.7)',
-              borderColor: 'rgba(240, 246, 252, 0.5)',
-              '&:hover': {
-                borderColor: 'rgba(240, 246, 252, 0.7)',
-                backgroundColor: 'rgba(240, 246, 252, 0.1)',
-              },
-              backdropFilter: 'blur(5px)',
-              borderRadius: '30px',
-              px: 2,
-            }}
-            variant="outlined"
-          >
-            Back to Chat
-          </Button>
-        </Stack>
+      <Container maxWidth="lg" sx={{ pb: 10 }}>
 
         <Box textAlign="center" mb={6}>
           <Typography 

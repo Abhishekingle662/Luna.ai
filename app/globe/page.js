@@ -307,7 +307,7 @@ function PerformanceControls({ onStarCountChange, onToggleTextures, onToggleStat
       zIndex: 100,
       minWidth: '240px',
       backdropFilter: 'blur(5px)',
-      border: '1px solid rgba(74, 144, 226, 0.3)'
+      border: '1px solid rgba(149, 117, 205, 0.3)'
     }}>
       <h3 style={{ margin: '0 0 15px 0', fontSize: '14px', color: '#4A90E2' }}>
         ✨ Globe Controls
@@ -456,7 +456,7 @@ export default function GlobePage() {
           padding: '12px',
           borderRadius: '8px',
           backdropFilter: 'blur(5px)',
-          border: '1px solid rgba(74, 144, 226, 0.3)'
+          border: '1px solid rgba(149, 117, 205, 0.3)'
         }}>
           <h2 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#4A90E2' }}>
             🌙 Luna.ai - Interactive Earth Globe

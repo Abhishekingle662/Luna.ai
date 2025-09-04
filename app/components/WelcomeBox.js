@@ -24,11 +24,11 @@ const twinkleKeyframes = `
   @keyframes chatPulse {
     0%, 100% { 
       transform: scale(1);
-      box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.7);
+      box-shadow: 0 0 0 0 rgba(149, 117, 205, 0.7);
     }
     50% { 
       transform: scale(1.05);
-      box-shadow: 0 0 0 10px rgba(74, 144, 226, 0);
+      box-shadow: 0 0 0 10px rgba(149, 117, 205, 0);
     }
   }
   @keyframes chatIndicator {
@@ -130,7 +130,7 @@ export default function WelcomeBox() {
     right: isMobile ? '1rem' : '2rem',
     background: 'rgba(15, 20, 25, 0.9)',
     backdropFilter: 'blur(15px)',
-    border: '2px solid rgba(74, 144, 226, 0.3)',
+    border: '2px solid rgba(149, 117, 205, 0.3)',
     borderRadius: '16px',
     padding: isMobile ? '1rem 1.25rem' : '1.25rem 1.5rem',
     fontFamily: 'Space Grotesk, sans-serif',
@@ -141,14 +141,14 @@ export default function WelcomeBox() {
     minWidth: isMobile ? '180px' : '220px',
     maxWidth: isMobile ? '200px' : '260px',
     animation: 'chatPulse 3s infinite ease-in-out',
-    boxShadow: '0 8px 32px rgba(74, 144, 226, 0.2), 0 0 0 1px rgba(240, 246, 252, 0.1)'
+    boxShadow: '0 8px 32px rgba(149, 117, 205, 0.2), 0 0 0 1px rgba(240, 246, 252, 0.1)'
   }
   
   const hoverStyle = {
     transform: 'translateY(-3px) scale(1.02)',
-    background: 'rgba(74, 144, 226, 0.15)',
-    border: '2px solid rgba(74, 144, 226, 0.6)',
-    boxShadow: '0 12px 40px rgba(74, 144, 226, 0.3), 0 0 0 1px rgba(240, 246, 252, 0.2)',
+    background: 'rgba(149, 117, 205, 0.15)',
+    border: '2px solid rgba(149, 117, 205, 0.6)',
+    boxShadow: '0 12px 40px rgba(149, 117, 205, 0.3), 0 0 0 1px rgba(240, 246, 252, 0.2)',
     color: '#f0f6fc',
   }  // Hide WelcomeBox when Luna Avatar appears (80% scroll progress)
   const shouldHide = scrollProgress > 0.8
@@ -220,13 +220,13 @@ export default function WelcomeBox() {
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              backgroundColor: '#4a90e2',
-              boxShadow: '0 0 8px rgba(74, 144, 226, 0.6)',
+              backgroundColor: '#9575cd',
+              boxShadow: '0 0 8px rgba(149, 117, 205, 0.6)',
               animation: 'pulse 2s infinite'
             }} />
             <span style={{ 
               fontSize: isMobile ? '0.7rem' : '0.8rem',
-              color: '#4a90e2',
+              color: '#9575cd',
               fontWeight: '500',
               letterSpacing: '0.5px'
             }}>💬 Chat Available</span>

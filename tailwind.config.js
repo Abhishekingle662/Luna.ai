@@ -16,6 +16,7 @@ module.exports = {
           'muted': '#8b949e',       // Muted text color
           'accent': '#f0f6fc',      // Primary Accent (Headings, Icons, Active States)
           'accent-text': '#111316', // Accent Text (on solid accent backgrounds)
+          'purple': '#9575cd',      // Purple accent color
         }
       },
       fontFamily: {

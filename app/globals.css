@@ -21,6 +21,7 @@
   --lunar-light: #c8d1d9;
   --lunar-accent: #f0f6fc;
   --lunar-accent-text: #111316;
+  --lunar-purple: #9575cd;
 }
 
 /* Base body styling */
@@ -38,6 +39,52 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
   color: var(--lunar-accent);
+}
+
+/* Navigation Styles */
+.nav-item {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover {
+  color: #f0f6fc !important;
+  background-color: rgba(61, 68, 76, 0.25);
+  box-shadow: 0 4px 12px rgba(240, 246, 252, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-item:hover svg {
+  color: #9575cd !important;
+}
+
+.nav-item:hover span {
+  color: #9575cd !important;
+}
+
+.nav-item-active {
+  background-color: rgba(149, 117, 205, 0.15);
+  box-shadow: 0 4px 12px rgba(149, 117, 205, 0.2);
+}
+
+.nav-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(149, 117, 205, 0.8), transparent);
+  border-radius: 1px;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 0 0 8px rgba(149, 117, 205, 0.4);
 }
 
 /* Twinkling starfield background */
@@ -197,22 +244,14 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
 }
 
-/* Custom scrollbar */
+/* Hide Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--lunar-deep);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--lunar-gray);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--lunar-light);
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Animation keyframes */
@@ -368,6 +407,7 @@ h1, h2, h3, h4, h5, h6 {
   .text-lunar-muted { color: #8b949e !important; }
   .text-lunar-accent { color: #f0f6fc !important; }
   .text-lunar-accent-text { color: #111316 !important; }
+  .text-lunar-purple { color: #9575cd !important; }
   
   .bg-lunar-deep { background-color: #111316 !important; }
   .bg-lunar-dark { background-color: #24292e !important; }
@@ -377,6 +417,7 @@ h1, h2, h3, h4, h5, h6 {
   .bg-lunar-muted { background-color: #8b949e !important; }
   .bg-lunar-accent { background-color: #f0f6fc !important; }
   .bg-lunar-accent-text { background-color: #111316 !important; }
+  .bg-lunar-purple { background-color: #9575cd !important; }
   
   .border-lunar-deep { border-color: #111316 !important; }
   .border-lunar-dark { border-color: #24292e !important; }
@@ -386,5 +427,6 @@ h1, h2, h3, h4, h5, h6 {
   .border-lunar-muted { border-color: #8b949e !important; }
   .border-lunar-accent { border-color: #f0f6fc !important; }
   .border-lunar-accent-text { border-color: #111316 !important; }
+  .border-lunar-purple { border-color: #9575cd !important; }
 }
 

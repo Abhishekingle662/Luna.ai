@@ -22,94 +22,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Link from 'next/link';
 import { keyframes } from '@mui/system';
 import { styled } from '@mui/material/styles';
-import { Home, MessageCircle, Gamepad2, Calculator } from 'lucide-react';
-
-// Navigation Header Component
-const NavigationHeader = () => (
-  <header 
-    className="fixed top-0 left-0 right-0 z-50 border-b"
-    style={{
-      backgroundColor: 'rgba(17, 19, 22, 0.9)',
-      backdropFilter: 'blur(24px)',
-      borderColor: 'rgba(61, 68, 76, 0.3)',
-      boxShadow: '0 10px 15px -3px rgba(240, 246, 252, 0.1)'
-    }}
-  >
-    <div className="max-w-6xl mx-auto px-6 py-3">
-      <nav className="flex justify-center items-center space-x-6">
-        <Link 
-          href="/" 
-          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
-          style={{
-            color: '#c8d1d9',
-          }}
-        >
-          <Home size={18} className="group-hover:scale-110 transition-transform duration-200" />
-          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Home</span>
-        </Link>
-        
-        <Link 
-          href="/chat" 
-          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
-          style={{
-            color: '#c8d1d9',
-          }}
-        >
-          <MessageCircle size={18} className="group-hover:scale-110 transition-transform duration-200" />
-          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Chat</span>
-        </Link>
-        
-        <Link 
-          href="/games" 
-          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
-          style={{
-            color: '#c8d1d9',
-          }}
-        >
-          <Gamepad2 size={18} className="group-hover:scale-110 transition-transform duration-200" />
-          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Games</span>
-        </Link>
-        
-        <Link 
-          href="/learn/mathphysics" 
-          className="nav-item flex items-center space-x-2 transition-all duration-300 px-4 py-3 rounded-xl group relative"
-          style={{
-            color: '#c8d1d9',
-          }}
-        >
-          <Calculator size={18} className="group-hover:scale-110 transition-transform duration-200" />
-          <span className="hidden sm:inline font-medium text-sm tracking-wide" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Math & Physics</span>
-        </Link>
-      </nav>
-    </div>
-
-    <style jsx>{`
-      .nav-item:hover {
-        color: #f0f6fc !important;
-        background-color: rgba(61, 68, 76, 0.25);
-        box-shadow: 0 10px 15px -3px rgba(240, 246, 252, 0.1);
-      }
-      .nav-item::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%) translateY(6px);
-        width: 60%;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, rgba(240, 246, 252, 0.8), transparent);
-        border-radius: 1px;
-        opacity: 0;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .nav-item:hover::after {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-        box-shadow: 0 0 8px rgba(240, 246, 252, 0.4);
-      }
-    `}</style>
-  </header>
-);
+import Navigation from '../../components/Navigation';
 
 // Remove MathJax dynamic import
 
@@ -695,11 +608,11 @@ export default function MathPhysicsPage() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <NavigationHeader />
+      <Navigation />
 
       {/* Particles background */}
       <BackgroundEffect />        {/* Main container */}
-      <Container maxWidth="lg" sx={{ minHeight: '100vh', pt: { xs: 12, md: 14 }, pb: 10 }}>
+      <Container maxWidth="lg" sx={{ minHeight: '100vh', pt: { xs: 4, md: 6 }, pb: 10 }}>
         {/* Header with integrated back button */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
