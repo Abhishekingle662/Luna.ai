@@ -3,10 +3,9 @@ import { useFrame } from '@react-three/fiber'
 import { Text, useGLTF } from '@react-three/drei'
 import { useRouter } from 'next/navigation'
 
-export default function LunaAvatar({ scrollProgress, ...props }) {
+export default function LunaAvatar({ ...props }) {
   const groupRef = useRef()
   const router = useRouter()
-  const [isVisible, setIsVisible] = useState(false)
   const [animationTime, setAnimationTime] = useState(0)
   const [hasError, setHasError] = useState(false)
   const [entranceAnimation, setEntranceAnimation] = useState(0)
@@ -68,38 +67,17 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
     return () => window.removeEventListener('moonPosition', handleMoonPosition)
   }, [])
 
-  // Luna becomes visible when user scrolls close to the moon (80% scroll progress)
-  useEffect(() => {
-    try {
-      const shouldBeVisible = scrollProgress > 0.8
-      if (shouldBeVisible !== isVisible) {
-        console.log(`Luna Avatar visibility changing: ${isVisible} → ${shouldBeVisible} (scroll: ${scrollProgress.toFixed(3)})`)
-        setIsVisible(shouldBeVisible)
-        if (shouldBeVisible) {
-          setEntranceAnimation(0) // Reset entrance animation when becoming visible
-          setCurrentMessageIndex(0) // Reset message cycle
-          setMessageTimer(0)
-        }
-      }
-    } catch (error) {
-      console.warn('Luna Avatar visibility update error:', error)
-      setHasError(true)
-    }
-  }, [scrollProgress, isVisible])
-
-  // Handle model loading errors
+  // Luna is always visible now
   useEffect(() => {
     if (lunaError) {
-      console.error('Error loading Luna model:', lunaError)
       setHasError(true)
     } else if (lunaScene) {
-      console.log('Luna model loaded successfully! ✨')
       setHasError(false)
     }
   }, [lunaScene, lunaError])
   
   useFrame((state, delta) => {
-    if (!groupRef.current || !isVisible || !lunaScene) return
+    if (!groupRef.current || !lunaScene) return
     
     setAnimationTime(prev => prev + delta)
     
@@ -145,14 +123,11 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
     const breathingScale = 1 + Math.sin(animationTime * 1.5) * 0.05
     const entranceScale = entranceAnimation // Smooth scale from 0 to 1
     
-    // Scale up with distance - avatar gets larger as it approaches camera
-    const distanceScale = 1 + scrollProgress * 1.5 // Scale up to 2.5x when fully scrolled
-    
     // Add hover and click effects
     const hoverScale = isHovered ? 1.1 : 1.0
     const clickScale = isClicked ? 0.95 : 1.0
     
-    const finalScale = breathingScale * entranceScale * distanceScale * hoverScale * clickScale
+    const finalScale = breathingScale * entranceScale * hoverScale * clickScale
     groupRef.current.scale.setScalar(finalScale)
     
     // Entrance opacity animation
@@ -201,7 +176,7 @@ export default function LunaAvatar({ scrollProgress, ...props }) {
     ]
   }
   
-  if (!isVisible || hasError) return null
+  if (hasError) return null
 
   // Show fallback if Luna model failed to load
   if (lunaError || !lunaScene) {
