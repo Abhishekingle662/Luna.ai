@@ -1,217 +1,99 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Home, MessageCircle, Gamepad2, Calculator, Globe, Menu, X } from 'lucide-react';
+import { BookOpen, Bot, Gamepad2, Globe2, Home, Orbit, Sigma } from 'lucide-react';
 
-const Navigation = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const navItems = [
+  { href: '/', label: 'Home', shortLabel: 'Home', icon: Home },
+  { href: '/chat', label: 'Luna Chat', shortLabel: 'Chat', icon: Bot },
+  { href: '/learn', label: 'Learn', shortLabel: 'Learn', icon: BookOpen },
+  { href: '/games', label: 'Games', shortLabel: 'Games', icon: Gamepad2 },
+  { href: '/globe', label: 'Globe', shortLabel: 'Globe', icon: Globe2 },
+  { href: '/learn/mathphysics', label: 'Physics', shortLabel: 'Physics', icon: Sigma },
+];
+
+function isActivePath(pathname, href) {
+  if (href === '/') {
+    return pathname === '/';
+  }
+
+  if (href === '/learn') {
+    return pathname === '/learn';
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+export default function Navigation() {
   const pathname = usePathname();
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const navItems = [
-    { href: '/', label: 'Home', icon: Home },
-    { href: '/chat', label: 'Chat', icon: MessageCircle },
-    { href: '/games', label: 'Games', icon: Gamepad2 },
-    { href: '/globe', label: 'Globe', icon: Globe },
-    { href: '/learn/mathphysics', label: 'Math & Physics', icon: Calculator },
-  ];
-
-  const isActive = (href) => {
-    if (href === '/') {
-      return pathname === '/';
-    }
-    return pathname.startsWith(href);
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   return (
     <>
-      {/* Bottom Navigation Bar */}
-      <motion.nav
-        className="fixed bottom-0 left-0 right-0 z-50"
-        style={{
-          backgroundColor: 'rgba(17, 19, 22, 0.95)',
-          backdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(61, 68, 76, 0.3)',
-          boxShadow: '0 -10px 15px -3px rgba(240, 246, 252, 0.1)'
-        }}
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+      <header className="fixed left-0 right-0 top-0 z-50 hidden border-b border-white/10 bg-[#080b12]/90 backdrop-blur-xl md:block">
+        <div className="luna-container flex h-16 items-center justify-between">
+          <Link href="/" className="group flex items-center gap-3" aria-label="Go to Luna.ai home">
+            <span className="grid h-9 w-9 place-items-center rounded-lg border border-cyan-300/25 bg-cyan-300/10 text-cyan-200">
+              <Orbit size={19} />
+            </span>
+            <span>
+              <span className="block text-sm font-black tracking-wide text-white">Luna.ai</span>
+              <span className="block text-[11px] font-semibold text-[var(--space-muted)]">Space learning lab</span>
+            </span>
+          </Link>
+
+          <nav className="flex items-center gap-1" aria-label="Primary navigation">
+            {navItems.slice(1).map((item) => {
+              const Icon = item.icon;
+              const active = isActivePath(pathname, item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={[
+                    'flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-bold transition',
+                    active
+                      ? 'border-cyan-300/30 bg-cyan-300/10 text-white'
+                      : 'border-transparent text-[var(--space-muted)] hover:border-white/10 hover:bg-white/5 hover:text-white',
+                  ].join(' ')}
+                >
+                  <Icon size={17} />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      </header>
+
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-[#080b12]/95 px-2 pb-[max(0.65rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl md:hidden"
+        aria-label="Primary navigation"
       >
-        {/* Desktop Navigation */}
-        {!isMobile && (
-          <div className="max-w-4xl mx-auto px-4 py-3">
-            <div className="flex justify-center items-center space-x-2">
-              {navItems.map((item, index) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                
-                return (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                  >
-                    <Link
-                      href={item.href}
-                      className={`nav-item flex flex-col items-center space-y-1 px-4 py-3 rounded-xl group relative transition-all duration-300 ${
-                        active ? 'nav-item-active' : ''
-                      }`}
-                      style={{
-                        color: active ? '#f0f6fc' : '#c8d1d9',
-                        minWidth: '80px'
-                      }}
-                    >
-                      <Icon 
-                        size={20} 
-                        className="group-hover:scale-110 transition-transform duration-200" 
-                        style={{ color: active ? '#9575cd' : '#c8d1d9' }}
-                      />
-                      <span 
-                        className="text-xs font-medium tracking-wide" 
-                        style={{ 
-                          fontFamily: 'Space Grotesk, sans-serif',
-                          color: active ? '#9575cd' : '#c8d1d9'
-                        }}
-                      >
-                        {item.label}
-                      </span>
-                      {active && (
-                        <motion.div
-                          className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full"
-                          style={{ backgroundColor: '#9575cd' }}
-                          layoutId="activeIndicator"
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        />
-                      )}
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        <div className="mx-auto grid max-w-xl grid-cols-6 gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActivePath(pathname, item.href);
 
-        {/* Mobile Navigation */}
-        {isMobile && (
-          <div className="px-4 py-3">
-            <div className="flex justify-center items-center space-x-1">
-              {navItems.map((item, index) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                
-                return (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                  >
-                    <Link
-                      href={item.href}
-                      className={`nav-item flex flex-col items-center space-y-1 px-2 py-2 rounded-lg group relative transition-all duration-300 ${
-                        active ? 'nav-item-active' : ''
-                      }`}
-                      style={{
-                        color: active ? '#f0f6fc' : '#c8d1d9',
-                        minWidth: '60px'
-                      }}
-                    >
-                      <Icon 
-                        size={18} 
-                        className="group-hover:scale-110 transition-transform duration-200" 
-                        style={{ color: active ? '#9575cd' : '#c8d1d9' }}
-                      />
-                      <span 
-                        className="text-xs font-medium" 
-                        style={{ 
-                          fontFamily: 'Space Grotesk, sans-serif',
-                          color: active ? '#9575cd' : '#c8d1d9'
-                        }}
-                      >
-                        {item.label.split(' ')[0]}
-                      </span>
-                      {active && (
-                        <motion.div
-                          className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full"
-                          style={{ backgroundColor: '#9575cd' }}
-                          layoutId="activeIndicator"
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        />
-                      )}
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <style jsx>{`
-          .nav-item:hover {
-            color: #f0f6fc !important;
-            background-color: rgba(61, 68, 76, 0.25);
-            box-shadow: 0 4px 12px rgba(240, 246, 252, 0.1);
-            transform: translateY(-2px);
-          }
-          
-          .nav-item:hover svg {
-            color: #9575cd !important;
-          }
-          
-          .nav-item:hover span {
-            color: #9575cd !important;
-          }
-          
-          .nav-item-active {
-            background-color: rgba(149, 117, 205, 0.15);
-            box-shadow: 0 4px 12px rgba(149, 117, 205, 0.2);
-          }
-          
-          .nav-item::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(-6px);
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(149, 117, 205, 0.8), transparent);
-            border-radius: 1px;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-          
-          .nav-item:hover::after {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            box-shadow: 0 0 8px rgba(149, 117, 205, 0.4);
-          }
-        `}</style>
-      </motion.nav>
-
-      {/* Spacer for bottom navigation */}
-      <div className="h-20" />
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={[
+                  'flex min-h-[54px] flex-col items-center justify-center gap-1 rounded-lg border text-[11px] font-bold transition',
+                  active
+                    ? 'border-cyan-300/30 bg-cyan-300/10 text-white'
+                    : 'border-transparent text-[var(--space-muted)] hover:bg-white/5 hover:text-white',
+                ].join(' ')}
+              >
+                <Icon size={18} />
+                <span className="leading-none">{item.shortLabel}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
-};
-
-export default Navigation;
+}

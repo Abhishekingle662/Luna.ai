@@ -6,6 +6,12 @@
 .pnp.js
 .yarn/install-state.gz
 
+# local environments
+/luna
+/.venv
+/venv
+/.vscode
+
 # testing
 /coverage
 
@@ -24,6 +30,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # local env files
 .env*.local

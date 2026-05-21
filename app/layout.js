@@ -2,10 +2,6 @@ import { Inter, Exo_2, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/react';
 import ClientLayout from './ClientLayout';
-import dynamic from 'next/dynamic';
-
-// Import the analytics component with no SSR
-const ClientAnalytics = dynamic(() => import('./ClientAnalytics'), { ssr: false });
 
 const inter = Inter({ subsets: ["latin"] });
 const spaceGrotesk = Space_Grotesk({ 
@@ -37,7 +33,8 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">      <head>
+    <html lang="en">
+      <head>
         {/* Critical CSS hint */}
         <meta name="critical-css" content="true" />
         
@@ -51,51 +48,11 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon_io/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/favicon_io/apple-touch-icon.png" />
         <link rel="manifest" href="/favicon_io/site.webmanifest" />
-        
-      </head><body className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable} bg-lunar-deep text-lunar-light font-lato`}>
-        <ClientAnalytics />
+      </head>
+      <body className={`${inter.className} ${spaceGrotesk.variable} ${exo2.variable} bg-lunar-deep text-lunar-light font-lato`}>
         <ClientLayout>{children}</ClientLayout>
         <Analytics />
-        
-        {/* Register service worker for enhanced caching */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    console.log('SW registered: ', registration);
-                  })
-                  .catch(function(registrationError) {
-                    console.log('SW registration failed: ', registrationError);
-                  });
-              });
-            }
-          `
-        }} />
-        
-        {/* Clear old service worker cache */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                  registration.unregister();
-                }
-              });
-              // Clear all caches
-              if ('caches' in window) {
-                caches.keys().then(function(names) {
-                  names.forEach(function(name) {
-                    caches.delete(name);
-                  });
-                });
-              }
-            }
-          `
-        }} />
       </body>
     </html>
   );
 }
-

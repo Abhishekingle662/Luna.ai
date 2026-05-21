@@ -133,14 +133,10 @@ export default function GravitySimulator() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="space-y-6">
       {/* Work in Progress Notice */}
       <motion.div
-        className="mb-6 p-4 rounded-lg"
-        style={{
-          backgroundColor: 'rgba(149, 117, 205, 0.1)',
-          border: '1px solid rgba(149, 117, 205, 0.3)'
-        }}
+        className="rounded-lg border border-amber-300/25 bg-amber-300/10 p-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -148,20 +144,17 @@ export default function GravitySimulator() {
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0">
             <div 
-              className="w-3 h-3 rounded-full animate-pulse"
-              style={{ backgroundColor: '#9575cd' }}
+              className="h-3 w-3 animate-pulse rounded-full bg-amber-200"
             ></div>
           </div>
           <div>
             <h3 
-              className="font-space-grotesk font-semibold text-sm"
-              style={{ color: '#9575cd' }}
+              className="font-space-grotesk text-sm font-semibold text-amber-100"
             >
-              ⚠️ Work in Progress
+              Work in progress
             </h3>
             <p 
-              className="font-lato text-xs mt-1"
-              style={{ color: 'rgba(149, 117, 205, 0.8)' }}
+              className="mt-1 font-lato text-xs text-[var(--space-muted)]"
             >
               This gravity simulator is currently under development and is not mathematically accurate. 
               The physics calculations are simplified for demonstration purposes only.
@@ -402,7 +395,7 @@ export default function GravitySimulator() {
                       onClick={() => setSelectedBody(null)}
                       className="text-lunar-muted hover:text-lunar-light"
                     >
-                      ×
+                      x
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm font-lato">
