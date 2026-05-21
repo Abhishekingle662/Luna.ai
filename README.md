@@ -1,31 +1,44 @@
-# Meet Luna!, your personal gateway to the cosmos! 
+# Luna.ai
 
-Try Luna here: https://www.lunaapp.space
+Luna.ai is an interactive space and science learning platform built with Next.js. The app combines a focused science-only AI guide with learning modules, simulations, games, and an interactive globe.
 
+## Product Direction
 
-![Screenshot 2025-03-01 084033](https://github.com/user-attachments/assets/10f09cdf-5c26-4816-ae63-c467ddf26d5e)
+- Science-first AI guide for space, astronomy, physics, and related STEM topics
+- Gamified exploration across chat, learning, games, and globe sections
+- Mobile-first UX for quick learning and interactive play
+- Cleaner visual system built around Tailwind/custom components over time
+- Low-cost OpenAI model defaults with environment-based overrides
 
-![Screenshot 2025-03-01 084045](https://github.com/user-attachments/assets/3344b43a-78c7-4071-9181-3c6f456fd1c6)
+## Current Sections
 
-This project is an innovative AI-powered chat application built with Next.js and Material-UI. It features a responsive design that works seamlessly across desktop and mobile devices. The application includes:
+- `/` - cinematic landing page
+- `/chat` - LUNA chat assistant for space and science questions
+- `/learn` - topic-based space science academy
+- `/learn/mathphysics` - math and physics learning modules
+- `/games` - space facts, gravity simulator, and NASA visualization links
+- `/globe` - interactive 3D Earth globe
 
-- A welcoming landing page with a call-to-action to start chatting
-- An intelligent chat interface powered by OpenAI's API
-- Dynamic message formatting for improved readability
-- Light and dark mode toggle for user preference
-- Smooth transitions and animations for an engaging user experience
+## Setup
 
-The app demonstrates modern web development practices, including server-side rendering, client-side routing, and responsive design. It's an excellent example of how to create an interactive AI chat application using cutting-edge web technologies.
+```bash
+npm install
+npm run dev
+```
 
-## Technologies Used
+Create a local environment file with:
 
-- Next.js 14 for server-side rendering and routing
-- React for building the user interface
-- Material-UI (MUI) for responsive design components
-- OpenAI API for powering the AI chat functionality
-- Vercel Analytics for tracking application usage
-- CSS-in-JS styling with MUI's styling solution
-- Custom animations using keyframes
-- Next.js App Router for advanced routing capabilities
-- React Hooks for state management and side effects
+```bash
+OPENAI_API_KEY=your_api_key
+OPENAI_CHAT_MODEL=gpt-5.4-nano
+```
 
+`OPENAI_CHAT_MODEL` is optional. The app defaults to `gpt-5.4-nano` for low-cost science chat responses.
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run lint
+```

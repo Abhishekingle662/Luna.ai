@@ -1,7 +1,11 @@
-/* Globe Page Specific Styles */
 .globe-page {
-  overflow: hidden;
   position: relative;
+  width: 100vw;
+  height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(98, 216, 255, 0.12), transparent 32rem),
+    linear-gradient(180deg, #03050b 0%, #07101f 52%, #03050b 100%);
 }
 
 .globe-page canvas {
@@ -9,84 +13,125 @@
   outline: none;
 }
 
-/* Performance Stats Styling */
-.stats {
-  position: absolute !important;
-  top: 100px !important;
-  left: 10px !important;
-  z-index: 50 !important;
-}
-
-/* Smooth transitions for controls */
-.globe-controls input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 4px;
-  background: #333;
-  border-radius: 2px;
-  outline: none;
-}
-
-.globe-controls input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  background: #4A90E2;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.globe-controls input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  background: #4A90E2;
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-}
-
-/* Loading animation */
-@keyframes pulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 0.4; }
-}
-
-.loading-text {
-  animation: pulse 2s infinite;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .globe-controls {
-    font-size: 10px !important;
-    padding: 10px !important;
-    min-width: 150px !important;
-  }
-  
-  .globe-info {
-    font-size: 10px !important;
-    padding: 8px !important;
-  }
-  
-  .back-button {
-    font-size: 12px !important;
-    padding: 6px 10px !important;
-  }
-}
-
-/* Accessibility improvements */
-.globe-controls input:focus,
-.back-button:focus {
-  outline: 2px solid #4A90E2;
-  outline-offset: 2px;
-}
-
-/* Prevent text selection on UI elements */
 .globe-info,
 .globe-controls {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+  position: absolute;
+  z-index: 20;
+  width: min(320px, calc(100vw - 2rem));
+  border: 1px solid var(--space-line);
+  border-radius: 8px;
+  background: rgba(7, 10, 16, 0.78);
+  color: var(--space-text);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(18px);
+}
+
+.globe-info {
+  top: 84px;
+  left: 16px;
+  padding: 18px;
+  pointer-events: none;
+}
+
+.globe-info h1 {
+  margin: 10px 0 0;
+  color: white;
+  font-size: 1.55rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.globe-info p {
+  margin: 12px 0 0;
+  color: var(--space-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.globe-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.globe-metrics span {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 9px;
+  color: var(--space-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.globe-controls {
+  top: 84px;
+  right: 16px;
+  padding: 16px;
+}
+
+.globe-controls h2 {
+  margin: 0 0 14px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.globe-range {
+  display: grid;
+  gap: 8px;
+  color: var(--space-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.globe-range input {
+  width: 100%;
+}
+
+.globe-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 12px;
+  color: var(--space-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.globe-toggle input {
+  accent-color: var(--space-cyan);
+}
+
+.globe-controls p {
+  margin: 14px 0 0;
+  border-top: 1px solid var(--space-line);
+  padding-top: 12px;
+  color: var(--space-dim);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 768px) {
+  .globe-info {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    padding: 14px;
+  }
+
+  .globe-info h1 {
+    font-size: 1.2rem;
+  }
+
+  .globe-controls {
+    top: auto;
+    right: 12px;
+    bottom: 86px;
+    left: 12px;
+    width: auto;
+    padding: 14px;
+  }
 }

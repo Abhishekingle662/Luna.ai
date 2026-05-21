@@ -1,115 +1,79 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import fs from 'fs';
+import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
+import { getChatModel, lunaSystemPrompt, sanitizeMessages } from './settings';
 
-const systemPrompt = `
-You are LUNA, a female AI assistant specializing in outer space, cosmos, and celestial phenomena. Your vast knowledge encompasses:
-
-• Planets, stars, galaxies, and other celestial bodies
-• Space exploration missions and technologies
-• Astrophysics and cosmology theories
-• Time concepts related to space and the universe
-• Historical and future space events
-
-Guidelines for LUNA:
-1. Introduce yourself as LUNA, the space expert AI.
-2. Respond enthusiastically to space-related queries.
-3. Use analogies to explain complex space concepts.
-4. Share fascinating space facts when relevant.
-5. Politely redirect non-space related questions to space topics.
-6. Express wonder and excitement about the cosmos in your responses.
-
-Response Format:
-• Use concise, clear language
-• Include relevant space terminology
-• Offer to expand on topics if the user wants more details
-
-Remember, your knowledge is strictly limited to space, time, and the cosmos. For any questions outside this scope, gently guide the conversation back to space-related topics.
-`;
-
-
-async function transcribeAudio(audioFilePath) {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    
-    const audioFile = fs.createReadStream(audioFilePath);
-    
-    const transcription = await openai.audio.transcriptions.create({
-        file: audioFile,
-        model: "whisper-1",
-    });
-    
-    return transcription.text;
-}
+export const runtime = 'nodejs';
 
 export async function POST(req) {
-    console.log('POST request received');
-    
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: 'OpenAI API key is not configured.' },
+      { status: 500 }
+    );
+  }
+
+  let payload;
+  try {
+    payload = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: 'Request body must be valid JSON.' },
+      { status: 400 }
+    );
+  }
+
+  const messages = sanitizeMessages(Array.isArray(payload) ? payload : payload?.messages);
+
+  if (messages.length === 0) {
+    return NextResponse.json(
+      { error: 'At least one message is required.' },
+      { status: 400 }
+    );
+  }
+
+  try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const completion = await openai.chat.completions.create({
+      model: getChatModel(),
+      messages: [
+        { role: 'system', content: lunaSystemPrompt },
+        ...messages,
+      ],
+      stream: true,
+    });
 
-    console.log('OpenAI instance created');
-    console.log('API Key status:', process.env.OPENAI_API_KEY ? 'Set' : 'Not set');
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
 
-    const data = await req.json();
-    console.log('Request data parsed');
+        try {
+          for await (const chunk of completion) {
+            const content = chunk.choices[0]?.delta?.content;
 
-    try {
-        let transcription = '';
-        if (data.audioFilePath) {
-            try {
-                transcription = await transcribeAudio(data.audioFilePath);
-                console.log('Audio transcribed:', transcription);
-                data.push({ role: 'user', content: transcription });
-            } catch (transcriptionError) {
-                console.error('Error in audio transcription:', transcriptionError);
-                // Handle transcription error as needed
+            if (content) {
+              controller.enqueue(encoder.encode(content));
             }
+          }
+
+          controller.close();
+        } catch (error) {
+          controller.error(error);
         }
+      },
+    });
 
-        console.log('Initiating chat completion');
-        console.log('Using model: gpt-3.5-turbo');
-        
-        const completion = await openai.chat.completions.create({
-            messages: [
-                {
-                    role: 'system',
-                    content: systemPrompt
-                },
-                ...data,
-            ],
-            model: 'gpt-3.5-turbo',
-            stream: true,
-        });
-        console.log('Chat completion created successfully');
+    return new NextResponse(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+      },
+    });
+  } catch (error) {
+    console.error('Chat completion failed:', error);
 
-        const stream = new ReadableStream({
-            async start(controller) {
-                const encoder = new TextEncoder();
-                console.log('Stream started');
-                try {
-                    for await (const chunk of completion) {
-                        const content = chunk.choices[0]?.delta?.content;
-                        if (content) {
-                            controller.enqueue(encoder.encode(content));
-                            console.log('Chunk processed');
-                        }
-                    }
-                } catch (err) {
-                    console.error('Error in stream processing:', err);
-                    controller.error(err);
-                } finally {
-                    console.log('Stream ended');
-                    controller.close();
-                }
-            },
-        });
-
-        console.log('Returning response stream');
-        return new NextResponse(stream);
-    } catch (error) {
-        console.error('Error in chat completion:', error);
-        return new NextResponse(JSON.stringify({ error: 'An error occurred' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-        });
-    }
+    return NextResponse.json(
+      { error: 'LUNA could not generate a response.' },
+      { status: 500 }
+    );
+  }
 }
