@@ -1,6 +1,6 @@
 export const missionStats = [
   { label: 'Learning paths', value: '4' },
-  { label: 'Interactive labs', value: '3' },
+  { label: 'Interactive labs', value: '4' },
   { label: 'Core topics', value: '12+' },
 ];
 
@@ -19,7 +19,7 @@ export const homeMissions = [
   },
   {
     title: 'Run Simulations',
-    description: 'Play with facts, gravity presets, and external NASA visualizations.',
+    description: 'Play with facts, orbital mechanics, launch vectors, and official NASA visualizations.',
     href: '/games',
     accent: 'green',
   },
@@ -145,8 +145,8 @@ export const gameTabs = [
   },
   {
     id: 'gravity',
-    title: 'Gravity Lab',
-    description: 'Tune orbital presets and compare how mass, speed, and trails change the motion.',
+    title: 'Orbit Lab',
+    description: 'Launch probes, inspect live telemetry, and compare orbit, transfer, binary star, and flyby presets.',
   },
   {
     id: 'nasa',

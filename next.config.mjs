@@ -13,29 +13,7 @@ const nextConfig = {
         fs: false,
       };
     }
-    
-    // Optimize chunks
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-          mui: {
-            test: /[\\/]node_modules[\\/]@mui[\\/]/,
-            name: 'mui',
-            chunks: 'all',
-            priority: 10,
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendor',
-            chunks: 'all',
-            priority: 5,
-          },
-        },
-      },
-    };
-    
+
     return config;
   },
 };
